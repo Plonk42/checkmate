@@ -9,5 +9,4 @@ public class Movement {
 		this.dx = dx;
 		this.dy = dy;
 	}
-	
 }

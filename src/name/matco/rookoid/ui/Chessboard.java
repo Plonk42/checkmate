@@ -1,11 +1,15 @@
 package name.matco.rookoid.ui;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import name.matco.rookoid.game.Case;
 import name.matco.rookoid.game.Game;
+import name.matco.rookoid.game.GameUtils;
+import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.piece.Piece;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -25,6 +29,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private static Paint blackPainter;
 	private static Paint whitePainter;
+	
+	private static Paint hightlightPainter;
 	private Timer paintTimer;
 	
 	private Hashtable<Piece, Drawable> drawableCache = new Hashtable<Piece, Drawable>();
@@ -34,7 +40,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private int caseSize;
 	
 	private Game game;
+	
 	private Piece selectedPiece;
+	private final List<Case> highlightedCases = new ArrayList<Case>();
+	
+	float isometricScaleFactor = 1;
 	
 	static {
 		blackPainter = new Paint();
@@ -46,6 +56,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		whitePainter.setAntiAlias(true);
 		whitePainter.setStyle(Style.FILL);
 		whitePainter.setARGB(255, 255, 206, 158);
+		
+		hightlightPainter = new Paint();
+		hightlightPainter.setAntiAlias(true);
+		hightlightPainter.setStyle(Style.FILL);
+		hightlightPainter.setARGB(255, 255, 0, 0);
 	}
 	
 	public Chessboard(Context context, AttributeSet attrs) {
@@ -77,15 +92,28 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		Case c = getCaseAt(event.getX(), event.getY());
 		if (selectedPiece != null) {
-			for (Case previous : game.getBoard()) {
-				if (previous.getPiece() == selectedPiece) {
-					previous.setPiece(null);
+			if(!selectedPiece.equals(c.getPiece())) {
+				for (Case previous : game.getBoard()) {
+					if (previous.getPiece() == selectedPiece) {
+						previous.setPiece(null);
+					}
 				}
+				if(c.getPiece() != null) {
+					synchronized (game.getCapturedPieces()) {
+						game.getCapturedPieces().add(c.getPiece());
+					}
+				}
+				c.setPiece(selectedPiece);
 			}
-			c.setPiece(selectedPiece);
 			selectedPiece = null;
 		} else {
 			selectedPiece = c.getPiece();
+			
+			highlightedCases.clear();
+			if(selectedPiece != null) {
+				highlightedCases.addAll(selectedPiece.getAllowedPositions());
+			}
+			
 			String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
 			Log.i(getClass().getName(), String.format("Selected piece : %s", str));
 		}
@@ -111,18 +139,21 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		x0 = (canvas.getWidth() - caseSize * 8) / 2;
 		y0 = (canvas.getHeight() - caseSize * 8) / 2;
 		canvas.translate(x0, y0);
-		for (int x = 0; x < 8; x++) {
-			for (int y = 0; y < 8; y++) {
-				int left = x * caseSize;
-				int right = left + caseSize;
-				int top = y * caseSize;
-				int bottom = top + caseSize;
-				
-				canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
+		for (Case c : game.getBoard()) {
+			int x = c.getCoordinate().x;
+			int y = c.getCoordinate().y;
+			int left = x * caseSize;
+			int right = left + caseSize;
+			int top = y * caseSize;
+			int bottom = top + caseSize;
+			
+			if(highlightedCases.contains(c)) {
+				canvas.drawRect(left - 3, top - 3, right + 3, bottom + 3, hightlightPainter);
 			}
+			canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
 		}
 		
-		float isometricScaleFactor = 1;
+		
 		for (int i = 0; i < game.getBoard().length; i++) {
 			Piece p = game.getBoard()[i].getPiece();
 			if (p == null) {
@@ -136,13 +167,49 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			int top = y * caseSize + PIECE_MARGIN;
 			int bottom = top + caseSize - 2 * PIECE_MARGIN;
 			
+			int magnify = p.equals(selectedPiece) ? -5 : 0;
+			
 			Drawable drawable = drawableCache.get(p);
 			drawable.setBounds(
-					(int) (isometricScaleFactor * left),
-					(int) (isometricScaleFactor * top),
-					(int) (isometricScaleFactor * right),
-					(int) (isometricScaleFactor * bottom));
+					(int) (isometricScaleFactor * left - magnify),
+					(int) (isometricScaleFactor * top - magnify),
+					(int) (isometricScaleFactor * right + magnify),
+					(int) (isometricScaleFactor * bottom + magnify));
 			drawable.draw(canvas);
+			
+			drawCapturedPieces(canvas);
+		}
+	}
+	
+	private void drawCapturedPieces(Canvas canvas) {
+		int capturedWhiteX = x0 - caseSize;
+		int offsetWhite = 0;
+		
+		int capturedBlackX = x0 + GameUtils.CHESSBOARD_SIZE * caseSize;
+		int offsetBlack = 0;
+		synchronized (game.getCapturedPieces()) {
+			for(Piece p : game.getCapturedPieces()) {
+				if(Player.WHITE.equals(p.getPlayer())) {
+					Drawable drawable = drawableCache.get(p);
+					drawable.setBounds(
+							(int) (isometricScaleFactor * capturedWhiteX),
+							(int) (isometricScaleFactor * offsetWhite),
+							(int) (isometricScaleFactor * capturedWhiteX + caseSize),
+							(int) (isometricScaleFactor * offsetWhite + caseSize));
+					drawable.draw(canvas);
+					offsetWhite += caseSize;
+				}
+				else {
+					Drawable drawable = drawableCache.get(p);
+					drawable.setBounds(
+							(int) (isometricScaleFactor * capturedBlackX),
+							(int) (isometricScaleFactor * offsetBlack),
+							(int) (isometricScaleFactor * capturedBlackX + caseSize),
+							(int) (isometricScaleFactor * offsetBlack + caseSize));
+					drawable.draw(canvas);
+					offsetBlack += caseSize;
+				}
+			}
 		}
 	}
 	
