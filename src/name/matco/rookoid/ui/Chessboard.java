@@ -27,7 +27,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private static Paint whitePainter;
 	private Timer paintTimer;
 	
-	private Hashtable<Piece, Drawable> drawableCache = new Hashtable<Piece, Drawable>();
+	private Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
 	
 	private int x0;
 	private int y0;
@@ -63,7 +63,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		for (Case c : game.getBoard()) {
 			Piece p = c.getPiece();
 			if (p != null) {
-				drawableCache.put(p, getContext().getResources().getDrawable(p.getResource()));
+				drawableCache.put(p.getResource(), getContext().getResources().getDrawable(p.getResource()));
 			}
 		}
 	}
@@ -136,7 +136,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			int top = y * caseSize + PIECE_MARGIN;
 			int bottom = top + caseSize - 2 * PIECE_MARGIN;
 			
-			Drawable drawable = drawableCache.get(p);
+			Drawable drawable = drawableCache.get(p.getResource());
 			drawable.setBounds(
 					(int) (isometricScaleFactor * left),
 					(int) (isometricScaleFactor * top),
