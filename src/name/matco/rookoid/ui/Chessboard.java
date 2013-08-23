@@ -60,7 +60,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		hightlightPainter = new Paint();
 		hightlightPainter.setAntiAlias(true);
 		hightlightPainter.setStyle(Style.FILL);
-		hightlightPainter.setARGB(255, 255, 0, 0);
+		hightlightPainter.setARGB(96, 255, 255, 255);
 	}
 	
 	public Chessboard(Context context, AttributeSet attrs) {
@@ -90,27 +90,28 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			return false;
 		}
 		
+		highlightedCases.clear();
+		
 		Case c = getCaseAt(event.getX(), event.getY());
 		if (selectedPiece != null) {
-			if(!selectedPiece.equals(c.getPiece())) {
-				for (Case previous : game.getBoard()) {
-					if (previous.getPiece() == selectedPiece) {
-						previous.setPiece(null);
+			if (selectedPiece.getAllowedPositions().contains(c)) {
+				if (c.getPiece() != null) {
+					if (!c.getPiece().getPlayer().equals(selectedPiece.getPlayer())) {
+						synchronized (game.getCapturedPieces()) {
+							game.getCapturedPieces().add(c.getPiece());
+						}
+						moveSelectedPieceTo(c);
 					}
 				}
-				if(c.getPiece() != null) {
-					synchronized (game.getCapturedPieces()) {
-						game.getCapturedPieces().add(c.getPiece());
-					}
+				else {
+					moveSelectedPieceTo(c);
 				}
-				c.setPiece(selectedPiece);
 			}
 			selectedPiece = null;
-		} else {
+		}
+		else {
 			selectedPiece = c.getPiece();
-			
-			highlightedCases.clear();
-			if(selectedPiece != null) {
+			if (selectedPiece != null) {
 				highlightedCases.addAll(selectedPiece.getAllowedPositions());
 			}
 			
@@ -120,7 +121,21 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		return true;
 	}
 	
+	private void moveSelectedPieceTo(Case c) {
+		movePieceTo(selectedPiece, c);
+	}
+	
+	private void movePieceTo(Piece p, Case c) {
+		p.getPlace().setPiece(null);
+		c.setPiece(p);
+		p.setPlace(c);
+	}
+	
 	private Case getCaseAt(float x, float y) {
+		if (x < x0 || x > x0 + caseSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + caseSize * GameUtils.CHESSBOARD_SIZE) {
+			return null;
+		}
+		
 		int caseX = (int) ((x - x0) / caseSize);
 		int caseY = (int) ((y - y0) / caseSize);
 		return game.getBoard()[caseY * 8 + caseX];
@@ -138,6 +153,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		x0 = (canvas.getWidth() - caseSize * 8) / 2;
 		y0 = (canvas.getHeight() - caseSize * 8) / 2;
+		
 		canvas.translate(x0, y0);
 		for (Case c : game.getBoard()) {
 			int x = c.getCoordinate().x;
@@ -147,12 +163,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			int top = y * caseSize;
 			int bottom = top + caseSize;
 			
-			if(highlightedCases.contains(c)) {
-				canvas.drawRect(left - 3, top - 3, right + 3, bottom + 3, hightlightPainter);
-			}
 			canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
+			if (highlightedCases.contains(c)) {
+				canvas.drawRect(left, top, right, bottom, hightlightPainter);
+			}
 		}
-		
 		
 		for (int i = 0; i < game.getBoard().length; i++) {
 			Piece p = game.getBoard()[i].getPiece();
@@ -168,13 +183,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			int bottom = top + caseSize - 2 * PIECE_MARGIN;
 			
 			int magnify = p.equals(selectedPiece) ? -5 : 0;
-
+			
 			Drawable drawable = drawableCache.get(p.getResource());
-			drawable.setBounds(
-					(int) (isometricScaleFactor * left - magnify),
-					(int) (isometricScaleFactor * top - magnify),
-					(int) (isometricScaleFactor * right + magnify),
-					(int) (isometricScaleFactor * bottom + magnify));
+			drawable.setBounds((int) (isometricScaleFactor * left - magnify), (int) (isometricScaleFactor * top - magnify), (int) (isometricScaleFactor * right + magnify), (int) (isometricScaleFactor * bottom + magnify));
 			drawable.draw(canvas);
 			
 			drawCapturedPieces(canvas);
@@ -182,33 +193,25 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	private void drawCapturedPieces(Canvas canvas) {
-		int capturedWhiteX = x0 - caseSize;
+		int capturedWhiteY = -caseSize / 2;
 		int offsetWhite = 0;
 		
-		int capturedBlackX = x0 + GameUtils.CHESSBOARD_SIZE * caseSize;
+		int capturedBlackY = GameUtils.CHESSBOARD_SIZE * caseSize;
 		int offsetBlack = 0;
 		synchronized (game.getCapturedPieces()) {
-			for(Piece p : game.getCapturedPieces()) {
-				if(Player.WHITE.equals(p.getPlayer())) {
-					Drawable drawable = drawableCache.get(p);
-					drawable.setBounds(
-							(int) (isometricScaleFactor * capturedWhiteX),
-							(int) (isometricScaleFactor * offsetWhite),
-							(int) (isometricScaleFactor * capturedWhiteX + caseSize),
-							(int) (isometricScaleFactor * offsetWhite + caseSize));
-					drawable.draw(canvas);
-					offsetWhite += caseSize;
+			for (Piece p : game.getCapturedPieces()) {
+				Drawable drawable = drawableCache.get(p.getResource());
+				if (Player.WHITE.equals(p.getPlayer())) {
+					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + caseSize / 2)),
+							(int) (isometricScaleFactor * (capturedWhiteY + caseSize / 2)));
+					offsetWhite += caseSize / 2;
 				}
 				else {
-					Drawable drawable = drawableCache.get(p);
-					drawable.setBounds(
-							(int) (isometricScaleFactor * capturedBlackX),
-							(int) (isometricScaleFactor * offsetBlack),
-							(int) (isometricScaleFactor * capturedBlackX + caseSize),
-							(int) (isometricScaleFactor * offsetBlack + caseSize));
-					drawable.draw(canvas);
-					offsetBlack += caseSize;
+					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + caseSize / 2)),
+							(int) (isometricScaleFactor * (capturedBlackY + caseSize / 2)));
+					offsetBlack += caseSize / 2;
 				}
+				drawable.draw(canvas);
 			}
 		}
 	}
@@ -225,7 +228,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				if (theCanvas != null) {
 					try {
 						draw(theCanvas);
-					} finally {
+					}
+					finally {
 						holder.unlockCanvasAndPost(theCanvas);
 					}
 				}
