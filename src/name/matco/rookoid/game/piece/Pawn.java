@@ -26,15 +26,15 @@ public class Pawn extends Piece {
 	@Override
 	public List<Movement> getAllowedMovements() {
 		List<Movement> movements = new ArrayList<Movement>();
-		if(Player.WHITE.equals(getPlayer())) {
-			movements.add(new Movement(0, -1));
-			//if(has not been played yet) {
-				movements.add(new Movement(0, -2));
+		if (Player.WHITE.equals(getPlayer())) {
+			movements.add(new Movement(0, 1));
+			// if(has not been played yet) {
+			movements.add(new Movement(0, 2));
 		}
 		else {
 			movements.add(new Movement(0, -1));
-			//if(has not been played yet) {
-				movements.add(new Movement(0, -2));
+			// if(has not been played yet) {
+			movements.add(new Movement(0, -2));
 		}
 		return movements;
 	}
