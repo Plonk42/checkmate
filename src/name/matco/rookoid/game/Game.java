@@ -3,6 +3,7 @@ package name.matco.rookoid.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.Bishop;
 import name.matco.rookoid.game.piece.King;
 import name.matco.rookoid.game.piece.Knight;
@@ -16,10 +17,13 @@ public class Game {
 	private final Case[] board = new Case[64];
 	private final List<Piece> capturedPieces = new ArrayList<Piece>();
 	
-	
 	public void init() {
 		for (int i = 0; i < 64; i++) {
-			board[i] = new Case(this, i % 8, i / 8);
+			try {
+				board[i] = new Case(this, i % 8, i / 8);
+			} catch (OutOfBoardCoordinateException e) {
+				// cannot be raised here
+			}
 		}
 		
 		// white player
@@ -64,7 +68,7 @@ public class Game {
 		place.setPiece(piece);
 		piece.setPlace(place);
 	}
-
+	
 	public List<Piece> getCapturedPieces() {
 		return capturedPieces;
 	}

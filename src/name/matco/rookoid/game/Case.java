@@ -1,5 +1,6 @@
 package name.matco.rookoid.game;
 
+import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.Piece;
 
 public class Case {
@@ -8,7 +9,7 @@ public class Case {
 	private final Coordinate coordinate;
 	private Piece piece;
 	
-	public Case(Game game, final int x, final int y) {
+	public Case(Game game, final int x, final int y) throws OutOfBoardCoordinateException {
 		this(game, new Coordinate(x, y));
 	}
 	
@@ -28,8 +29,8 @@ public class Case {
 	public final Piece getPiece() {
 		return piece;
 	}
-
-	public Case apply(Movement m) {
+	
+	public Case apply(Movement m) throws OutOfBoardCoordinateException {
 		return game.getCaseAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
 	}
 	

@@ -6,6 +6,7 @@ import java.util.List;
 import name.matco.rookoid.game.Case;
 import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Player;
+import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 
 public abstract class Piece {
 	
@@ -26,8 +27,8 @@ public abstract class Piece {
 		for (Movement m : getAllowedMovements()) {
 			try {
 				allowed.add(place.apply(m));
-			} catch(ArrayIndexOutOfBoundsException e) {
-				//outside the board
+			} catch (OutOfBoardCoordinateException e) {
+				// outside the board; that's ok.
 			}
 		}
 		return allowed;
@@ -38,18 +39,17 @@ public abstract class Piece {
 	public String getDescription() {
 		return player + " " + getName();
 	}
-
+	
 	public Case getPlace() {
 		return place;
 	}
-
+	
 	public void setPlace(Case place) {
 		this.place = place;
 	}
-
+	
 	public Player getPlayer() {
 		return player;
 	}
-	
 	
 }
