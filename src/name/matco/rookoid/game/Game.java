@@ -17,7 +17,23 @@ public class Game {
 	private final Case[] board = new Case[64];
 	private final List<Piece> capturedPieces = new ArrayList<Piece>();
 	
-	public void init() {
+	// singleton
+	private static Game instance;
+	
+	private Game() {
+		init();
+	}
+	
+	public static synchronized Game getInstance() {
+		if (instance == null) {
+			instance = new Game();
+		}
+		return instance;
+	}
+	
+	private void init() {
+		capturedPieces.clear();
+		
 		for (int i = 0; i < 64; i++) {
 			try {
 				board[i] = new Case(this, i % 8, i / 8);
@@ -53,6 +69,10 @@ public class Game {
 		for (int i = 8; i < 16; i++) {
 			addPiece(63 - i, new Pawn(Player.BLACK));
 		}
+	}
+	
+	public void reset() {
+		init();
 	}
 	
 	public Case getCaseAt(Coordinate coordinate) {

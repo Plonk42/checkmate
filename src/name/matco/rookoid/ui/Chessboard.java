@@ -11,6 +11,7 @@ import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.piece.Piece;
+import android.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -68,10 +69,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
 		getHolder().addCallback(this);
 		
-		game = new Game();
-		game.init();
-		
+		game = Game.getInstance();
 		buildDrawableCache();
+		setBackgroundColor(getResources().getColor(R.color.darker_gray));
 	}
 	
 	private void buildDrawableCache() {

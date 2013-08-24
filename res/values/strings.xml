@@ -3,4 +3,6 @@
 
     <string name="app_name">Rookoid</string>
 
+    <string name="restart_text">Restart</string>
+
 </resources>
