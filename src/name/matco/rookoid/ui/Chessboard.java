@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import name.matco.rookoid.game.Case;
 import name.matco.rookoid.game.Game;
@@ -70,7 +69,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		game = Game.getInstance();
 		buildDrawableCache();
-		//setBackgroundColor(getResources().getColor(R.color.darker_gray));
+		// setBackgroundColor(getResources().getColor(R.color.darker_gray));
 	}
 	
 	private void buildDrawableCache() {
@@ -93,7 +92,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		Case c = getCaseAt(event.getX(), event.getY());
 		
-		if(c != null) {
+		if (c != null) {
 			Piece p = c.getPiece();
 			
 			if (selectedPiece != null) {
@@ -113,7 +112,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				selectedPiece = null;
 			}
 			else {
-				if(p != null && game.getActivePlayer().equals(p.getPlayer())) {
+				if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
 					selectedPiece = p;
 					if (selectedPiece != null) {
 						highlightedCases.addAll(selectedPiece.getAllowedPositions());
@@ -123,6 +122,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 					Log.i(getClass().getName(), String.format("Selected piece : %s", str));
 				}
 			}
+			doDraw();
 			return true;
 		}
 		return false;
@@ -131,8 +131,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private void moveSelectedPieceTo(Case c) {
 		game.movePieceTo(selectedPiece, c);
 		game.setActivePlayer(Player.WHITE.equals(game.getActivePlayer()) ? Player.BLACK : Player.WHITE);
-	}	
-
+	}
+	
 	private Case getCaseAt(float x, float y) {
 		if (x < x0 || x > x0 + caseSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + caseSize * GameUtils.CHESSBOARD_SIZE) {
 			return null;
@@ -218,25 +218,22 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
+	private void doDraw() {
+		SurfaceHolder holder = getHolder();
+		Canvas theCanvas = holder.lockCanvas();
+		if (theCanvas != null) {
+			try {
+				draw(theCanvas);
+			} finally {
+				holder.unlockCanvasAndPost(theCanvas);
+			}
+		}
+	}
+	
 	@Override
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
-		
-		paintTimer = new Timer();
-		paintTimer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				Canvas theCanvas = holder.lockCanvas();
-				if (theCanvas != null) {
-					try {
-						draw(theCanvas);
-					}
-					finally {
-						holder.unlockCanvasAndPost(theCanvas);
-					}
-				}
-			}
-		}, 0, 500);
+		doDraw();
 	}
 	
 	@Override
