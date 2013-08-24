@@ -12,7 +12,7 @@ public abstract class Piece {
 	
 	protected final Player player;
 	
-	private Case place;
+	protected Case place;
 	
 	public Piece(Player player) {
 		this.player = player;
