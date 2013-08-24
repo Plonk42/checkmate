@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import name.matco.rookoid.game.Case;
+import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
 import name.matco.rookoid.game.Player;
@@ -39,7 +39,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private Game game;
 	
 	private Piece selectedPiece;
-	private final List<Case> highlightedCases = new ArrayList<Case>();
+	private final List<Square> highlightedCases = new ArrayList<Square>();
 	
 	float isometricScaleFactor = 1;
 	
@@ -71,7 +71,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	private void buildDrawableCache() {
-		for (Case c : game.getBoard()) {
+		for (Square c : game.getBoard()) {
 			Piece p = c.getPiece();
 			if (p != null) {
 				drawableCache.put(p.getResource(), getContext().getResources().getDrawable(p.getResource()));
@@ -88,7 +88,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		highlightedCases.clear();
 		
-		Case c = getCaseAt(event.getX(), event.getY());
+		Square c = getCaseAt(event.getX(), event.getY());
 		
 		if (c != null) {
 			Piece p = c.getPiece();
@@ -126,12 +126,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		return false;
 	}
 	
-	private void moveSelectedPieceTo(Case c) {
+	private void moveSelectedPieceTo(Square c) {
 		game.movePieceTo(selectedPiece, c);
 		game.setActivePlayer(Player.WHITE.equals(game.getActivePlayer()) ? Player.BLACK : Player.WHITE);
 	}
 	
-	private Case getCaseAt(float x, float y) {
+	private Square getCaseAt(float x, float y) {
 		if (x < x0 || x > x0 + caseSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + caseSize * GameUtils.CHESSBOARD_SIZE) {
 			return null;
 		}
@@ -155,7 +155,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		y0 = (canvas.getHeight() - caseSize * 8) / 2;
 		
 		canvas.translate(x0, y0);
-		for (Case c : game.getBoard()) {
+		for (Square c : game.getBoard()) {
 			int x = c.getCoordinate().x;
 			int y = c.getCoordinate().y;
 			int left = x * caseSize;

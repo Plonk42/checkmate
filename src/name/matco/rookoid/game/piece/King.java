@@ -26,8 +26,8 @@ public class King extends Piece {
 	}
 	
 	@Override
-	public String getName() {
-		return "King";
+	public PieceType getType() {
+		return PieceType.KING;
 	}
 	
 	@Override

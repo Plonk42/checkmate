@@ -14,7 +14,7 @@ import name.matco.rookoid.game.piece.Rook;
 
 public class Game {
 	
-	private final Case[] board = new Case[64];
+	private final Square[] board = new Square[64];
 	private final List<Piece> capturedPieces = new ArrayList<Piece>();
 	
 	private Player activePlayer = Player.WHITE;
@@ -38,7 +38,7 @@ public class Game {
 		
 		for (int i = 0; i < 64; i++) {
 			try {
-				board[i] = new Case(this, i % 8, i / 8);
+				board[i] = new Square(this, i % 8, i / 8);
 			} catch (OutOfBoardCoordinateException e) {
 				// cannot be raised here
 			}
@@ -77,20 +77,20 @@ public class Game {
 		init();
 	}
 	
-	public Case getCaseAt(Coordinate coordinate) {
+	public Square getCaseAt(Coordinate coordinate) {
 		return board[GameUtils.coordinateToIndex(coordinate)];
 	}
 	
-	public Case getCaseAt(int x, int y) throws OutOfBoardCoordinateException {
+	public Square getCaseAt(int x, int y) throws OutOfBoardCoordinateException {
 		return getCaseAt(new Coordinate(x, y));
 	}
 	
-	public Case[] getBoard() {
+	public Square[] getBoard() {
 		return board;
 	}
 	
 	public void addPiece(int index, Piece piece) {
-		Case place = board[index];
+		Square place = board[index];
 		place.setPiece(piece);
 		piece.setPlace(place);
 	}
@@ -99,7 +99,7 @@ public class Game {
 		return capturedPieces;
 	}
 	
-	public void movePieceTo(Piece p, Case c) {
+	public void movePieceTo(Piece p, Square c) {
 		p.getPlace().setPiece(null);
 		c.setPiece(p);
 		p.setPlace(c);
