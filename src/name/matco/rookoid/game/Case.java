@@ -33,5 +33,12 @@ public class Case {
 	public Case apply(Movement m) throws OutOfBoardCoordinateException {
 		return game.getCaseAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
 	}
+
+	public Game getGame() {
+		return game;
+	}
 	
+	public String toString() {
+		return getCoordinate().toString();
+	}
 }

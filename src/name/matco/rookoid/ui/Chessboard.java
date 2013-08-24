@@ -11,7 +11,6 @@ import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.piece.Piece;
-import android.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -71,7 +70,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		game = Game.getInstance();
 		buildDrawableCache();
-		setBackgroundColor(getResources().getColor(R.color.darker_gray));
+		//setBackgroundColor(getResources().getColor(R.color.darker_gray));
 	}
 	
 	private void buildDrawableCache() {
@@ -93,44 +92,47 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		highlightedCases.clear();
 		
 		Case c = getCaseAt(event.getX(), event.getY());
-		if (selectedPiece != null) {
-			if (selectedPiece.getAllowedPositions().contains(c)) {
-				if (c.getPiece() != null) {
-					if (!c.getPiece().getPlayer().equals(selectedPiece.getPlayer())) {
-						synchronized (game.getCapturedPieces()) {
-							game.getCapturedPieces().add(c.getPiece());
+		
+		if(c != null) {
+			Piece p = c.getPiece();
+			
+			if (selectedPiece != null) {
+				if (selectedPiece.getAllowedPositions().contains(c)) {
+					if (p != null) {
+						if (!c.getPiece().getPlayer().equals(selectedPiece.getPlayer())) {
+							synchronized (game.getCapturedPieces()) {
+								game.getCapturedPieces().add(p);
+							}
+							moveSelectedPieceTo(c);
 						}
+					}
+					else {
 						moveSelectedPieceTo(c);
 					}
 				}
-				else {
-					moveSelectedPieceTo(c);
+				selectedPiece = null;
+			}
+			else {
+				if(p != null && game.getActivePlayer().equals(p.getPlayer())) {
+					selectedPiece = p;
+					if (selectedPiece != null) {
+						highlightedCases.addAll(selectedPiece.getAllowedPositions());
+					}
+					
+					String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
+					Log.i(getClass().getName(), String.format("Selected piece : %s", str));
 				}
 			}
-			selectedPiece = null;
+			return true;
 		}
-		else {
-			selectedPiece = c.getPiece();
-			if (selectedPiece != null) {
-				highlightedCases.addAll(selectedPiece.getAllowedPositions());
-			}
-			
-			String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
-			Log.i(getClass().getName(), String.format("Selected piece : %s", str));
-		}
-		return true;
+		return false;
 	}
 	
 	private void moveSelectedPieceTo(Case c) {
-		movePieceTo(selectedPiece, c);
-	}
-	
-	private void movePieceTo(Piece p, Case c) {
-		p.getPlace().setPiece(null);
-		c.setPiece(p);
-		p.setPlace(c);
-	}
-	
+		game.movePieceTo(selectedPiece, c);
+		game.setActivePlayer(Player.WHITE.equals(game.getActivePlayer()) ? Player.BLACK : Player.WHITE);
+	}	
+
 	private Case getCaseAt(float x, float y) {
 		if (x < x0 || x > x0 + caseSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + caseSize * GameUtils.CHESSBOARD_SIZE) {
 			return null;
@@ -234,7 +236,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 					}
 				}
 			}
-		}, 0, 100);
+		}, 0, 500);
 	}
 	
 	@Override

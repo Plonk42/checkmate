@@ -17,6 +17,8 @@ public class Game {
 	private final Case[] board = new Case[64];
 	private final List<Piece> capturedPieces = new ArrayList<Piece>();
 	
+	private Player activePlayer = Player.WHITE;
+	
 	// singleton
 	private static Game instance;
 	
@@ -79,6 +81,10 @@ public class Game {
 		return board[GameUtils.coordinateToIndex(coordinate)];
 	}
 	
+	public Case getCaseAt(int x, int y) throws OutOfBoardCoordinateException {
+		return getCaseAt(new Coordinate(x, y));
+	}
+	
 	public Case[] getBoard() {
 		return board;
 	}
@@ -93,4 +99,17 @@ public class Game {
 		return capturedPieces;
 	}
 	
+	public void movePieceTo(Piece p, Case c) {
+		p.getPlace().setPiece(null);
+		c.setPiece(p);
+		p.setPlace(c);
+	}
+
+	public Player getActivePlayer() {
+		return activePlayer;
+	}
+
+	public void setActivePlayer(Player activePlayer) {
+		this.activePlayer = activePlayer;
+	}
 }
