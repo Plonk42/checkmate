@@ -3,7 +3,6 @@ package name.matco.rookoid.ui;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Timer;
 
 import name.matco.rookoid.game.Case;
 import name.matco.rookoid.game.Game;
@@ -30,7 +29,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private static Paint whitePainter;
 	
 	private static Paint hightlightPainter;
-	private Timer paintTimer;
 	
 	private Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
 	
@@ -244,9 +242,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface destroyed");
-		
-		paintTimer.cancel();
-		paintTimer = null;
 	}
 	
 }
