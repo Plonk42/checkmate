@@ -186,6 +186,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			int bottom = top + caseSize - 2 * PIECE_MARGIN;
 			
 			long millis = System.currentTimeMillis();
+			// FIXME : reset offset to 0 when unselected
 			int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(millis / 200.0) + 8.0) : 0;
 			
 			Drawable drawable = drawableCache.get(p.getResource());
@@ -236,11 +237,15 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
 		
+		doDraw();
+		
 		paintTimer = new Timer();
 		paintTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				doDraw();
+				if (selectedPiece != null) {
+					doDraw();
+				}
 			}
 		}, 0, 50);
 	}
