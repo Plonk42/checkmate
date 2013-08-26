@@ -1,6 +1,5 @@
 package name.matco.rookoid.game.piece;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.rookoid.R;
@@ -8,18 +7,6 @@ import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Player;
 
 public class King extends Piece {
-	
-	public static List<Movement> MOVEMENTS = new ArrayList<Movement>();
-	static {
-		MOVEMENTS.add(new Movement(0, 1));
-		MOVEMENTS.add(new Movement(0, -1));
-		MOVEMENTS.add(new Movement(1, 0));
-		MOVEMENTS.add(new Movement(-1, 0));
-		MOVEMENTS.add(new Movement(1, 1));
-		MOVEMENTS.add(new Movement(1, -1));
-		MOVEMENTS.add(new Movement(-1, 1));
-		MOVEMENTS.add(new Movement(-1, -1));
-	}
 	
 	public King(Player player) {
 		super(player);
@@ -36,8 +23,8 @@ public class King extends Piece {
 	}
 	
 	@Override
-	public List<Movement> getAllowedMovements() {
-		return MOVEMENTS;
+	public List<List<Movement>> getAllowedMovements() {
+		return Movement.getKingMovements();
 	}
 	
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
 import name.matco.rookoid.game.Player;
+import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.piece.Piece;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -94,7 +94,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			Piece p = c.getPiece();
 			
 			if (selectedPiece != null) {
-				if (selectedPiece.getAllowedPositions().contains(c)) {
+				if (selectedPiece.getAllowedPositions(game).contains(c)) {
 					if (p != null) {
 						if (!c.getPiece().getPlayer().equals(selectedPiece.getPlayer())) {
 							synchronized (game.getCapturedPieces()) {
@@ -113,7 +113,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
 					selectedPiece = p;
 					if (selectedPiece != null) {
-						highlightedCases.addAll(selectedPiece.getAllowedPositions());
+						highlightedCases.addAll(selectedPiece.getAllowedPositions(game));
 					}
 					
 					String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";

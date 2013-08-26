@@ -1,10 +1,8 @@
 package name.matco.rookoid.game.piece;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.rookoid.R;
-import name.matco.rookoid.game.GameUtils;
 import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Player;
 
@@ -25,9 +23,7 @@ public class Bishop extends Piece {
 	}
 	
 	@Override
-	public List<Movement> getAllowedMovements() {
-		List<Movement> movements = new ArrayList<Movement>();
-		movements.addAll(GameUtils.DIAGONALE_MOVEMENTS);
-		return movements;
+	public List<List<Movement>> getAllowedMovements() {
+		return Movement.getDiagonaleMovements();
 	}
 }

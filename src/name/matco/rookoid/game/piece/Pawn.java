@@ -5,6 +5,7 @@ import java.util.List;
 
 import name.matco.rookoid.R;
 import name.matco.rookoid.game.Movement;
+import name.matco.rookoid.game.Movement.Direction;
 import name.matco.rookoid.game.Player;
 
 public class Pawn extends Piece {
@@ -24,22 +25,24 @@ public class Pawn extends Piece {
 	}
 	
 	@Override
-	public List<Movement> getAllowedMovements() {
+	public List<List<Movement>> getAllowedMovements() {
 		List<Movement> movements = new ArrayList<Movement>();
 		if (Player.WHITE.equals(getPlayer())) {
-			movements.add(new Movement(0, 1));
+			movements.add(Direction.SOUTH.getMovement());
 			// not been played yet
 			if (place.getCoordinate().y == 1) {
-				movements.add(new Movement(0, 2));
+				movements.add(new Movement(0, 2)); // TODO : use SOUTH?
 			}
 		}
 		else {
-			movements.add(new Movement(0, -1));
+			movements.add(Direction.NORTH.getMovement());
 			// not been played yet
 			if (place.getCoordinate().y == 6) {
-				movements.add(new Movement(0, -2));
+				movements.add(new Movement(0, -2)); // TODO : use NORTH?
 			}
 		}
-		return movements;
+		List<List<Movement>> ret = new ArrayList<List<Movement>>();
+		ret.add(movements);
+		return ret;
 	}
 }
