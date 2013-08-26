@@ -3,6 +3,8 @@ package name.matco.rookoid.ui;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
@@ -29,6 +31,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private static Paint whitePainter;
 	
 	private static Paint hightlightPainter;
+	private Timer paintTimer;
 	
 	private Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
 	
@@ -182,10 +185,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			int top = y * caseSize + PIECE_MARGIN;
 			int bottom = top + caseSize - 2 * PIECE_MARGIN;
 			
-			int magnify = p.equals(selectedPiece) ? -5 : 0;
+			long millis = System.currentTimeMillis();
+			int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(millis / 200.0) + 8.0) : 0;
 			
 			Drawable drawable = drawableCache.get(p.getResource());
-			drawable.setBounds((int) (isometricScaleFactor * left - magnify), (int) (isometricScaleFactor * top - magnify), (int) (isometricScaleFactor * right + magnify), (int) (isometricScaleFactor * bottom + magnify));
+			drawable.setBounds((int) (isometricScaleFactor * left), (int) (isometricScaleFactor * top - offset), (int) (isometricScaleFactor * right), (int) (isometricScaleFactor * bottom - offset));
 			drawable.draw(canvas);
 			
 			drawCapturedPieces(canvas);
@@ -231,7 +235,14 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
-		doDraw();
+		
+		paintTimer = new Timer();
+		paintTimer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				doDraw();
+			}
+		}, 0, 50);
 	}
 	
 	@Override
@@ -242,6 +253,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface destroyed");
+		
+		paintTimer.cancel();
+		paintTimer = null;
 	}
 	
 }
