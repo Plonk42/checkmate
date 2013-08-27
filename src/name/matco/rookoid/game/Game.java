@@ -39,6 +39,7 @@ public class Game {
 	private void init() {
 		moves.clear();
 		capturedPieces.clear();
+		progression = 0;
 		
 		for (int i = 0; i < 64; i++) {
 			try {
