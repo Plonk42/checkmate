@@ -37,6 +37,7 @@ public class Game {
 	}
 	
 	private void init() {
+		activePlayer = Player.WHITE;
 		moves.clear();
 		capturedPieces.clear();
 		progression = 0;
