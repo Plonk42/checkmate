@@ -129,9 +129,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		return false;
 	}
 	
+	//TODO delete this
 	private void moveSelectedPieceTo(Square c) {
 		game.movePieceTo(selectedPiece, c);
-		game.setActivePlayer(Player.WHITE.equals(game.getActivePlayer()) ? Player.BLACK : Player.WHITE);
 	}
 	
 	private Square getSquareAt(float x, float y) {
@@ -231,6 +231,10 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				holder.unlockCanvasAndPost(theCanvas);
 			}
 		}
+	}
+	
+	public void refresh() {
+		doDraw();
 	}
 	
 	@Override

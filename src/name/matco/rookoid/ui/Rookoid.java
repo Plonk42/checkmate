@@ -14,11 +14,31 @@ public class Rookoid extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fullscreen);
 		
-		Button restartButton = (Button) findViewById(R.id.restart_button);
+		final Chessboard chessboard = (Chessboard) findViewById(R.id.chessboard);
+		
+		final Button restartButton = (Button) findViewById(R.id.restart_button);
 		restartButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Game.getInstance().reset();
+			}
+		});
+		
+		final Button previousMoveButton = (Button) findViewById(R.id.previous_move_button);
+		previousMoveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Game.getInstance().goPrevious();
+				chessboard.refresh();
+			}
+		});
+		
+		final Button nextMoveButton = (Button) findViewById(R.id.next_move_button);
+		nextMoveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Game.getInstance().goNext();
+				chessboard.refresh();
 			}
 		});
 	}

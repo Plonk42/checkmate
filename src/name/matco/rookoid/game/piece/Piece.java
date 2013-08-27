@@ -66,4 +66,9 @@ public abstract class Piece {
 		return player;
 	}
 	
+	@Override
+	public String toString() {
+		return getDescription();
+	}
+	
 }

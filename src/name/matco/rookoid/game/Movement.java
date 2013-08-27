@@ -183,4 +183,13 @@ public class Movement {
 		return new Movement(dx + m.dx, dy + m.dy);
 	}
 	
+	public Movement withInversion() {
+		return new Movement(-dx, -dy);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("->(%d,%d)", dx, dy);
+	}
+	
 }

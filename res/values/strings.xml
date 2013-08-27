@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">Rookoid</string>
-
     <string name="restart_text">Restart</string>
 
+    <string name="previous_move">Previous</string>
+    <string name="next_move">Next</string>
 </resources>
