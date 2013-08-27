@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
-import name.matco.rookoid.game.exception.SquareNotLinked;
 import name.matco.rookoid.game.piece.Bishop;
 import name.matco.rookoid.game.piece.King;
 import name.matco.rookoid.game.piece.Knight;
@@ -18,7 +17,7 @@ public class Game {
 	
 	private final Square[] board = new Square[64];
 	private final List<Piece> capturedPieces = new ArrayList<Piece>();
-	private final List<Move> moves = new ArrayList<Move>();
+	private List<Move> moves = new ArrayList<Move>();
 	private int progression = 0;
 	
 	private Player activePlayer = Player.WHITE;
@@ -105,58 +104,60 @@ public class Game {
 	}
 	
 	public void movePieceTo(Piece p, Square s) {
-		//keep log of movement
-		try {
-			Move m = new Move(p, p.getSquare().getMovementTo(s));
-			moves.add(m);
-			Log.i(getClass().getName(), String.format("Add move %s", m));
+		// keep log of movement
+		Move m = new Move(p, p.getSquare().getMovementTo(s), s.getPiece());
+		Log.i(getClass().getName(), String.format("Add move %s", m));
+		if (progression < moves.size()) {
+			moves = moves.subList(0, progression);
 			progression = moves.size();
-		} catch (SquareNotLinked e) {
-			// no way to come here as squares must be linked
 		}
+		moves.add(m);
+		progression++;
 		
 		movePieceToWithoutLog(p, s);
 	}
 	
 	private void movePieceToWithoutLog(Piece p, Square s) {
-		//change active player
-		activePlayer = Player.WHITE.equals(activePlayer) ? Player.BLACK : Player.WHITE;
+		// change active player
+		activePlayer = activePlayer.next();
 		
-		//move piece
+		// move piece
 		p.getSquare().setPiece(null);
 		s.setPiece(p);
 		p.setSquare(s);
 	}
-
+	
 	public Player getActivePlayer() {
 		return activePlayer;
 	}
-
-	public void setActivePlayer(Player activePlayer) {
-		this.activePlayer = activePlayer;
-	}
 	
-	public void goPrevious() {
-		if(progression > 0) {
+	public boolean goPrevious() {
+		if (progression > 0) {
 			Move m = moves.get(--progression);
 			try {
 				Log.i(getClass().getName(), String.format("Moving piece %s back using movement %s", m.getPiece(), m.getMovement().withInversion()));
-				movePieceToWithoutLog(m.getPiece(), m.getPiece().getSquare().apply(m.getMovement().withInversion()));
+				Square from = m.getPiece().getSquare();
+				movePieceToWithoutLog(m.getPiece(), from.apply(m.getMovement().withInversion()));
+				from.setPiece(m.getCapturedPiece());
 			} catch (OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 			}
+			return true;
 		}
+		return false;
 	}
 	
-	public void goNext() {
-		if(progression < moves.size() - 1) {
-			Move m = moves.get(++progression);
+	public boolean goNext() {
+		if (progression < moves.size()) {
+			Move m = moves.get(progression++);
 			try {
 				movePieceToWithoutLog(m.getPiece(), m.getPiece().getSquare().apply(m.getMovement()));
 			} catch (OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 			}
+			return true;
 		}
+		return false;
 	}
 	
 }

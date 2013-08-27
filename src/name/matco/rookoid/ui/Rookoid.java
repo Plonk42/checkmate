@@ -21,6 +21,7 @@ public class Rookoid extends Activity {
 			@Override
 			public void onClick(View v) {
 				Game.getInstance().reset();
+				chessboard.reset();
 			}
 		});
 		
@@ -28,8 +29,9 @@ public class Rookoid extends Activity {
 		previousMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Game.getInstance().goPrevious();
-				chessboard.refresh();
+				if (Game.getInstance().goPrevious()) {
+					chessboard.refresh();
+				}
 			}
 		});
 		
@@ -37,8 +39,9 @@ public class Rookoid extends Activity {
 		nextMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Game.getInstance().goNext();
-				chessboard.refresh();
+				if (Game.getInstance().goNext()) {
+					chessboard.refresh();
+				}
 			}
 		});
 	}

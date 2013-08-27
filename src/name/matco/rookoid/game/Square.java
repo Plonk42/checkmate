@@ -1,7 +1,6 @@
 package name.matco.rookoid.game;
 
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
-import name.matco.rookoid.game.exception.SquareNotLinked;
 import name.matco.rookoid.game.piece.Piece;
 
 public class Square {
@@ -22,10 +21,11 @@ public class Square {
 	public final Coordinate getCoordinate() {
 		return coordinate;
 	}
-
+	
 	public final void setPiece(final Piece piece) {
 		this.piece = piece;
 	}
+	
 	public final Piece getPiece() {
 		return piece;
 	}
@@ -33,9 +33,13 @@ public class Square {
 	public Square apply(Movement m) throws OutOfBoardCoordinateException {
 		return game.getSquareAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
 	}
-
+	
 	public Game getGame() {
 		return game;
+	}
+	
+	public Movement getMovementTo(Square s) {
+		return new Movement(s.getCoordinate().x - getCoordinate().x, s.getCoordinate().y - getCoordinate().y);
 	}
 	
 	@Override
@@ -43,24 +47,4 @@ public class Square {
 		return getCoordinate().toString();
 	}
 	
-	public Movement getMovementTo(Square s) throws SquareNotLinked {
-		if(getCoordinate().x == s.getCoordinate().x) {
-			return new Movement(0, s.getCoordinate().y - getCoordinate().y);
-		}
-		if(getCoordinate().y == s.getCoordinate().y) {
-			return new Movement(s.getCoordinate().x - getCoordinate().x, 0);
-		}
-		if(getCoordinate().x - s.getCoordinate().x == getCoordinate().y - s.getCoordinate().y) {
-			return new Movement(s.getCoordinate().x - getCoordinate().x, s.getCoordinate().y - getCoordinate().y);
-		}
-		throw new SquareNotLinked(this, s);
-	}
-	
-	public int getDistanceTo(Square s) throws SquareNotLinked {
-		Movement movement = getMovementTo(s);
-		if(movement.dx == movement.dy) {
-			return movement.dx;
-		}
-		return movement.dx + movement.dy;
-	}
 }

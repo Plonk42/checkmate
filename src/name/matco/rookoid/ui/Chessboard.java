@@ -39,7 +39,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private int y0;
 	private int squareSize;
 	
-	private Game game;
+	private final Game game;
 	
 	private Piece selectedPiece;
 	private final List<Square> highlightedSquares = new ArrayList<Square>();
@@ -129,7 +129,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		return false;
 	}
 	
-	//TODO delete this
+	// TODO delete this
 	private void moveSelectedPieceTo(Square c) {
 		game.movePieceTo(selectedPiece, c);
 	}
@@ -235,6 +235,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public void refresh() {
 		doDraw();
+	}
+	
+	public void reset() {
+		selectedPiece = null;
+		highlightedSquares.clear();
+		refresh();
 	}
 	
 	@Override
