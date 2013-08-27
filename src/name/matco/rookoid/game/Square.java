@@ -1,6 +1,6 @@
 package name.matco.rookoid.game;
 
-import name.matco.rookoid.game.exception.CaseNotLinked;
+import name.matco.rookoid.game.exception.SquareNotLinked;
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.Piece;
 
@@ -31,7 +31,7 @@ public class Square {
 	}
 	
 	public Square apply(Movement m) throws OutOfBoardCoordinateException {
-		return game.getCaseAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
+		return game.getSquareAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
 	}
 
 	public Game getGame() {
@@ -43,7 +43,7 @@ public class Square {
 		return getCoordinate().toString();
 	}
 	
-	public int getDistanceTo(Square c) throws CaseNotLinked {
+	public int getDistanceTo(Square c) throws SquareNotLinked {
 		if(getCoordinate().x == c.getCoordinate().x) {
 			return Math.abs(getCoordinate().y - c.getCoordinate().y);
 		}
@@ -53,6 +53,6 @@ public class Square {
 		if(getCoordinate().x - c.getCoordinate().x == getCoordinate().y - c.getCoordinate().y) {
 			return getCoordinate().x - c.getCoordinate().x;
 		}
-		throw new CaseNotLinked(this, c);
+		throw new SquareNotLinked(this, c);
 	}
 }

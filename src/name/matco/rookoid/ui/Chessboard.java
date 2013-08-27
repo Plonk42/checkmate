@@ -37,12 +37,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private int x0;
 	private int y0;
-	private int caseSize;
+	private int squareSize;
 	
 	private Game game;
 	
 	private Piece selectedPiece;
-	private final List<Square> highlightedCases = new ArrayList<Square>();
+	private final List<Square> highlightedSquares = new ArrayList<Square>();
 	
 	float isometricScaleFactor = 1;
 	
@@ -89,9 +89,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			return false;
 		}
 		
-		highlightedCases.clear();
+		highlightedSquares.clear();
 		
-		Square c = getCaseAt(event.getX(), event.getY());
+		Square c = getSquareAt(event.getX(), event.getY());
 		
 		if (c != null) {
 			Piece p = c.getPiece();
@@ -116,7 +116,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
 					selectedPiece = p;
 					if (selectedPiece != null) {
-						highlightedCases.addAll(selectedPiece.getAllowedPositions(game));
+						highlightedSquares.addAll(selectedPiece.getAllowedPositions(game));
 					}
 					
 					String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
@@ -134,14 +134,14 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		game.setActivePlayer(Player.WHITE.equals(game.getActivePlayer()) ? Player.BLACK : Player.WHITE);
 	}
 	
-	private Square getCaseAt(float x, float y) {
-		if (x < x0 || x > x0 + caseSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + caseSize * GameUtils.CHESSBOARD_SIZE) {
+	private Square getSquareAt(float x, float y) {
+		if (x < x0 || x > x0 + squareSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + squareSize * GameUtils.CHESSBOARD_SIZE) {
 			return null;
 		}
 		
-		int caseX = (int) ((x - x0) / caseSize);
-		int caseY = (int) ((y - y0) / caseSize);
-		return game.getBoard()[caseY * 8 + caseX];
+		int squareX = (int) ((x - x0) / squareSize);
+		int squareY = (int) ((y - y0) / squareSize);
+		return game.getBoard()[squareY * 8 + squareX];
 	}
 	
 	@Override
@@ -150,24 +150,24 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		int width = (canvas.getWidth() - BOARD_MARGIN * 2) / 8;
 		int height = (canvas.getHeight() - BOARD_MARGIN * 2) / 8;
-		caseSize = Math.min(width, height);
+		squareSize = Math.min(width, height);
 		
-		Log.d(getClass().getName(), String.format("Draw canvas [dimension = %dx%d, size = %d]", width, height, caseSize));
+		Log.d(getClass().getName(), String.format("Draw canvas [dimension = %dx%d, size = %d]", width, height, squareSize));
 		
-		x0 = (canvas.getWidth() - caseSize * 8) / 2;
-		y0 = (canvas.getHeight() - caseSize * 8) / 2;
+		x0 = (canvas.getWidth() - squareSize * 8) / 2;
+		y0 = (canvas.getHeight() - squareSize * 8) / 2;
 		
 		canvas.translate(x0, y0);
 		for (Square c : game.getBoard()) {
 			int x = c.getCoordinate().x;
 			int y = c.getCoordinate().y;
-			int left = x * caseSize;
-			int right = left + caseSize;
-			int top = y * caseSize;
-			int bottom = top + caseSize;
+			int left = x * squareSize;
+			int right = left + squareSize;
+			int top = y * squareSize;
+			int bottom = top + squareSize;
 			
 			canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
-			if (highlightedCases.contains(c)) {
+			if (highlightedSquares.contains(c)) {
 				canvas.drawRect(left, top, right, bottom, hightlightPainter);
 			}
 		}
@@ -180,10 +180,10 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			
 			int x = i % 8;
 			int y = i / 8;
-			int left = x * caseSize + PIECE_MARGIN;
-			int right = left + caseSize - 2 * PIECE_MARGIN;
-			int top = y * caseSize + PIECE_MARGIN;
-			int bottom = top + caseSize - 2 * PIECE_MARGIN;
+			int left = x * squareSize + PIECE_MARGIN;
+			int right = left + squareSize - 2 * PIECE_MARGIN;
+			int top = y * squareSize + PIECE_MARGIN;
+			int bottom = top + squareSize - 2 * PIECE_MARGIN;
 			
 			long millis = System.currentTimeMillis();
 			// FIXME : reset offset to 0 when unselected
@@ -198,23 +198,23 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	private void drawCapturedPieces(Canvas canvas) {
-		int capturedWhiteY = -caseSize / 2;
+		int capturedWhiteY = -squareSize / 2;
 		int offsetWhite = 0;
 		
-		int capturedBlackY = GameUtils.CHESSBOARD_SIZE * caseSize;
+		int capturedBlackY = GameUtils.CHESSBOARD_SIZE * squareSize;
 		int offsetBlack = 0;
 		synchronized (game.getCapturedPieces()) {
 			for (Piece p : game.getCapturedPieces()) {
 				Drawable drawable = drawableCache.get(p.getResource());
 				if (Player.WHITE.equals(p.getPlayer())) {
-					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + caseSize / 2)),
-							(int) (isometricScaleFactor * (capturedWhiteY + caseSize / 2)));
-					offsetWhite += caseSize / 2;
+					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + squareSize / 2)),
+							(int) (isometricScaleFactor * (capturedWhiteY + squareSize / 2)));
+					offsetWhite += squareSize / 2;
 				}
 				else {
-					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + caseSize / 2)),
-							(int) (isometricScaleFactor * (capturedBlackY + caseSize / 2)));
-					offsetBlack += caseSize / 2;
+					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + squareSize / 2)),
+							(int) (isometricScaleFactor * (capturedBlackY + squareSize / 2)));
+					offsetBlack += squareSize / 2;
 				}
 				drawable.draw(canvas);
 			}

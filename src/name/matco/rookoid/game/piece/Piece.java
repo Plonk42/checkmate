@@ -13,7 +13,7 @@ public abstract class Piece {
 	
 	protected final Player player;
 	
-	protected Square place;
+	protected Square square;
 	
 	public Piece(Player player) {
 		this.player = player;
@@ -28,18 +28,18 @@ public abstract class Piece {
 		for (List<Movement> directions : getAllowedMovements()) {
 			for (Movement m : directions) {
 				try {
-					Square c = place.apply(m);
+					Square c = square.apply(m);
 					Piece p = c.getPiece();
+					// there is a piece on square
 					if (p != null) {
 						// player can not capture his own pieces or capture the opponent's king
 						if (!getPlayer().equals(p.getPlayer()) && !PieceType.KING.equals(p.getType())) {
 							allowed.add(c);
 						}
 						break;
-					} else {
-						// nothing on this case
-						allowed.add(c);
 					}
+					// square is empty
+					allowed.add(c);
 				} catch (OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
@@ -55,12 +55,11 @@ public abstract class Piece {
 		return player + " " + getType();
 	}
 	
-	public Square getPlace() {
-		return place;
+	public Square getSquare() {
+		return square;
 	}
-	
-	public void setPlace(Square place) {
-		this.place = place;
+	public void setSquare(Square place) {
+		this.square = place;
 	}
 	
 	public Player getPlayer() {

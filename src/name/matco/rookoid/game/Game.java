@@ -77,12 +77,12 @@ public class Game {
 		init();
 	}
 	
-	public Square getCaseAt(Coordinate coordinate) {
+	public Square getSquareAt(Coordinate coordinate) {
 		return board[GameUtils.coordinateToIndex(coordinate)];
 	}
 	
-	public Square getCaseAt(int x, int y) throws OutOfBoardCoordinateException {
-		return getCaseAt(new Coordinate(x, y));
+	public Square getSquareAt(int x, int y) throws OutOfBoardCoordinateException {
+		return getSquareAt(new Coordinate(x, y));
 	}
 	
 	public Square[] getBoard() {
@@ -92,7 +92,7 @@ public class Game {
 	public void addPiece(int index, Piece piece) {
 		Square place = board[index];
 		place.setPiece(piece);
-		piece.setPlace(place);
+		piece.setSquare(place);
 	}
 	
 	public List<Piece> getCapturedPieces() {
@@ -100,9 +100,9 @@ public class Game {
 	}
 	
 	public void movePieceTo(Piece p, Square c) {
-		p.getPlace().setPiece(null);
+		p.getSquare().setPiece(null);
 		c.setPiece(p);
-		p.setPlace(c);
+		p.setSquare(c);
 	}
 
 	public Player getActivePlayer() {

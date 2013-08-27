@@ -30,14 +30,14 @@ public class Pawn extends Piece {
 		if (Player.WHITE.equals(getPlayer())) {
 			movements.add(Direction.SOUTH.getMovement());
 			// not been played yet
-			if (place.getCoordinate().y == 1) {
+			if (square.getCoordinate().y == 1) {
 				movements.add(new Movement(0, 2)); // TODO : use SOUTH?
 			}
 		}
 		else {
 			movements.add(Direction.NORTH.getMovement());
 			// not been played yet
-			if (place.getCoordinate().y == 6) {
+			if (square.getCoordinate().y == 6) {
 				movements.add(new Movement(0, -2)); // TODO : use NORTH?
 			}
 		}
