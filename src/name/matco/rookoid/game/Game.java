@@ -122,6 +122,10 @@ public class Game {
 		// change active player
 		activePlayer = activePlayer.next();
 		
+		if (s.getPiece() != null) {
+			capturedPieces.add(s.getPiece());
+		}
+		
 		// move piece
 		p.getSquare().setPiece(null);
 		s.setPiece(p);
@@ -140,6 +144,7 @@ public class Game {
 				Square from = m.getPiece().getSquare();
 				movePieceToWithoutLog(m.getPiece(), from.apply(m.getMovement().withInversion()));
 				from.setPiece(m.getCapturedPiece());
+				capturedPieces.remove(m.getCapturedPiece());
 			} catch (OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 			}
