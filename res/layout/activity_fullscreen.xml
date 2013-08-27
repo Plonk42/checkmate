@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
-    tools:context=".Rookoid"
-    android:paddingTop="30dp">
+    android:background="#424242"
+    tools:context=".Rookoid">
 
 	<name.matco.rookoid.ui.Chessboard
 	    android:id="@+id/chessboard"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent" />
+		android:layout_height="match_parent" 
+		android:layout_marginTop="100dip"/>
 
 	<LinearLayout
 		android:orientation="horizontal"
@@ -17,7 +17,8 @@
 		android:layout_alignParentTop="true"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:padding="5dip">
+		android:padding="5dip"
+		android:layout_marginTop="45dip">
 
 		<Button
 		    android:id="@+id/restart_button"
