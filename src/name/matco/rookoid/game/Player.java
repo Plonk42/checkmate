@@ -4,17 +4,17 @@ public enum Player {
 	
 	BLACK {
 		@Override
-		public Player next() {
+		public Player getOpponent() {
 			return WHITE;
 		}
 	},
 	WHITE {
 		@Override
-		public Player next() {
+		public Player getOpponent() {
 			return BLACK;
 		}
 	};
 	
-	abstract public Player next();
+	abstract public Player getOpponent();
 	
 }
