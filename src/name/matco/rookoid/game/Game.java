@@ -138,6 +138,10 @@ public class Game {
 		movePieceToWithoutLog(p, s);
 	}
 	
+	/**
+	 * @param p piece to move
+	 * @param s square where the square will be
+	 */
 	private void movePieceToWithoutLog(final Piece p, final Square s) {
 		// change active player
 		activePlayer = activePlayer.getOpponent();
@@ -155,7 +159,7 @@ public class Game {
 		}
 	}
 	
-	private void movePieceToInternal(final Piece p, final Square s) {
+	public void movePieceToInternal(final Piece p, final Square s) {
 		// move piece
 		p.getSquare().setPiece(null);
 		s.setPiece(p);
@@ -261,19 +265,25 @@ public class Game {
 		// check if any movement of any piece can save player
 		for (final Piece piece : pieces) {
 			if (player.equals(piece.getPlayer()) && !capturedPieces.contains(piece)) {
-				// final Square orignalPiecePosition = piece.getSquare();
+				final Square originalPieceSquare = piece.getSquare();
 				for (final Square square : piece.getAllowedPositions(this)) {
 					// apply movement
 					// oups that's dangerous and that's ugly
-					movePieceTo(piece, square);
-					if (!isCheck(player)) {
+					final Piece capturedPiece = square.getPiece();
+					movePieceToInternal(piece, square);
+					
+					final boolean isCheck = isCheck(player);
+					
+					// revert back to original position
+					movePieceToInternal(piece, originalPieceSquare);
+					if (capturedPiece != null) {
+						movePieceToInternal(capturedPiece, square);
+					}
+					
+					if (!isCheck) {
 						Log.i(getClass().getName(), String.format("Can move piece %s to %s to escape check", piece, square));
-						// revert back to original position
-						goPrevious();
 						return false;
 					}
-					// revert back to original position
-					goPrevious();
 				}
 			}
 		}

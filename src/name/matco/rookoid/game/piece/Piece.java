@@ -38,11 +38,17 @@ public abstract class Piece {
 						}
 					}
 					// check if moving this piece to this square does not set the player in check
-					getSquare().getGame().movePieceTo(this, s);
+					final Square originalSquare = getSquare();
+					getSquare().getGame().movePieceToInternal(this, s);
 					if (!getSquare().getGame().isCheck(getPlayer())) {
 						allowed.add(s);
 					}
-					getSquare().getGame().goPrevious();
+					
+					// revert back to original position
+					getSquare().getGame().movePieceToInternal(this, originalSquare);
+					if (p != null) {
+						getSquare().getGame().movePieceToInternal(p, s);
+					}
 				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
