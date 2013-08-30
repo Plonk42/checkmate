@@ -1,6 +1,7 @@
 package name.matco.rookoid.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +22,8 @@ public class Game {
 	private final Set<MovementListener> movementListeners = new HashSet<MovementListener>();
 	
 	private final Square[] board = new Square[64];
-	private final List<Piece> capturedPieces = new ArrayList<Piece>();
+	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
+	private final List<Piece> capturedPieces = Collections.synchronizedList(new ArrayList<Piece>());
 	private List<Move> moves = new ArrayList<Move>();
 	private int progression = 0;
 	
@@ -115,6 +117,7 @@ public class Game {
 		final Square place = board[index];
 		place.setPiece(piece);
 		piece.setSquare(place);
+		pieces.add(piece);
 	}
 	
 	public List<Piece> getCapturedPieces() {
@@ -145,14 +148,18 @@ public class Game {
 		
 		final Square from = p.getSquare();
 		
-		// move piece
-		p.getSquare().setPiece(null);
-		s.setPiece(p);
-		p.setSquare(s);
+		movePieceToInternal(p, s);
 		
 		for (final MovementListener mv : movementListeners) {
 			mv.onMovement(p, from, s);
 		}
+	}
+	
+	private void movePieceToInternal(final Piece p, final Square s) {
+		// move piece
+		p.getSquare().setPiece(null);
+		s.setPiece(p);
+		p.setSquare(s);
 	}
 	
 	public Player getActivePlayer() {
@@ -245,6 +252,32 @@ public class Game {
 			}
 		}
 		return false;
+	}
+	
+	public boolean isCheckmate(final Player player) {
+		if (!isCheck(player)) {
+			return false;
+		}
+		// check if any movement of any piece can save player
+		for (final Piece piece : pieces) {
+			if (player.equals(piece.getPlayer()) && !capturedPieces.contains(piece)) {
+				// final Square orignalPiecePosition = piece.getSquare();
+				for (final Square square : piece.getAllowedPositions(this)) {
+					// apply movement
+					// oups that's dangerous and that's ugly
+					movePieceTo(piece, square);
+					if (!isCheck(player)) {
+						Log.i(getClass().getName(), String.format("Can move piece %s to %s to escape check", piece, square));
+						// revert back to original position
+						goPrevious();
+						return false;
+					}
+					// revert back to original position
+					goPrevious();
+				}
+			}
+		}
+		return true;
 	}
 	
 	public void addMovementListener(final MovementListener ml) {
