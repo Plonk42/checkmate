@@ -1,7 +1,9 @@
 package name.matco.rookoid.game;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.Bishop;
@@ -15,6 +17,8 @@ import name.matco.rookoid.game.piece.Rook;
 import android.util.Log;
 
 public class Game {
+	
+	private final Set<MovementListener> movementListeners = new HashSet<MovementListener>();
 	
 	private final Square[] board = new Square[64];
 	private final List<Piece> capturedPieces = new ArrayList<Piece>();
@@ -83,6 +87,14 @@ public class Game {
 		}
 	}
 	
+	public int getProgression() {
+		return progression;
+	}
+	
+	public List<Move> getMoves() {
+		return moves;
+	}
+	
 	public void reset() {
 		init();
 	}
@@ -131,10 +143,16 @@ public class Game {
 			capturedPieces.add(s.getPiece());
 		}
 		
+		final Square from = p.getSquare();
+		
 		// move piece
 		p.getSquare().setPiece(null);
 		s.setPiece(p);
 		p.setSquare(s);
+		
+		for (final MovementListener mv : movementListeners) {
+			mv.onMovement(p, from, s);
+		}
 	}
 	
 	public Player getActivePlayer() {
@@ -227,6 +245,14 @@ public class Game {
 			}
 		}
 		return false;
+	}
+	
+	public void addMovementListener(final MovementListener ml) {
+		movementListeners.add(ml);
+	}
+	
+	public void removeMovementListener(final MovementListener ml) {
+		movementListeners.remove(ml);
 	}
 	
 }

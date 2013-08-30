@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import name.matco.rookoid.R;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
 import name.matco.rookoid.game.Player;
@@ -25,7 +24,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Button;
 
 public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	
@@ -68,9 +66,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		hightlightPainter.setARGB(96, 255, 255, 255);
 	}
 	
-	final Button previousMoveButton;
-	final Button nextMoveButton;
-	
 	public Chessboard(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
@@ -80,9 +75,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		buildDrawableCache();
 		// setBackgroundColor(getResources().getColor(R.color.darker_gray));
 		
-		// it may be better to setup a bus or at least a onMoveListener
-		previousMoveButton = (Button) findViewById(R.id.previous_move_button);
-		nextMoveButton = (Button) findViewById(R.id.next_move_button);
 	}
 	
 	private void buildDrawableCache() {
