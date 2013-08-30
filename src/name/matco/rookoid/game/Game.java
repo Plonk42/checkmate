@@ -23,8 +23,8 @@ public class Game {
 	
 	private Player activePlayer = Player.WHITE;
 	
-	private Piece whiteKing = new King(Player.WHITE);
-	private Piece blackKing = new King(Player.BLACK);
+	private final Piece whiteKing = new King(Player.WHITE);
+	private final Piece blackKing = new King(Player.BLACK);
 	
 	// singleton
 	private static Game instance;
@@ -49,7 +49,7 @@ public class Game {
 		for (int i = 0; i < 64; i++) {
 			try {
 				board[i] = new Square(this, i % 8, i / 8);
-			} catch (OutOfBoardCoordinateException e) {
+			} catch (final OutOfBoardCoordinateException e) {
 				// cannot be raised here
 			}
 		}
@@ -87,11 +87,11 @@ public class Game {
 		init();
 	}
 	
-	public Square getSquareAt(Coordinate coordinate) {
+	public Square getSquareAt(final Coordinate coordinate) {
 		return board[GameUtils.coordinateToIndex(coordinate)];
 	}
 	
-	public Square getSquareAt(int x, int y) throws OutOfBoardCoordinateException {
+	public Square getSquareAt(final int x, final int y) throws OutOfBoardCoordinateException {
 		return getSquareAt(new Coordinate(x, y));
 	}
 	
@@ -99,8 +99,8 @@ public class Game {
 		return board;
 	}
 	
-	public void addPiece(int index, Piece piece) {
-		Square place = board[index];
+	public void addPiece(final int index, final Piece piece) {
+		final Square place = board[index];
 		place.setPiece(piece);
 		piece.setSquare(place);
 	}
@@ -109,9 +109,9 @@ public class Game {
 		return capturedPieces;
 	}
 	
-	public void movePieceTo(Piece p, Square s) {
+	public void movePieceTo(final Piece p, final Square s) {
 		// keep log of movement
-		Move m = new Move(p, p.getSquare().getMovementTo(s), s.getPiece());
+		final Move m = new Move(p, p.getSquare().getMovementTo(s), s.getPiece());
 		Log.i(getClass().getName(), String.format("Add move %s", m));
 		if (progression < moves.size()) {
 			moves = moves.subList(0, progression);
@@ -123,7 +123,7 @@ public class Game {
 		movePieceToWithoutLog(p, s);
 	}
 	
-	private void movePieceToWithoutLog(Piece p, Square s) {
+	private void movePieceToWithoutLog(final Piece p, final Square s) {
 		// change active player
 		activePlayer = activePlayer.next();
 		
@@ -143,14 +143,14 @@ public class Game {
 	
 	public boolean goPrevious() {
 		if (progression > 0) {
-			Move m = moves.get(--progression);
+			final Move m = moves.get(--progression);
 			try {
 				Log.i(getClass().getName(), String.format("Moving piece %s back using movement %s", m.getPiece(), m.getMovement().withInversion()));
-				Square from = m.getPiece().getSquare();
+				final Square from = m.getPiece().getSquare();
 				movePieceToWithoutLog(m.getPiece(), from.apply(m.getMovement().withInversion()));
 				from.setPiece(m.getCapturedPiece());
 				capturedPieces.remove(m.getCapturedPiece());
-			} catch (OutOfBoardCoordinateException e) {
+			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 			}
 			return true;
@@ -160,10 +160,10 @@ public class Game {
 	
 	public boolean goNext() {
 		if (progression < moves.size()) {
-			Move m = moves.get(progression++);
+			final Move m = moves.get(progression++);
 			try {
 				movePieceToWithoutLog(m.getPiece(), m.getPiece().getSquare().apply(m.getMovement()));
-			} catch (OutOfBoardCoordinateException e) {
+			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 			}
 			return true;
@@ -171,58 +171,57 @@ public class Game {
 		return false;
 	}
 	
-	//improve this by describing which piece can do a kind of movement
-	public boolean isCheck(Player player) {
-		Piece king = Player.WHITE.equals(player) ? whiteKing : blackKing;
-		//check lines
-		for (List<Movement> directions : Movement.getLineMovements()) {
-			for (Movement m : directions) {
+	// improve this by describing which piece can do a kind of movement
+	public boolean isCheck(final Player player) {
+		final Piece king = Player.WHITE.equals(player) ? whiteKing : blackKing;
+		// check lines
+		for (final List<Movement> directions : Movement.LINE_MOVEMENTS) {
+			for (final Movement m : directions) {
 				try {
-					Square s = king.getSquare().apply(m);
-					if(s.getPiece() != null) {
-						if(s.getPiece().getPlayer().equals(player.next()) && (s.getPiece().getType().equals(PieceType.ROOK) || s.getPiece().getType().equals(PieceType.QUEEN))) {
+					final Square s = king.getSquare().apply(m);
+					if (s.getPiece() != null) {
+						if (s.getPiece().getPlayer().equals(player.next()) && (s.getPiece().getType().equals(PieceType.ROOK) || s.getPiece().getType().equals(PieceType.QUEEN))) {
 							return true;
 						}
 						break;
 					}
-				} catch (OutOfBoardCoordinateException e) {
+				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
 				}
-			}	
+			}
 		}
-		//check diagnoales
-		for (List<Movement> directions : Movement.getDiagonaleMovements()) {
+		// check diagnoales
+		for (final List<Movement> directions : Movement.DIAGONALE_MOVEMENTS) {
 			boolean first = true;
-			for (Movement m : directions) {
+			for (final Movement m : directions) {
 				try {
-					Square s = king.getSquare().apply(m);
-					if(s.getPiece() != null) {
-						Log.i(getClass().getName(), String.format("une piece a été trouvée sur la diagonale : %s", s.getPiece()));
-						if(s.getPiece().getPlayer().equals(player.next())) {
-							//wrong: a pawn only captures in front of itself (only 2 directions among 4)
-							if(first && s.getPiece().getType().equals(PieceType.PAWN) || s.getPiece().getType().equals(PieceType.BISHOP) || s.getPiece().getType().equals(PieceType.QUEEN)) {
+					final Square s = king.getSquare().apply(m);
+					if (s.getPiece() != null) {
+						if (s.getPiece().getPlayer().equals(player.next())) {
+							// wrong: a pawn only captures in front of itself (only 2 directions among 4)
+							if (first && s.getPiece().getType().equals(PieceType.PAWN) || s.getPiece().getType().equals(PieceType.BISHOP) || s.getPiece().getType().equals(PieceType.QUEEN)) {
 								return true;
 							}
 						}
 						break;
 					}
-				} catch (OutOfBoardCoordinateException e) {
+				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
 				}
 				first = false;
-			}	
+			}
 		}
-		//check knights
-		for (List<Movement> directions : Movement.getDiagonaleMovements()) {
-			for (Movement m : directions) {
+		// check knights
+		for (final List<Movement> directions : Movement.KNIGHT_MOVEMENTS) {
+			for (final Movement m : directions) {
 				try {
-					Square s = king.getSquare().apply(m);
-					if(s.getPiece() != null && s.getPiece().getPlayer().equals(player.next()) && s.getPiece().getType().equals(PieceType.KNIGHT)) {
+					final Square s = king.getSquare().apply(m);
+					if (s.getPiece() != null && s.getPiece().getPlayer().equals(player.next()) && s.getPiece().getType().equals(PieceType.KNIGHT)) {
 						return true;
 					}
-				} catch (OutOfBoardCoordinateException e) {
+				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 				}
 			}

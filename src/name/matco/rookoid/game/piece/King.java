@@ -8,7 +8,7 @@ import name.matco.rookoid.game.Player;
 
 public class King extends Piece {
 	
-	public King(Player player) {
+	public King(final Player player) {
 		super(player);
 	}
 	
@@ -24,7 +24,7 @@ public class King extends Piece {
 	
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
-		return Movement.getKingMovements();
+		return Movement.KING_MOVEMENTS;
 	}
 	
 }

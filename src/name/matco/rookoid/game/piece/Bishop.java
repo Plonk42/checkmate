@@ -8,7 +8,7 @@ import name.matco.rookoid.game.Player;
 
 public class Bishop extends Piece {
 	
-	public Bishop(Player player) {
+	public Bishop(final Player player) {
 		super(player);
 	}
 	
@@ -24,6 +24,6 @@ public class Bishop extends Piece {
 	
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
-		return Movement.getDiagonaleMovements();
+		return Movement.DIAGONALE_MOVEMENTS;
 	}
 }

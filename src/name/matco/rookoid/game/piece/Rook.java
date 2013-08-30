@@ -8,7 +8,7 @@ import name.matco.rookoid.game.Player;
 
 public class Rook extends Piece {
 	
-	public Rook(Player player) {
+	public Rook(final Player player) {
 		super(player);
 	}
 	
@@ -24,7 +24,7 @@ public class Rook extends Piece {
 	
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
-		return Movement.getLineMovements();
+		return Movement.LINE_MOVEMENTS;
 	}
 	
 }

@@ -82,7 +82,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		// it may be better to setup a bus or at least a onMoveListener
 		previousMoveButton = (Button) findViewById(R.id.previous_move_button);
-		nextMoveButton = (Button) findViewById(R.id.previous_move_button);
+		nextMoveButton = (Button) findViewById(R.id.next_move_button);
 	}
 	
 	private void buildDrawableCache() {

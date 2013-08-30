@@ -1,5 +1,6 @@
 package name.matco.rookoid.game.piece;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.rookoid.R;
@@ -8,7 +9,7 @@ import name.matco.rookoid.game.Player;
 
 public class Queen extends Piece {
 	
-	public Queen(Player player) {
+	public Queen(final Player player) {
 		super(player);
 	}
 	
@@ -24,8 +25,8 @@ public class Queen extends Piece {
 	
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
-		List<List<Movement>> movements = Movement.getLineMovements();
-		movements.addAll(Movement.getDiagonaleMovements());
+		final List<List<Movement>> movements = new ArrayList<List<Movement>>(Movement.LINE_MOVEMENTS);
+		movements.addAll(Movement.DIAGONALE_MOVEMENTS);
 		return movements;
 	}
 }
