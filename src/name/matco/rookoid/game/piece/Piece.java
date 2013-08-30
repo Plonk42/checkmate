@@ -15,7 +15,7 @@ public abstract class Piece {
 	
 	protected Square square;
 	
-	public Piece(Player player) {
+	public Piece(final Player player) {
 		this.player = player;
 	}
 	
@@ -23,25 +23,27 @@ public abstract class Piece {
 	
 	public abstract int getResource();
 	
-	public List<Square> getAllowedPositions(Game game) {
-		ArrayList<Square> allowed = new ArrayList<Square>();
-		for (List<Movement> directions : getAllowedMovements()) {
-			for (Movement m : directions) {
+	public List<Square> getAllowedPositions(final Game game) {
+		final ArrayList<Square> allowed = new ArrayList<Square>();
+		for (final List<Movement> directions : getAllowedMovements()) {
+			for (final Movement m : directions) {
 				try {
-					Square c = square.apply(m);
-					Piece p = c.getPiece();
+					final Square s = square.apply(m);
+					final Piece p = s.getPiece();
 					// there is a piece on square
 					if (p != null) {
 						// player can not capture his own pieces or capture the opponent's king
-						if (!getPlayer().equals(p.getPlayer()) && !PieceType.KING.equals(p.getType())) {
-							allowed.add(c);
+						if (getPlayer().equals(p.getPlayer()) || PieceType.KING.equals(p.getType())) {
+							break;
 						}
-						break;
 					}
-					// square is empty
-					//TODO wrong : check if moving this piece to this square does not set the player in check
-					allowed.add(c);
-				} catch (OutOfBoardCoordinateException e) {
+					// check if moving this piece to this square does not set the player in check
+					getSquare().getGame().movePieceTo(this, s);
+					if (!getSquare().getGame().isCheck(getPlayer())) {
+						allowed.add(s);
+					}
+					getSquare().getGame().goPrevious();
+				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
 				}
@@ -59,7 +61,8 @@ public abstract class Piece {
 	public Square getSquare() {
 		return square;
 	}
-	public void setSquare(Square place) {
+	
+	public void setSquare(final Square place) {
 		this.square = place;
 	}
 	
