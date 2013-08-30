@@ -9,6 +9,7 @@ import name.matco.rookoid.game.piece.King;
 import name.matco.rookoid.game.piece.Knight;
 import name.matco.rookoid.game.piece.Pawn;
 import name.matco.rookoid.game.piece.Piece;
+import name.matco.rookoid.game.piece.PieceType;
 import name.matco.rookoid.game.piece.Queen;
 import name.matco.rookoid.game.piece.Rook;
 import android.util.Log;
@@ -21,6 +22,9 @@ public class Game {
 	private int progression = 0;
 	
 	private Player activePlayer = Player.WHITE;
+	
+	private Piece whiteKing = new King(Player.WHITE);
+	private Piece blackKing = new King(Player.BLACK);
 	
 	// singleton
 	private static Game instance;
@@ -54,7 +58,7 @@ public class Game {
 		addPiece(0, new Rook(Player.WHITE));
 		addPiece(1, new Knight(Player.WHITE));
 		addPiece(2, new Bishop(Player.WHITE));
-		addPiece(3, new King(Player.WHITE));
+		addPiece(3, whiteKing);
 		addPiece(4, new Queen(Player.WHITE));
 		addPiece(5, new Bishop(Player.WHITE));
 		addPiece(6, new Knight(Player.WHITE));
@@ -69,7 +73,7 @@ public class Game {
 		addPiece(63 - 1, new Knight(Player.BLACK));
 		addPiece(63 - 2, new Bishop(Player.BLACK));
 		addPiece(63 - 3, new Queen(Player.BLACK));
-		addPiece(63 - 4, new King(Player.BLACK));
+		addPiece(63 - 4, blackKing);
 		addPiece(63 - 5, new Bishop(Player.BLACK));
 		addPiece(63 - 6, new Knight(Player.BLACK));
 		addPiece(63 - 7, new Rook(Player.BLACK));
@@ -163,6 +167,65 @@ public class Game {
 				// no move could have been done outside board
 			}
 			return true;
+		}
+		return false;
+	}
+	
+	//improve this by describing which piece can do a kind of movement
+	public boolean isCheck(Player player) {
+		Piece king = Player.WHITE.equals(player) ? whiteKing : blackKing;
+		//check lines
+		for (List<Movement> directions : Movement.getLineMovements()) {
+			for (Movement m : directions) {
+				try {
+					Square s = king.getSquare().apply(m);
+					if(s.getPiece() != null) {
+						if(s.getPiece().getPlayer().equals(player.next()) && (s.getPiece().getType().equals(PieceType.ROOK) || s.getPiece().getType().equals(PieceType.QUEEN))) {
+							return true;
+						}
+						break;
+					}
+				} catch (OutOfBoardCoordinateException e) {
+					// outside the board; stop going in this direction
+					break;
+				}
+			}	
+		}
+		//check diagnoales
+		for (List<Movement> directions : Movement.getDiagonaleMovements()) {
+			boolean first = true;
+			for (Movement m : directions) {
+				try {
+					Square s = king.getSquare().apply(m);
+					if(s.getPiece() != null) {
+						Log.i(getClass().getName(), String.format("une piece a été trouvée sur la diagonale : %s", s.getPiece()));
+						if(s.getPiece().getPlayer().equals(player.next())) {
+							//wrong: a pawn only captures in front of itself (only 2 directions among 4)
+							if(first && s.getPiece().getType().equals(PieceType.PAWN) || s.getPiece().getType().equals(PieceType.BISHOP) || s.getPiece().getType().equals(PieceType.QUEEN)) {
+								return true;
+							}
+						}
+						break;
+					}
+				} catch (OutOfBoardCoordinateException e) {
+					// outside the board; stop going in this direction
+					break;
+				}
+				first = false;
+			}	
+		}
+		//check knights
+		for (List<Movement> directions : Movement.getDiagonaleMovements()) {
+			for (Movement m : directions) {
+				try {
+					Square s = king.getSquare().apply(m);
+					if(s.getPiece() != null && s.getPiece().getPlayer().equals(player.next()) && s.getPiece().getType().equals(PieceType.KNIGHT)) {
+						return true;
+					}
+				} catch (OutOfBoardCoordinateException e) {
+					// outside the board; stop going in this direction
+				}
+			}
 		}
 		return false;
 	}

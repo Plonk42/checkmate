@@ -39,6 +39,7 @@ public abstract class Piece {
 						break;
 					}
 					// square is empty
+					//TODO wrong : check if moving this piece to this square does not set the player in check
 					allowed.add(c);
 				} catch (OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction

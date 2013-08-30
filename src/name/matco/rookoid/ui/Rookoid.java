@@ -26,6 +26,7 @@ public class Rookoid extends Activity {
 		});
 		
 		final Button previousMoveButton = (Button) findViewById(R.id.previous_move_button);
+		//previousMoveButton.setEnabled(false);
 		previousMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -36,6 +37,7 @@ public class Rookoid extends Activity {
 		});
 		
 		final Button nextMoveButton = (Button) findViewById(R.id.next_move_button);
+		//nextMoveButton.setEnabled(false);
 		nextMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
