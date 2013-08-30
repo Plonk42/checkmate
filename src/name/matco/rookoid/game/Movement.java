@@ -75,9 +75,9 @@ public class Movement {
 		LINE_MOVEMENTS = Collections.unmodifiableList(lines);
 	}
 	
-	public final static List<List<Movement>> DIAGONALE_MOVEMENTS;
+	public final static List<List<Movement>> DIAGONAL_MOVEMENTS;
 	static {
-		final List<List<Movement>> diagonales = new ArrayList<List<Movement>>();
+		final List<List<Movement>> diagonals = new ArrayList<List<Movement>>();
 		for (final Direction dir : new Direction[] { Direction.NORTH_EAST, Direction.SOUTH_EAST, Direction.SOUTH_WEST, Direction.NORTH_WEST }) {
 			final List<Movement> moves = new ArrayList<Movement>();
 			Movement prev = dir.getMovement();
@@ -86,9 +86,9 @@ public class Movement {
 				prev = prev.add(dir.getMovement());
 				moves.add(prev);
 			}
-			diagonales.add(Collections.unmodifiableList(moves));
+			diagonals.add(Collections.unmodifiableList(moves));
 		}
-		DIAGONALE_MOVEMENTS = Collections.unmodifiableList(diagonales);
+		DIAGONAL_MOVEMENTS = Collections.unmodifiableList(diagonals);
 	}
 	
 	public final static List<List<Movement>> KNIGHT_MOVEMENTS;

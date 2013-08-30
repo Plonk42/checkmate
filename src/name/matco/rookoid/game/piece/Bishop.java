@@ -24,6 +24,6 @@ public class Bishop extends Piece {
 	
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
-		return Movement.DIAGONALE_MOVEMENTS;
+		return Movement.DIAGONAL_MOVEMENTS;
 	}
 }

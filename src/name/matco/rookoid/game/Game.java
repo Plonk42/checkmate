@@ -217,7 +217,7 @@ public class Game {
 			}
 		}
 		// check diagnoales
-		for (final List<Movement> directions : Movement.DIAGONALE_MOVEMENTS) {
+		for (final List<Movement> directions : Movement.DIAGONAL_MOVEMENTS) {
 			boolean first = true;
 			for (final Movement m : directions) {
 				try {

@@ -26,7 +26,7 @@ public class Queen extends Piece {
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
 		final List<List<Movement>> movements = new ArrayList<List<Movement>>(Movement.LINE_MOVEMENTS);
-		movements.addAll(Movement.DIAGONALE_MOVEMENTS);
+		movements.addAll(Movement.DIAGONAL_MOVEMENTS);
 		return movements;
 	}
 }
