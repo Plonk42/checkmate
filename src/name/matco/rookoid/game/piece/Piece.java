@@ -3,7 +3,6 @@ package name.matco.rookoid.game.piece;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
@@ -23,7 +22,7 @@ public abstract class Piece {
 	
 	public abstract int getResource();
 	
-	public List<Square> getAllowedPositions(final Game game) {
+	public List<Square> getAllowedPositions() {
 		final ArrayList<Square> allowed = new ArrayList<Square>();
 		for (final List<Movement> directions : getAllowedMovements()) {
 			for (final Movement m : directions) {

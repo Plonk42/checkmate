@@ -270,7 +270,7 @@ public class Game {
 		for (final Piece piece : pieces) {
 			if (player.equals(piece.getPlayer()) && !capturedPieces.contains(piece)) {
 				final Square originalPieceSquare = piece.getSquare();
-				for (final Square square : piece.getAllowedPositions(this)) {
+				for (final Square square : piece.getAllowedPositions()) {
 					// apply movement
 					// oups that's dangerous and that's ugly
 					final Piece capturedPiece = square.getPiece();
