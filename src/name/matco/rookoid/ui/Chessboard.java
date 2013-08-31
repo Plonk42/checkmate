@@ -181,7 +181,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	private void playCheckmateSound() {
-		final float duration = 4f; // seconds
+		final float duration = 3f; // seconds
 		final int sampleRate = 8000;
 		final int numSamples = (int) (duration * sampleRate);
 		final double sample[] = new double[numSamples];
