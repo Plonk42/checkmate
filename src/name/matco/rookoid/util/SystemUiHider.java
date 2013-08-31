@@ -1,7 +1,6 @@
 package name.matco.rookoid.util;
 
 import android.app.Activity;
-import android.os.Build;
 import android.view.View;
 
 /**
@@ -74,22 +73,18 @@ public abstract class SystemUiHider {
 	 * the device.
 	 * 
 	 * @param activity
-	 *            The activity whose window's system UI should be
-	 *            controlled by this class.
+	 *        The activity whose window's system UI should be
+	 *        controlled by this class.
 	 * @param anchorView
-	 *            The view on which {@link View#setSystemUiVisibility(int)} will be called.
+	 *        The view on which {@link View#setSystemUiVisibility(int)} will be called.
 	 * @param flags
-	 *            Either 0 or any combination of {@link #FLAG_FULLSCREEN}, {@link #FLAG_HIDE_NAVIGATION}, and {@link #FLAG_LAYOUT_IN_SCREEN_OLDER_DEVICES}.
+	 *        Either 0 or any combination of {@link #FLAG_FULLSCREEN}, {@link #FLAG_HIDE_NAVIGATION}, and {@link #FLAG_LAYOUT_IN_SCREEN_OLDER_DEVICES}.
 	 */
-	public static SystemUiHider getInstance(Activity activity, View anchorView, int flags) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			return new SystemUiHiderHoneycomb(activity, anchorView, flags);
-		} else {
-			return new SystemUiHiderBase(activity, anchorView, flags);
-		}
+	public static SystemUiHider getInstance(final Activity activity, final View anchorView, final int flags) {
+		return new SystemUiHiderBase(activity, anchorView, flags);
 	}
 	
-	protected SystemUiHider(Activity activity, View anchorView, int flags) {
+	protected SystemUiHider(final Activity activity, final View anchorView, final int flags) {
 		mActivity = activity;
 		mAnchorView = anchorView;
 		mFlags = flags;
@@ -143,7 +138,7 @@ public abstract class SystemUiHider {
 	 */
 	private static OnVisibilityChangeListener sDummyListener = new OnVisibilityChangeListener() {
 		@Override
-		public void onVisibilityChange(boolean visible) {
+		public void onVisibilityChange(final boolean visible) {
 		}
 	};
 	
@@ -155,7 +150,7 @@ public abstract class SystemUiHider {
 		 * Called when the system UI visibility has changed.
 		 * 
 		 * @param visible
-		 *            True if the system UI is visible.
+		 *        True if the system UI is visible.
 		 */
 		public void onVisibilityChange(boolean visible);
 	}
