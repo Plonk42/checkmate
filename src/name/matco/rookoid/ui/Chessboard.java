@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.GameUtils;
+import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.piece.Piece;
@@ -30,11 +31,17 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private static final int BOARD_MARGIN = 10;
 	private static final int PIECE_MARGIN = 5;
 	
+	private static final int MOVE_DURATION = 200; // ms
+	
 	private static Paint blackPainter;
 	private static Paint whitePainter;
 	
 	private static Paint hightlightPainter;
 	private Timer paintTimer;
+	private final Object drawLock = new Object();
+	
+	private boolean isMoving = false;
+	private long startMovingMillis = 0;
 	
 	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
 	
@@ -89,7 +96,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
 		Log.i(getClass().getName(), String.format("Touch Event [x = %.1f, y = %.1f, action = %d]", event.getX(), event.getY(), event.getAction()));
-		if (event.getAction() != MotionEvent.ACTION_DOWN) {
+		if (event.getAction() != MotionEvent.ACTION_DOWN || isMoving) {
 			return false;
 		}
 		
@@ -97,37 +104,44 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		final Square c = getSquareAt(event.getX(), event.getY());
 		
-		if (c != null) {
-			final Piece p = c.getPiece();
-			
-			if (selectedPiece != null) {
-				if (selectedPiece.getAllowedPositions(game).contains(c)) {
-					if (p != null) {
-						if (!p.getPlayer().equals(selectedPiece.getPlayer())) {
+		synchronized (drawLock) {
+			if (c != null) {
+				final Piece p = c.getPiece();
+				
+				if (selectedPiece != null) {
+					if (selectedPiece.getAllowedPositions(game).contains(c)) {
+						if (p != null) {
+							if (!p.getPlayer().equals(selectedPiece.getPlayer())) {
+								moveSelectedPieceTo(c);
+							}
+						}
+						else {
 							moveSelectedPieceTo(c);
 						}
+						isMoving = true;
+						startMovingMillis = System.currentTimeMillis();
+						Log.i(getClass().getName(), "Move started at " + startMovingMillis);
 					}
-					else {
-						moveSelectedPieceTo(c);
+					selectedPiece = null;
+				}
+				else {
+					if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
+						selectedPiece = p;
+						if (selectedPiece != null) {
+							highlightedSquares.addAll(selectedPiece.getAllowedPositions(game));
+						}
+						
+						final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
+						Log.i(getClass().getName(), String.format("Selected piece : %s", str));
 					}
 				}
-				selectedPiece = null;
 			}
 			else {
-				if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
-					selectedPiece = p;
-					if (selectedPiece != null) {
-						highlightedSquares.addAll(selectedPiece.getAllowedPositions(game));
-					}
-					
-					final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
-					Log.i(getClass().getName(), String.format("Selected piece : %s", str));
-				}
+				selectedPiece = null;
 			}
-			doDraw();
-			return true;
 		}
-		return false;
+		doDraw();
+		return true;
 	}
 	
 	private void playCheckSound() {
@@ -255,28 +269,56 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 		
-		for (int i = 0; i < game.getBoard().length; i++) {
-			final Piece p = game.getBoard()[i].getPiece();
-			if (p == null) {
-				continue;
+		synchronized (drawLock) {
+			for (int i = 0; i < game.getBoard().length; i++) {
+				final Piece p = game.getBoard()[i].getPiece();
+				if (p == null) {
+					continue;
+				}
+				
+				final Drawable drawable = drawableCache.get(p.getResource());
+				
+				final int x = i % 8;
+				final int y = i / 8;
+				final int left = x * squareSize + PIECE_MARGIN;
+				final int right = left + squareSize - 2 * PIECE_MARGIN;
+				final int top = y * squareSize + PIECE_MARGIN;
+				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
+				
+				final long now = System.currentTimeMillis();
+				
+				if (isMoving && p.equals(game.getLastMove().getPiece())) {
+					final float coeff;
+					if (now >= startMovingMillis + MOVE_DURATION) {
+						isMoving = false;
+						coeff = 1;
+						Log.i(getClass().getName(), "Move finished at " + now);
+					} else {
+						coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
+					}
+					
+					final Movement m = game.getLastMove().getMovement();
+					final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
+					final int dy = (int) ((coeff - 1.0) * m.dy * squareSize);
+					Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy);
+					drawable.setBounds(
+							(int) (isometricScaleFactor * (left + dx)),
+							(int) (isometricScaleFactor * (top + dy)),
+							(int) (isometricScaleFactor * (right + dx)),
+							(int) (isometricScaleFactor * (bottom + dy)));
+				} else {
+					// FIXME : reset offset to 0 when unselected
+					final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(now / 200.0) + 8.0) : 0;
+					drawable.setBounds(
+							(int) (isometricScaleFactor * left),
+							(int) (isometricScaleFactor * top - offset),
+							(int) (isometricScaleFactor * right),
+							(int) (isometricScaleFactor * bottom - offset));
+				}
+				drawable.draw(canvas);
+				
+				drawCapturedPieces(canvas);
 			}
-			
-			final int x = i % 8;
-			final int y = i / 8;
-			final int left = x * squareSize + PIECE_MARGIN;
-			final int right = left + squareSize - 2 * PIECE_MARGIN;
-			final int top = y * squareSize + PIECE_MARGIN;
-			final int bottom = top + squareSize - 2 * PIECE_MARGIN;
-			
-			final long millis = System.currentTimeMillis();
-			// FIXME : reset offset to 0 when unselected
-			final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(millis / 200.0) + 8.0) : 0;
-			
-			final Drawable drawable = drawableCache.get(p.getResource());
-			drawable.setBounds((int) (isometricScaleFactor * left), (int) (isometricScaleFactor * top - offset), (int) (isometricScaleFactor * right), (int) (isometricScaleFactor * bottom - offset));
-			drawable.draw(canvas);
-			
-			drawCapturedPieces(canvas);
 		}
 	}
 	
@@ -321,11 +363,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	public void reset() {
-		selectedPiece = null;
-		highlightedSquares.clear();
-		
-		// previousMoveButton.setEnabled(false);
-		// nextMoveButton.setEnabled(false);
+		synchronized (drawLock) {
+			isMoving = false;
+			selectedPiece = null;
+			highlightedSquares.clear();
+		}
 		
 		refresh();
 	}
@@ -340,11 +382,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		paintTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				if (selectedPiece != null) {
+				if (selectedPiece != null || isMoving) {
 					doDraw();
 				}
 			}
-		}, 0, 50);
+		}, 0, 25);
 	}
 	
 	@Override
