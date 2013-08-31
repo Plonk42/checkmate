@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.Bishop;
@@ -32,6 +34,8 @@ public class Game {
 	private final Piece whiteKing = new King(Player.WHITE);
 	private final Piece blackKing = new King(Player.BLACK);
 	
+	private final Map<Player, Integer> timers = new TreeMap<Player, Integer>();
+	
 	// singleton
 	private static Game instance;
 	
@@ -51,6 +55,10 @@ public class Game {
 		moves.clear();
 		capturedPieces.clear();
 		progression = 0;
+		
+		for (final Player player : Player.values()) {
+			timers.put(player, 0);
+		}
 		
 		for (int i = 0; i < 64; i++) {
 			try {
