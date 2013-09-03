@@ -6,4 +6,10 @@
 
     <string name="previous_move">Previous</string>
     <string name="next_move">Next</string>
+    
+    <string name="white">White</string>
+    <string name="black">Black</string>
+    
+    <string name="white_short">W</string>
+    <string name="black_short">B</string>
 </resources>

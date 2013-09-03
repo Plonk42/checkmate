@@ -37,6 +37,23 @@
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:text="@string/next_move" />
+		
+			<LinearLayout
+				android:orientation="vertical"
+				android:gravity="top"
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent">
+
+				<Chronometer
+				    android:id="@+id/white_timer"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content" />
+				
+				<Chronometer
+				    android:id="@+id/black_timer"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content" />
+			</LinearLayout>
 	</LinearLayout>
 
 </RelativeLayout>
