@@ -25,6 +25,9 @@ public class Rookoid extends Activity {
 		final Button previousMoveButton = (Button) findViewById(R.id.previous_move_button);
 		final Button nextMoveButton = (Button) findViewById(R.id.next_move_button);
 		
+		final Chronometer whiteTimer = (Chronometer) findViewById(R.id.white_timer);
+		final Chronometer blackTimer = (Chronometer) findViewById(R.id.black_timer);
+		
 		restartButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
@@ -32,6 +35,8 @@ public class Rookoid extends Activity {
 				chessboard.reset();
 				previousMoveButton.setEnabled(false);
 				nextMoveButton.setEnabled(false);
+				whiteTimer.setText(String.format("%s 00:00", getResources().getText(Player.WHITE.getShortname())));
+				blackTimer.setText(String.format("%s 00:00", getResources().getText(Player.BLACK.getShortname())));
 			}
 		});
 		
@@ -72,9 +77,6 @@ public class Rookoid extends Activity {
 				}
 			}
 		});
-		
-		final Chronometer whiteTimer = (Chronometer) findViewById(R.id.white_timer);
-		final Chronometer blackTimer = (Chronometer) findViewById(R.id.black_timer);
 		
 		whiteTimer.setOnChronometerTickListener(getTimerChronomoterTickListener(Player.WHITE));
 		blackTimer.setOnChronometerTickListener(getTimerChronomoterTickListener(Player.BLACK));
