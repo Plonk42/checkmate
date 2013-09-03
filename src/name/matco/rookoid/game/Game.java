@@ -35,6 +35,7 @@ public class Game {
 	private final Piece blackKing = new King(Player.BLACK);
 	
 	private final Map<Player, Integer> timers = new TreeMap<Player, Integer>();
+	private long lastMoveTime;
 	
 	// singleton
 	private static Game instance;
@@ -56,9 +57,11 @@ public class Game {
 		capturedPieces.clear();
 		progression = 0;
 		
+		// manage timers
 		for (final Player player : Player.values()) {
 			timers.put(player, 0);
 		}
+		lastMoveTime = System.currentTimeMillis();
 		
 		for (int i = 0; i < 64; i++) {
 			try {
@@ -105,6 +108,14 @@ public class Game {
 		return moves;
 	}
 	
+	public long getLastMoveTime() {
+		return lastMoveTime;
+	}
+	
+	public Map<Player, Integer> getTimers() {
+		return timers;
+	}
+	
 	public Move getLastMove() {
 		return moves.size() > 0 ? moves.get(moves.size() - 1) : null;
 	}
@@ -146,6 +157,11 @@ public class Game {
 		}
 		moves.add(m);
 		progression++;
+		
+		// manage timer
+		final long now = System.currentTimeMillis();
+		timers.put(activePlayer, (int) (timers.get(activePlayer) + now - lastMoveTime));
+		lastMoveTime = now;
 		
 		movePieceToWithoutLog(p, s);
 	}

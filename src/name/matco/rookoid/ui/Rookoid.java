@@ -3,12 +3,14 @@ package name.matco.rookoid.ui;
 import name.matco.rookoid.R;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.MovementListener;
+import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.piece.Piece;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 
 public class Rookoid extends Activity {
 	
@@ -70,6 +72,31 @@ public class Rookoid extends Activity {
 				}
 			}
 		});
+		
+		final Chronometer whiteTimer = (Chronometer) findViewById(R.id.white_timer);
+		final Chronometer blackTimer = (Chronometer) findViewById(R.id.black_timer);
+		
+		whiteTimer.setOnChronometerTickListener(getTimerChronomoterTickListener(Player.WHITE));
+		blackTimer.setOnChronometerTickListener(getTimerChronomoterTickListener(Player.BLACK));
+		
+		whiteTimer.setBase(1000);
+		blackTimer.setBase(1000);
+		
+		whiteTimer.start();
+		blackTimer.start();
 	}
 	
+	private Chronometer.OnChronometerTickListener getTimerChronomoterTickListener(final Player player) {
+		return new Chronometer.OnChronometerTickListener() {
+			@Override
+			public void onChronometerTick(final Chronometer chronometer) {
+				long time = Game.getInstance().getTimers().get(player) + (System.currentTimeMillis() - Game.getInstance().getLastMoveTime()) / 1000l;
+				if (Game.getInstance().getActivePlayer().equals(player)) {
+					time += (System.currentTimeMillis() - Game.getInstance().getLastMoveTime());
+				}
+				time /= 1000;
+				chronometer.setText(String.format("%s %02d:%02d", getResources().getText(player.getShortname()), (int) time / 60, time % 60));
+			}
+		};
+	}
 }
