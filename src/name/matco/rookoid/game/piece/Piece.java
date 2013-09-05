@@ -14,6 +14,8 @@ public abstract class Piece {
 	
 	protected Square square;
 	
+	protected boolean hasMoved;
+	
 	public Piece(final Player player) {
 		this.player = player;
 	}
@@ -61,6 +63,14 @@ public abstract class Piece {
 	
 	public String getDescription() {
 		return player + " " + getType();
+	}
+	
+	public boolean getHasMoved() {
+		return hasMoved;
+	}
+	
+	public void setHasMoved(final boolean hasMoved) {
+		this.hasMoved = hasMoved;
 	}
 	
 	public Square getSquare() {

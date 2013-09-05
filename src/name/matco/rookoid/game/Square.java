@@ -9,11 +9,11 @@ public class Square {
 	private final Coordinate coordinate;
 	private Piece piece;
 	
-	public Square(Game game, final int x, final int y) throws OutOfBoardCoordinateException {
+	public Square(final Game game, final int x, final int y) throws OutOfBoardCoordinateException {
 		this(game, new Coordinate(x, y));
 	}
 	
-	public Square(Game game, final Coordinate c) {
+	public Square(final Game game, final Coordinate c) {
 		this.game = game;
 		this.coordinate = c;
 	}
@@ -30,7 +30,7 @@ public class Square {
 		return piece;
 	}
 	
-	public Square apply(Movement m) throws OutOfBoardCoordinateException {
+	public Square apply(final Movement m) throws OutOfBoardCoordinateException {
 		return game.getSquareAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
 	}
 	
@@ -38,7 +38,7 @@ public class Square {
 		return game;
 	}
 	
-	public Movement getMovementTo(Square s) {
+	public Movement getMovementTo(final Square s) {
 		return new Movement(s.getCoordinate().x - getCoordinate().x, s.getCoordinate().y - getCoordinate().y);
 	}
 	
@@ -47,4 +47,14 @@ public class Square {
 		return getCoordinate().toString();
 	}
 	
+	public boolean isEmpty() {
+		return getPiece() == null;
+	}
+	
+	public boolean isCastlingDestination() {
+		return getCoordinate().x == 2 && getCoordinate().y == 0 ||
+				getCoordinate().x == 6 && getCoordinate().y == 0 ||
+				getCoordinate().x == 2 && getCoordinate().y == 7 ||
+				getCoordinate().x == 6 && getCoordinate().y == 7;
+	}
 }

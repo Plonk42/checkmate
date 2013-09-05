@@ -174,13 +174,17 @@ public class Game {
 		// change active player
 		activePlayer = activePlayer.getOpponent();
 		
-		if (s.getPiece() != null) {
-			capturedPieces.add(s.getPiece());
+		if (!PieceType.KING.equals(p) || p.getHasMoved() || !s.isCastlingDestination()) {
+			if (s.getPiece() != null) {
+				capturedPieces.add(s.getPiece());
+			}
 		}
 		
 		final Square from = p.getSquare();
 		
 		movePieceToInternal(p, s);
+		
+		p.setHasMoved(true);
 		
 		for (final MovementListener mv : movementListeners) {
 			mv.onMovement(p, from, s);
@@ -188,8 +192,26 @@ public class Game {
 	}
 	
 	public void movePieceToInternal(final Piece p, final Square s) {
-		// move piece
-		p.getSquare().setPiece(null);
+		if (PieceType.KING.equals(p.getType()) && !p.getHasMoved() && s.isCastlingDestination()) {
+			try {
+				// retrieve right rook
+				if (s.getCoordinate().x < 4) {
+					final Piece rook = getSquareAt(0, s.getCoordinate().y).getPiece();
+					Log.i(getClass().getName(), String.format("Found rook %s at square 0, %d", rook, s.getCoordinate().y));
+					movePieceTo(rook, getSquareAt(2, s.getCoordinate().y));
+				}
+				else {
+					final Piece rook = getSquareAt(7, s.getCoordinate().y).getPiece();
+					Log.i(getClass().getName(), String.format("Found rook %s at square 7, %d", rook, s.getCoordinate().y));
+					movePieceTo(rook, getSquareAt(5, s.getCoordinate().y));
+				}
+			} catch (final OutOfBoardCoordinateException e) {
+				// no way to retrieve out of board cases
+			}
+		}
+		else {
+			p.getSquare().setPiece(null);
+		}
 		s.setPiece(p);
 		p.setSquare(s);
 	}
