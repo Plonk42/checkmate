@@ -17,4 +17,5 @@ public class GameUtils {
 	public static Coordinate indexTocoordinate(int index) throws OutOfBoardCoordinateException {
 		return new Coordinate(index % CHESSBOARD_SIZE, index / CHESSBOARD_SIZE);
 	}
+	
 }

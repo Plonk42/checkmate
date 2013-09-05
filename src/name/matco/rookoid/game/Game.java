@@ -259,7 +259,7 @@ public class Game {
 				try {
 					final Square s = king.getSquare().apply(m);
 					if (s.getPiece() != null) {
-						if (s.getPiece().getPlayer().equals(player.getOpponent()) && (s.getPiece().getType().equals(PieceType.ROOK) || s.getPiece().getType().equals(PieceType.QUEEN))) {
+						if (s.getPiece().is(player.getOpponent()) && (s.getPiece().is(PieceType.ROOK) || s.getPiece().is(PieceType.QUEEN))) {
 							return true;
 						}
 						break;
@@ -277,9 +277,9 @@ public class Game {
 				try {
 					final Square s = king.getSquare().apply(m);
 					if (s.getPiece() != null) {
-						if (s.getPiece().getPlayer().equals(player.getOpponent())) {
-							// wrong: a pawn only captures in front of itself (only 2 directions among 4)
-							if (first && s.getPiece().getType().equals(PieceType.PAWN) || s.getPiece().getType().equals(PieceType.BISHOP) || s.getPiece().getType().equals(PieceType.QUEEN)) {
+						if (s.getPiece().is(player.getOpponent())) {
+							// FIXME : wrong: a pawn only captures in front of itself (only 2 directions among 4)
+							if (first && s.getPiece().is(PieceType.PAWN) || s.getPiece().is(PieceType.BISHOP) || s.getPiece().is(PieceType.QUEEN)) {
 								return true;
 							}
 						}
@@ -297,7 +297,7 @@ public class Game {
 			for (final Movement m : directions) {
 				try {
 					final Square s = king.getSquare().apply(m);
-					if (s.getPiece() != null && s.getPiece().getPlayer().equals(player.getOpponent()) && s.getPiece().getType().equals(PieceType.KNIGHT)) {
+					if (s.getPiece() != null && s.getPiece().is(player.getOpponent()) && s.getPiece().is(PieceType.KNIGHT)) {
 						return true;
 					}
 				} catch (final OutOfBoardCoordinateException e) {
