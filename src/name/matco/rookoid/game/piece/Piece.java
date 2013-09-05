@@ -10,6 +10,18 @@ import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 
 public abstract class Piece {
 	
+	public static boolean is(final Piece piece, final Player player) {
+		return piece.getPlayer().equals(player);
+	}
+	
+	public static boolean is(final Piece piece, final PieceType type) {
+		return piece.getType().equals(type);
+	}
+	
+	public static boolean is(final Piece piece, final PieceType type, final Player player) {
+		return is(piece, player) && is(piece, type);
+	}
+	
 	protected final Player player;
 	
 	protected Square square;
@@ -22,6 +34,18 @@ public abstract class Piece {
 	
 	public abstract int getResource();
 	
+	public boolean is(final Player player) {
+		return is(this, player);
+	}
+	
+	public boolean is(final PieceType type) {
+		return is(this, type);
+	}
+	
+	public boolean is(final PieceType type, final Player player) {
+		return is(this, type, player);
+	}
+	
 	public List<Square> getAllowedPositions() {
 		final ArrayList<Square> allowed = new ArrayList<Square>();
 		for (final List<Movement> directions : getAllowedMovements()) {
@@ -32,7 +56,7 @@ public abstract class Piece {
 					// there is a piece on square
 					if (p != null) {
 						// player can not capture his own pieces or capture the opponent's king
-						if (getPlayer().equals(p.getPlayer()) || PieceType.KING.equals(p.getType())) {
+						if (p.is(getPlayer()) || p.is(PieceType.KING)) {
 							break;
 						}
 					}

@@ -111,7 +111,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				if (selectedPiece != null) {
 					if (selectedPiece.getAllowedPositions().contains(c)) {
 						if (p != null) {
-							if (!p.getPlayer().equals(selectedPiece.getPlayer())) {
+							if (!p.is(selectedPiece.getPlayer())) {
 								moveSelectedPieceTo(c);
 							}
 						}
