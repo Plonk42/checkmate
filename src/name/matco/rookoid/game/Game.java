@@ -119,7 +119,7 @@ public class Game {
 	}
 	
 	public Move getLastMove() {
-		return moves.size() > 0 ? moves.get(moves.size() - 1) : null;
+		return moves.size() > 0 ? moves.get(progression - 1) : null;
 	}
 	
 	public void reset() {
@@ -153,6 +153,8 @@ public class Game {
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination()) {
 			m = new Castling((King) p, to);
+		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getCoordinate().x != to.getCoordinate().x)) {
+			m = new EnPassant((Pawn) p, to);
 		} else {
 			m = new Move(p, to);
 		}
@@ -234,7 +236,7 @@ public class Game {
 				}
 			}
 		}
-		// check diagnoales
+		// check diagonals
 		for (final List<Movement> directions : Movement.DIAGONAL_MOVEMENTS) {
 			boolean first = true;
 			for (final Movement m : directions) {

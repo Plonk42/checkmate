@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.rookoid.R;
+import name.matco.rookoid.game.Game;
+import name.matco.rookoid.game.Move;
 import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Movement.Direction;
 import name.matco.rookoid.game.Player;
@@ -28,56 +30,45 @@ public class Pawn extends Piece {
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
 		final List<Movement> movements = new ArrayList<Movement>();
-		if (Player.WHITE.equals(getPlayer())) {
-			try {
-				// pawn can not capture on line movements
-				if (getSquare().apply(Direction.SOUTH.getMovement()).getPiece() == null) {
-					movements.add(Direction.SOUTH.getMovement());
-					// not been played yet
-					if (square.getCoordinate().y == 1) {
-						final Movement twoSquares = new Movement(0, 2);
-						if (getSquare().apply(twoSquares).getPiece() == null) {
-							movements.add(twoSquares); // TODO : use SOUTH?
-						}
+		final Direction forward = is(Player.WHITE) ? Direction.SOUTH : Direction.NORTH;
+		
+		try {
+			// pawn can not capture on line movements
+			if (getSquare().apply(forward.getMovement()).getPiece() == null) {
+				movements.add(forward.getMovement());
+				// not been played yet
+				if (!hasMoved()) {
+					final Movement twoSquares = forward.getMovement().withAdd(forward.getMovement());
+					if (getSquare().apply(twoSquares).getPiece() == null) {
+						movements.add(twoSquares);
 					}
 				}
-				// pawn can move on diagonal if there is a piece to capture
-				if (getSquare().apply(Direction.SOUTH_EAST.getMovement()).getPiece() != null) {
-					movements.add(Direction.SOUTH_EAST.getMovement());
-				}
-				// pawn can move on diagonal if there is a piece to capture
-				if (getSquare().apply(Direction.SOUTH_WEST.getMovement()).getPiece() != null) {
-					movements.add(Direction.SOUTH_WEST.getMovement());
-				}
-			} catch (final OutOfBoardCoordinateException e) {
-				// out of board moves not allowed
 			}
-		}
-		else {
-			try {
-				// pawn can not capture on line movements
-				if (getSquare().apply(Direction.NORTH.getMovement()).getPiece() == null) {
-					movements.add(Direction.NORTH.getMovement());
-					// not been played yet
-					if (square.getCoordinate().y == 6) {
-						final Movement twoSquares = new Movement(0, -2);
-						if (getSquare().apply(twoSquares).getPiece() == null) {
-							movements.add(twoSquares); // TODO : use NORTH?
-						}
-					}
-				}
-				// pawn can move on diagonal if there is a piece to capture
-				if (getSquare().apply(Direction.NORTH_EAST.getMovement()).getPiece() != null) {
-					movements.add(Direction.NORTH_EAST.getMovement());
-				}
-				// pawn can move on diagonal if there is a piece to capture
-				if (getSquare().apply(Direction.NORTH_WEST.getMovement()).getPiece() != null) {
-					movements.add(Direction.NORTH_WEST.getMovement());
-				}
-			} catch (final OutOfBoardCoordinateException e) {
-				// out of board moves not allowed
+			// pawn can move on diagonal if there is a piece to capture
+			final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
+			if (getSquare().apply(withEast).getPiece() != null) {
+				movements.add(withEast);
 			}
+			// pawn can move on diagonal if there is a piece to capture
+			final Movement withWest = forward.getMovement().withAdd(Direction.WEST.getMovement());
+			if (getSquare().apply(withWest).getPiece() != null) {
+				movements.add(withWest);
+			}
+			
+			// "en passant" capture
+			final Move lastMove = Game.getInstance().getLastMove();
+			if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && lastMove.isPieceFirstMove()) {
+				if (lastMove.getPiece().equals(getSquare().apply(Direction.EAST.getMovement()).getPiece())) {
+					movements.add(withEast);
+				}
+				if (lastMove.getPiece().equals(getSquare().apply(Direction.WEST.getMovement()).getPiece())) {
+					movements.add(withWest);
+				}
+			}
+		} catch (final OutOfBoardCoordinateException e) {
+			// out of board moves not allowed
 		}
+		
 		final List<List<Movement>> ret = new ArrayList<List<Movement>>();
 		ret.add(movements);
 		return ret;

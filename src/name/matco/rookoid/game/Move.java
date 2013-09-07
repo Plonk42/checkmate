@@ -18,6 +18,7 @@ public class Move {
 		this.from = piece.getSquare();
 		this.to = to;
 		this.movement = from.getMovementTo(to);
+		this.capturedPiece = to.getPiece();
 	}
 	
 	public Movement getMovement() {
@@ -45,24 +46,24 @@ public class Move {
 	}
 	
 	public void doMove(final Game game) {
-		if (to.getPiece() != null) {
-			capturedPiece = to.getPiece();
+		if (capturedPiece != null) {
 			game.getCapturedPieces().add(capturedPiece);
-			to.setPiece(null);
+			capturedPiece.getSquare().setPiece(null);
 		}
 		game.movePiece(piece, to);
 		piece.setHasMoved(true);
 	}
 	
-	// FIXME : when needed, this should call piece.setHasMoved(false);
 	public Move getRevertMove() {
 		final Move parent = this;
 		return new Move(piece, to) {
 			@Override
 			public void doMove(final Game game) {
 				game.movePiece(parent.getPiece(), parent.getFrom());
-				to.setPiece(parent.getCapturedPiece());
-				game.getCapturedPieces().remove(parent.getCapturedPiece());
+				if (parent.getCapturedPiece() != null) {
+					parent.getCapturedPiece().getSquare().setPiece(parent.getCapturedPiece());
+					game.getCapturedPieces().remove(parent.getCapturedPiece());
+				}
 				if (parent.isPieceFirstMove()) {
 					parent.getPiece().setHasMoved(false);
 				}
@@ -72,7 +73,7 @@ public class Move {
 	
 	@Override
 	public String toString() {
-		return capturedPiece == null ? String.format("Piece %s moves %s", piece, movement) : String.format("Piece %s moves %s, capture %s", piece, movement, capturedPiece);
+		return capturedPiece == null ? String.format("Piece %s moves %s", piece, movement) : String.format("Piece %s moves %s and captures %s", piece, movement, capturedPiece);
 	}
 	
 }

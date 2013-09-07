@@ -333,12 +333,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		synchronized (game.getCapturedPieces()) {
 			for (final Piece p : game.getCapturedPieces()) {
 				final Drawable drawable = drawableCache.get(p.getResource());
-				if (Player.WHITE.equals(p.getPlayer())) {
+				if (p.is(Player.WHITE)) {
 					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + squareSize / 2)),
 							(int) (isometricScaleFactor * (capturedWhiteY + squareSize / 2)));
 					offsetWhite += squareSize / 2;
-				}
-				else {
+				} else {
 					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + squareSize / 2)),
 							(int) (isometricScaleFactor * (capturedBlackY + squareSize / 2)));
 					offsetBlack += squareSize / 2;

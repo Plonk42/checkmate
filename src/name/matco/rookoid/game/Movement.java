@@ -67,7 +67,7 @@ public class Movement {
 			Movement prev = dir.getMovement();
 			moves.add(prev);
 			for (int i = 0; i < GameUtils.CHESSBOARD_SIZE - 1; i++) {
-				prev = prev.add(dir.getMovement());
+				prev = prev.withAdd(dir.getMovement());
 				moves.add(prev);
 			}
 			lines.add(Collections.unmodifiableList(moves));
@@ -83,7 +83,7 @@ public class Movement {
 			Movement prev = dir.getMovement();
 			moves.add(prev);
 			for (int i = 0; i < GameUtils.CHESSBOARD_SIZE - 1; i++) {
-				prev = prev.add(dir.getMovement());
+				prev = prev.withAdd(dir.getMovement());
 				moves.add(prev);
 			}
 			diagonals.add(Collections.unmodifiableList(moves));
@@ -125,7 +125,7 @@ public class Movement {
 		this.dy = dy;
 	}
 	
-	public Movement add(final Movement m) {
+	public Movement withAdd(final Movement m) {
 		return new Movement(dx + m.dx, dy + m.dy);
 	}
 	
