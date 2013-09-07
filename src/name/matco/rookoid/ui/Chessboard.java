@@ -301,12 +301,13 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 					final Movement m = game.getLastMove().getMovement();
 					final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
 					final int dy = (int) ((coeff - 1.0) * m.dy * squareSize);
+					final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
 					Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy);
 					drawable.setBounds(
-							(int) (isometricScaleFactor * (left + dx)),
-							(int) (isometricScaleFactor * (top + dy)),
-							(int) (isometricScaleFactor * (right + dx)),
-							(int) (isometricScaleFactor * (bottom + dy)));
+							(int) (isometricScaleFactor * (left + dx - factor)),
+							(int) (isometricScaleFactor * (top + dy - factor)),
+							(int) (isometricScaleFactor * (right + dx + factor)),
+							(int) (isometricScaleFactor * (bottom + dy + factor)));
 				} else {
 					// FIXME : reset offset to 0 when unselected
 					final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(now / 200.0) + 8.0) : 0;
