@@ -44,7 +44,19 @@ public class Square {
 	
 	@Override
 	public String toString() {
-		return getCoordinate().toString();
+		return getCoordinate().toString() + " = " + getAlgebraic();
+	}
+	
+	public String getAlgebraic() {
+		return String.format("%s%s", getFile(), getRank());
+	}
+	
+	public char getFile() {
+		return (char) ('a' + coordinate.x);
+	}
+	
+	public char getRank() {
+		return (char) ('1' + coordinate.y);
 	}
 	
 	public boolean isEmpty() {

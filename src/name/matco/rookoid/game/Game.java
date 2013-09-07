@@ -22,6 +22,7 @@ import android.util.Log;
 public class Game {
 	
 	private final Set<MovementListener> movementListeners = new HashSet<MovementListener>();
+	private final Set<CheckListener> checkListeners = new HashSet<CheckListener>();
 	
 	private final Square[] board = new Square[64];
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
@@ -158,7 +159,7 @@ public class Game {
 		} else {
 			m = new Move(p, to);
 		}
-		Log.i(getClass().getName(), String.format("Logging : %s", m));
+		Log.i(getClass().getName(), String.format("Logging : %s = %s", m.getAlgebraic(), m));
 		
 		// log movement
 		if (progression < moves.size()) {
@@ -167,19 +168,35 @@ public class Game {
 		moves.add(m);
 		progression = moves.size();
 		
-		moveWithoutLog(m);
+		playMoveWithoutLog(m);
 		
 		// manage timer
 		final long now = System.currentTimeMillis();
 		timers.put(activePlayer, (int) (timers.get(activePlayer) + now - lastMoveTime));
 		lastMoveTime = now;
+		
+		Log.i(getClass().getName(), String.format("Check check for player %s", getActivePlayer()));
+		if (isCheck(getActivePlayer())) {
+			Log.i(getClass().getName(), String.format("Check"));
+			if (isCheckmate(getActivePlayer())) {
+				Log.i(getClass().getName(), String.format("Checkmate"));
+				for (final CheckListener cv : checkListeners) {
+					cv.onCheckmate(m.getPiece(), m.getFrom(), m.getTo());
+				}
+			}
+			else {
+				for (final CheckListener cv : checkListeners) {
+					cv.onCheck(m.getPiece(), m.getFrom(), m.getTo());
+				}
+			}
+		}
 	}
 	
 	/**
 	 * @param m the move
 	 */
-	public void moveWithoutLog(final Move m) {
-		Log.i(getClass().getName(), String.format("Playing : %s", m));
+	private void playMoveWithoutLog(final Move m) {
+		Log.i(getClass().getName(), String.format("Playing : %s = %s", m.getAlgebraic(), m));
 		m.doMove(this);
 		
 		// change active player
@@ -202,7 +219,7 @@ public class Game {
 	
 	public boolean goPrevious() {
 		if (progression > 0) {
-			moveWithoutLog(moves.get(--progression).getRevertMove());
+			playMoveWithoutLog(moves.get(--progression).getRevertMove());
 			return true;
 		}
 		return false;
@@ -210,7 +227,7 @@ public class Game {
 	
 	public boolean goNext() {
 		if (progression < moves.size()) {
-			moveWithoutLog(moves.get(progression++));
+			playMoveWithoutLog(moves.get(progression++));
 			return true;
 		}
 		return false;
@@ -312,6 +329,14 @@ public class Game {
 	
 	public void removeMovementListener(final MovementListener ml) {
 		movementListeners.remove(ml);
+	}
+	
+	public void addCheckListener(final CheckListener cl) {
+		checkListeners.add(cl);
+	}
+	
+	public void removeCheckListener(final CheckListener cl) {
+		checkListeners.remove(cl);
 	}
 	
 }

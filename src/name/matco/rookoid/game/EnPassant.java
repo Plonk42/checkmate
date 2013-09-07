@@ -20,6 +20,11 @@ public class EnPassant extends Move {
 	}
 	
 	@Override
+	public String getAlgebraic() {
+		return String.format("%sx%se.p.", piece.getSquare().getFile(), to.getAlgebraic());
+	}
+	
+	@Override
 	public String toString() {
 		return String.format("Pawn %s moves %s and captures \"en passant\" %s", piece, movement, capturedPiece);
 	}

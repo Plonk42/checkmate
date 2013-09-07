@@ -22,11 +22,11 @@ public class Castling extends Move {
 			// retrieve right rook
 			if (to.getCoordinate().x == 1) {
 				rook = (Rook) game.getSquareAt(0, to.getCoordinate().y).getPiece();
-				Log.i(getClass().getName(), String.format("Found rook %s at square 0, %d", rook, to.getCoordinate().y));
+				Log.d(getClass().getName(), String.format("Found rook %s at square 0, %d", rook, to.getCoordinate().y));
 				game.movePiece(rook, game.getSquareAt(2, to.getCoordinate().y));
 			} else {
 				rook = (Rook) game.getSquareAt(7, to.getCoordinate().y).getPiece();
-				Log.i(getClass().getName(), String.format("Found rook %s at square 7, %d", rook, to.getCoordinate().y));
+				Log.d(getClass().getName(), String.format("Found rook %s at square 7, %d", rook, to.getCoordinate().y));
 				game.movePiece(rook, game.getSquareAt(4, to.getCoordinate().y));
 			}
 			rook.setHasMoved(true);
@@ -59,6 +59,12 @@ public class Castling extends Move {
 				rook.setHasMoved(false);
 			}
 		};
+	}
+	
+	@Override
+	public String getAlgebraic() {
+		// FIXME : update this when WHITE will move to the bottom
+		return to.getFile() == 'b' ? "0-0" : "0-0-0";
 	}
 	
 	@Override

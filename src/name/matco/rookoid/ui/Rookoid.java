@@ -1,6 +1,7 @@
 package name.matco.rookoid.ui;
 
 import name.matco.rookoid.R;
+import name.matco.rookoid.game.CheckListener;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.MovementListener;
 import name.matco.rookoid.game.Player;
@@ -66,6 +67,18 @@ public class Rookoid extends Activity {
 			public void onMovement(final Piece p, final Square from, final Square to) {
 				previousMoveButton.setEnabled(Game.getInstance().getProgression() != 0);
 				nextMoveButton.setEnabled(Game.getInstance().getMoves().size() != Game.getInstance().getProgression());
+			}
+		});
+		
+		Game.getInstance().addCheckListener(new CheckListener() {
+			@Override
+			public void onCheck(final Piece p, final Square from, final Square to) {
+				UIUtils.playCheckSound();
+			}
+			
+			@Override
+			public void onCheckmate(final Piece p, final Square from, final Square to) {
+				UIUtils.playCheckmateSound();
 			}
 		});
 		

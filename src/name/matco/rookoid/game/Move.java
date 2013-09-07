@@ -1,6 +1,7 @@
 package name.matco.rookoid.game;
 
 import name.matco.rookoid.game.piece.Piece;
+import name.matco.rookoid.game.piece.PieceType;
 
 public class Move {
 	
@@ -71,9 +72,22 @@ public class Move {
 		};
 	}
 	
+	// TODO : Disambiguating moves
+	// TODO : check, checkmate
+	public String getAlgebraic() {
+		if (capturedPiece != null) {
+			if (piece.is(PieceType.PAWN)) {
+				return String.format("%sx%s", piece.getSquare().getFile(), to.getAlgebraic());
+			}
+			return String.format("%sx%s", piece.getType().getAlgebraic(), to.getAlgebraic());
+		}
+		
+		return String.format("%s%s", piece.getType().getAlgebraic(), to.getAlgebraic());
+	}
+	
 	@Override
 	public String toString() {
-		return capturedPiece == null ? String.format("Piece %s moves %s", piece, movement) : String.format("Piece %s moves %s and captures %s", piece, movement, capturedPiece);
+		return capturedPiece == null ? String.format("%s moves %s", piece, movement) : String.format("%s moves %s and captures %s", piece, movement, capturedPiece);
 	}
 	
 }
