@@ -40,6 +40,7 @@ public class Rookoid extends Activity {
 			}
 		});
 		
+		// TODO : unselect currently selected piece when touching buttons
 		previousMoveButton.setEnabled(false);
 		previousMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -63,18 +64,8 @@ public class Rookoid extends Activity {
 		Game.getInstance().addMovementListener(new MovementListener() {
 			@Override
 			public void onMovement(final Piece p, final Square from, final Square to) {
-				if (Game.getInstance().getProgression() == 0) {
-					previousMoveButton.setEnabled(false);
-				}
-				else {
-					previousMoveButton.setEnabled(true);
-				}
-				if (Game.getInstance().getMoves().size() == Game.getInstance().getProgression()) {
-					nextMoveButton.setEnabled(false);
-				}
-				else {
-					nextMoveButton.setEnabled(true);
-				}
+				previousMoveButton.setEnabled(Game.getInstance().getProgression() != 0);
+				nextMoveButton.setEnabled(Game.getInstance().getMoves().size() != Game.getInstance().getProgression());
 			}
 		});
 		

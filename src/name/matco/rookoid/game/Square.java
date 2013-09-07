@@ -52,9 +52,9 @@ public class Square {
 	}
 	
 	public boolean isCastlingDestination() {
-		return getCoordinate().x == 2 && getCoordinate().y == 0 ||
-				getCoordinate().x == 6 && getCoordinate().y == 0 ||
-				getCoordinate().x == 2 && getCoordinate().y == 7 ||
-				getCoordinate().x == 6 && getCoordinate().y == 7;
+		return getCoordinate().x == 1 && getCoordinate().y == 0 ||
+				getCoordinate().x == 5 && getCoordinate().y == 0 ||
+				getCoordinate().x == 1 && getCoordinate().y == 7 ||
+				getCoordinate().x == 5 && getCoordinate().y == 7;
 	}
 }

@@ -135,7 +135,7 @@ public class Movement {
 	
 	@Override
 	public String toString() {
-		return String.format("->(%d,%d)", dx, dy);
+		return String.format("(%d,%d)", dx, dy);
 	}
 	
 }

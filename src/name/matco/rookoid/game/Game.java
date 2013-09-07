@@ -27,12 +27,12 @@ public class Game {
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
 	private final List<Piece> capturedPieces = Collections.synchronizedList(new ArrayList<Piece>());
 	private List<Move> moves = new ArrayList<Move>();
-	private int progression = 0;
+	private int progression;
 	
-	private Player activePlayer = Player.WHITE;
+	private Player activePlayer;
 	
-	private final Piece whiteKing = new King(Player.WHITE);
-	private final Piece blackKing = new King(Player.BLACK);
+	private Piece whiteKing;
+	private Piece blackKing;
 	
 	private final Map<Player, Integer> timers = new TreeMap<Player, Integer>();
 	private long lastMoveTime;
@@ -72,6 +72,7 @@ public class Game {
 		}
 		
 		// white player
+		whiteKing = new King(Player.WHITE);
 		addPiece(0, new Rook(Player.WHITE));
 		addPiece(1, new Knight(Player.WHITE));
 		addPiece(2, new Bishop(Player.WHITE));
@@ -86,6 +87,7 @@ public class Game {
 		}
 		
 		// black player
+		blackKing = new King(Player.BLACK);
 		addPiece(63 - 0, new Rook(Player.BLACK));
 		addPiece(63 - 1, new Knight(Player.BLACK));
 		addPiece(63 - 2, new Bishop(Player.BLACK));
@@ -147,73 +149,49 @@ public class Game {
 		return capturedPieces;
 	}
 	
-	public void movePieceTo(final Piece p, final Square s) {
-		// keep log of movement
-		final Move m = new Move(p, p.getSquare().getMovementTo(s), s.getPiece());
-		Log.i(getClass().getName(), String.format("Add move %s", m));
+	public void playMove(final Piece p, final Square to) {
+		final Move m;
+		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination()) {
+			m = new Castling((King) p, to);
+		} else {
+			m = new Move(p, to);
+		}
+		Log.i(getClass().getName(), String.format("Logging : %s", m));
+		
+		// log movement
 		if (progression < moves.size()) {
 			moves = moves.subList(0, progression);
-			progression = moves.size();
 		}
 		moves.add(m);
-		progression++;
+		progression = moves.size();
+		
+		moveWithoutLog(m);
 		
 		// manage timer
 		final long now = System.currentTimeMillis();
 		timers.put(activePlayer, (int) (timers.get(activePlayer) + now - lastMoveTime));
 		lastMoveTime = now;
-		
-		movePieceToWithoutLog(p, s);
 	}
 	
 	/**
-	 * @param p piece to move
-	 * @param s square where the square will be
+	 * @param m the move
 	 */
-	private void movePieceToWithoutLog(final Piece p, final Square s) {
+	public void moveWithoutLog(final Move m) {
+		Log.i(getClass().getName(), String.format("Playing : %s", m));
+		m.doMove(this);
+		
 		// change active player
 		activePlayer = activePlayer.getOpponent();
 		
-		if (!PieceType.KING.equals(p) || p.getHasMoved() || !s.isCastlingDestination()) {
-			if (s.getPiece() != null) {
-				capturedPieces.add(s.getPiece());
-			}
-		}
-		
-		final Square from = p.getSquare();
-		
-		movePieceToInternal(p, s);
-		
-		p.setHasMoved(true);
-		
 		for (final MovementListener mv : movementListeners) {
-			mv.onMovement(p, from, s);
+			mv.onMovement(m.getPiece(), m.getFrom(), m.getTo());
 		}
 	}
 	
-	public void movePieceToInternal(final Piece p, final Square s) {
-		if (PieceType.KING.equals(p.getType()) && !p.getHasMoved() && s.isCastlingDestination()) {
-			try {
-				// retrieve right rook
-				if (s.getCoordinate().x < 4) {
-					final Piece rook = getSquareAt(0, s.getCoordinate().y).getPiece();
-					Log.i(getClass().getName(), String.format("Found rook %s at square 0, %d", rook, s.getCoordinate().y));
-					movePieceTo(rook, getSquareAt(2, s.getCoordinate().y));
-				}
-				else {
-					final Piece rook = getSquareAt(7, s.getCoordinate().y).getPiece();
-					Log.i(getClass().getName(), String.format("Found rook %s at square 7, %d", rook, s.getCoordinate().y));
-					movePieceTo(rook, getSquareAt(5, s.getCoordinate().y));
-				}
-			} catch (final OutOfBoardCoordinateException e) {
-				// no way to retrieve out of board cases
-			}
-		}
-		else {
-			p.getSquare().setPiece(null);
-		}
-		s.setPiece(p);
-		p.setSquare(s);
+	public void movePiece(final Piece p, final Square to) {
+		p.getSquare().setPiece(null); // TODO : keep this here?
+		to.setPiece(p);
+		p.setSquare(to);
 	}
 	
 	public Player getActivePlayer() {
@@ -222,16 +200,7 @@ public class Game {
 	
 	public boolean goPrevious() {
 		if (progression > 0) {
-			final Move m = moves.get(--progression);
-			try {
-				Log.i(getClass().getName(), String.format("Moving piece %s back using movement %s", m.getPiece(), m.getMovement().withInversion()));
-				final Square from = m.getPiece().getSquare();
-				movePieceToWithoutLog(m.getPiece(), from.apply(m.getMovement().withInversion()));
-				from.setPiece(m.getCapturedPiece());
-				capturedPieces.remove(m.getCapturedPiece());
-			} catch (final OutOfBoardCoordinateException e) {
-				// no move could have been done outside board
-			}
+			moveWithoutLog(moves.get(--progression).getRevertMove());
 			return true;
 		}
 		return false;
@@ -239,12 +208,7 @@ public class Game {
 	
 	public boolean goNext() {
 		if (progression < moves.size()) {
-			final Move m = moves.get(progression++);
-			try {
-				movePieceToWithoutLog(m.getPiece(), m.getPiece().getSquare().apply(m.getMovement()));
-			} catch (final OutOfBoardCoordinateException e) {
-				// no move could have been done outside board
-			}
+			moveWithoutLog(moves.get(progression++));
 			return true;
 		}
 		return false;
@@ -318,16 +282,16 @@ public class Game {
 				final Square originalPieceSquare = piece.getSquare();
 				for (final Square square : piece.getAllowedPositions()) {
 					// apply movement
-					// oups that's dangerous and that's ugly
+					// FIXME : that's dangerous and that's ugly
 					final Piece capturedPiece = square.getPiece();
-					movePieceToInternal(piece, square);
+					movePiece(piece, square);
 					
 					final boolean isCheck = isCheck(player);
 					
 					// revert back to original position
-					movePieceToInternal(piece, originalPieceSquare);
+					movePiece(piece, originalPieceSquare);
 					if (capturedPiece != null) {
-						movePieceToInternal(capturedPiece, square);
+						movePiece(capturedPiece, square);
 					}
 					
 					if (!isCheck) {

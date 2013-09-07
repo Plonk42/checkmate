@@ -216,8 +216,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		audioTrack.play();
 	}
 	
-	private void moveSelectedPieceTo(final Square c) {
-		game.movePieceTo(selectedPiece, c);
+	private void moveSelectedPieceTo(final Square to) {
+		game.playMove(selectedPiece, to);
 		Log.i(getClass().getName(), String.format("Check check for player %s", game.getActivePlayer()));
 		if (game.isCheck(game.getActivePlayer())) {
 			Log.i(getClass().getName(), String.format("Check"));
@@ -287,6 +287,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				
 				final long now = System.currentTimeMillis();
 				
+				// FIXME : game.getLastMove().getPiece() can throw a NPE if the game is reseted during draw
 				if (isMoving && p.equals(game.getLastMove().getPiece())) {
 					final float coeff;
 					if (now >= startMovingMillis + MOVE_DURATION) {

@@ -64,15 +64,15 @@ public abstract class Piece {
 					}
 					// check if moving this piece to this square does not set the player in check
 					final Square originalSquare = getSquare();
-					getSquare().getGame().movePieceToInternal(this, s);
+					getSquare().getGame().movePiece(this, s);
 					if (!getSquare().getGame().isCheck(getPlayer())) {
 						allowed.add(s);
 					}
 					
 					// revert back to original position
-					getSquare().getGame().movePieceToInternal(this, originalSquare);
+					getSquare().getGame().movePiece(this, originalSquare);
 					if (p != null) {
-						getSquare().getGame().movePieceToInternal(p, s);
+						getSquare().getGame().movePiece(p, s);
 					}
 				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
@@ -89,7 +89,7 @@ public abstract class Piece {
 		return player + " " + getType();
 	}
 	
-	public boolean getHasMoved() {
+	public boolean hasMoved() {
 		return hasMoved;
 	}
 	
