@@ -1,6 +1,7 @@
 package name.matco.rookoid.game;
 
 import name.matco.rookoid.game.piece.Pawn;
+import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.PieceType;
 import android.util.Log;
 
@@ -20,30 +21,35 @@ public class Promotion extends Move {
 		
 		// create new piece
 		try {
-			to.setPiece(this.chosenType.getPieceClass().getConstructor(Player.class).newInstance(getPiece().getPlayer()));
-			Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), to.getPiece()));
+			final Piece promotedPiece = this.chosenType.getPieceClass().getConstructor(Player.class).newInstance(getPiece().getPlayer());
+			to.setPiece(promotedPiece);
+			promotedPiece.setSquare(to);
+			Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
+			
+			// remove pawn from pieces list
+			game.getPieces().remove(getPiece());
+			// add promoted piece in pieces list
+			game.getPieces().add(promotedPiece);
 		} catch (final Exception e) {
 			// just no way to come here
 		}
-		
-		// remove pawn from pieces list
-		game.getPieces().remove(getPiece());
-		// add promoted piece in pieces list
-		game.getPieces().add(to.getPiece());
 	}
 	
 	@Override
 	public Move getRevertMove() {
-		return new Move(piece, to) {
+		return new Move(piece, from) {
 			@Override
 			public void doMove(final Game game) {
+				capturedPiece = null;
+				from = Promotion.this.from;
+				
 				// remove promoted piece from pieces list
-				game.getPieces().remove(to.getPiece());
+				game.getPieces().remove(Promotion.this.getPiece());
 				// re add pawn in pieces list
 				game.getPieces().add(Promotion.this.getPiece());
 				
 				// use revert move
-				super.getRevertMove().doMove(game);
+				getRevertMove().doMove(game);
 			}
 		};
 	}

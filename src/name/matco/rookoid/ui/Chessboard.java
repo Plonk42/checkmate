@@ -37,7 +37,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	private Timer paintTimer;
 	private final Object drawLock = new Object();
 	
-	private boolean isMoving = false;
+	private Piece movingPiece;
 	private long startMovingMillis = 0;
 	
 	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
@@ -93,7 +93,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
 		Log.i(getClass().getName(), String.format("Touch Event [x = %.1f, y = %.1f, action = %d]", event.getX(), event.getY(), event.getAction()));
-		if (event.getAction() != MotionEvent.ACTION_DOWN || isMoving) {
+		if (event.getAction() != MotionEvent.ACTION_DOWN || movingPiece != null) {
 			return false;
 		}
 		
@@ -115,7 +115,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 						else {
 							game.playMove(selectedPiece, s);
 						}
-						isMoving = true;
+						movingPiece = selectedPiece;
 						startMovingMillis = System.currentTimeMillis();
 						Log.i(getClass().getName(), "Move started at " + startMovingMillis);
 					}
@@ -181,7 +181,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		synchronized (drawLock) {
 			for (int i = 0; i < game.getBoard().length; i++) {
-				final Piece p = game.getBoard()[i].getPiece();
+				final Square s = game.getBoard()[i];
+				final Piece p = s.getPiece();
 				if (p == null) {
 					continue;
 				}
@@ -197,11 +198,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				
 				final long now = System.currentTimeMillis();
 				
-				// FIXME : game.getLastMove().getPiece() can throw a NPE if the game is reseted during draw
-				if (isMoving && p.equals(game.getLastMove().getPiece())) {
+				// piece could have changed during a promotion
+				if (movingPiece != null && s.equals(movingPiece.getSquare())) {
 					final float coeff;
 					if (now >= startMovingMillis + MOVE_DURATION) {
-						isMoving = false;
+						movingPiece = null;
 						coeff = 1;
 						Log.i(getClass().getName(), "Move finished at " + now);
 					} else {
@@ -275,7 +276,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public void reset() {
 		synchronized (drawLock) {
-			isMoving = false;
+			movingPiece = null;
 			selectedPiece = null;
 			highlightedSquares.clear();
 		}
@@ -293,7 +294,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		paintTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				if (selectedPiece != null || isMoving) {
+				if (selectedPiece != null || movingPiece != null) {
 					doDraw();
 				}
 			}

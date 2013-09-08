@@ -9,7 +9,7 @@ public class Move {
 	protected Piece capturedPiece;
 	protected boolean pieceFirstMove;
 	
-	protected final Square from;
+	protected Square from;
 	protected final Square to;
 	protected final Movement movement;
 	
@@ -56,17 +56,17 @@ public class Move {
 	}
 	
 	public Move getRevertMove() {
-		final Move parent = this;
+		final Move self = this;
 		return new Move(piece, to) {
 			@Override
 			public void doMove(final Game game) {
-				game.movePiece(parent.getPiece(), parent.getFrom());
-				if (parent.getCapturedPiece() != null) {
-					parent.getCapturedPiece().getSquare().setPiece(parent.getCapturedPiece());
-					game.getCapturedPieces().remove(parent.getCapturedPiece());
+				game.movePiece(self.getPiece(), self.getFrom());
+				if (self.getCapturedPiece() != null) {
+					self.getCapturedPiece().getSquare().setPiece(self.getCapturedPiece());
+					game.getCapturedPieces().remove(self.getCapturedPiece());
 				}
-				if (parent.isPieceFirstMove()) {
-					parent.getPiece().setHasMoved(false);
+				if (self.isPieceFirstMove()) {
+					self.getPiece().setHasMoved(false);
 				}
 			}
 		};
