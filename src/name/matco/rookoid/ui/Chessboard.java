@@ -163,7 +163,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		final int height = (canvas.getHeight() - BOARD_MARGIN * 2) / 8;
 		squareSize = Math.min(width, height);
 		
-		Log.d(getClass().getName(), String.format("Draw canvas [dimension = %dx%d, size = %d]", width, height, squareSize));
+		Log.v(getClass().getName(), String.format("Draw canvas [dimension = %dx%d, size = %d]", width, height, squareSize));
 		
 		x0 = (canvas.getWidth() - squareSize * 8) / 2;
 		y0 = (canvas.getHeight() - squareSize * 8) / 2;

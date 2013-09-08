@@ -63,10 +63,14 @@ public class Square {
 		return getPiece() == null;
 	}
 	
-	public boolean isCastlingDestination() {
-		return getCoordinate().x == 1 && getCoordinate().y == 0 ||
-				getCoordinate().x == 5 && getCoordinate().y == 0 ||
-				getCoordinate().x == 1 && getCoordinate().y == 7 ||
-				getCoordinate().x == 5 && getCoordinate().y == 7;
+	public boolean isPromotionDestination(final Player player) {
+		// FIXME : update this when WHITE will move to the bottom
+		return getCoordinate().y == (Player.WHITE.equals(player) ? 7 : 0);
+	}
+	
+	public boolean isCastlingDestination(final Player player) {
+		// FIXME : update this when WHITE will move to the bottom
+		final int side = Player.WHITE.equals(player) ? 0 : 7;
+		return getCoordinate().y == side && (getCoordinate().x == 1 || getCoordinate().x == 5);
 	}
 }

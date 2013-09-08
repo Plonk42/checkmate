@@ -38,13 +38,12 @@ public class Castling extends Move {
 	
 	@Override
 	public Move getRevertMove() {
-		final Move parent = this;
 		return new Move(piece, to) {
 			@Override
 			public void doMove(final Game game) {
 				// revert king move
-				game.movePiece(parent.getPiece(), parent.getFrom());
-				parent.getPiece().setHasMoved(false);
+				game.movePiece(piece, Castling.this.getFrom());
+				piece.setHasMoved(false);
 				
 				try {
 					if (to.getCoordinate().x == 1) {

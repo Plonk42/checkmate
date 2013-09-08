@@ -12,6 +12,11 @@ public enum PieceType {
 		public String getAlgebraic() {
 			return ""; // not letter for Pawn, or (P)
 		}
+		
+		@Override
+		public Class<? extends Piece> getPieceClass() {
+			return Pawn.class;
+		}
 	},
 	ROOK {
 		@Override
@@ -22,6 +27,11 @@ public enum PieceType {
 		@Override
 		public String getAlgebraic() {
 			return "R";
+		}
+		
+		@Override
+		public Class<? extends Piece> getPieceClass() {
+			return Rook.class;
 		}
 	},
 	KNIGHT {
@@ -34,6 +44,11 @@ public enum PieceType {
 		public String getAlgebraic() {
 			return "N";
 		}
+		
+		@Override
+		public Class<? extends Piece> getPieceClass() {
+			return Knight.class;
+		}
 	},
 	BISHOP {
 		@Override
@@ -44,6 +59,11 @@ public enum PieceType {
 		@Override
 		public String getAlgebraic() {
 			return "B";
+		}
+		
+		@Override
+		public Class<? extends Piece> getPieceClass() {
+			return Bishop.class;
 		}
 	},
 	QUEEN {
@@ -56,6 +76,11 @@ public enum PieceType {
 		public String getAlgebraic() {
 			return "Q";
 		}
+		
+		@Override
+		public Class<? extends Piece> getPieceClass() {
+			return Queen.class;
+		}
 	},
 	KING {
 		@Override
@@ -67,8 +92,14 @@ public enum PieceType {
 		public String getAlgebraic() {
 			return "K";
 		}
+		
+		@Override
+		public Class<? extends Piece> getPieceClass() {
+			return King.class;
+		}
 	};
 	
 	abstract public String getAlgebraic();
 	
+	abstract public Class<? extends Piece> getPieceClass();
 }

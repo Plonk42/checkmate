@@ -146,16 +146,28 @@ public class Game {
 		pieces.add(piece);
 	}
 	
+	public List<Piece> getPieces() {
+		return pieces;
+	}
+	
 	public List<Piece> getCapturedPieces() {
 		return capturedPieces;
 	}
 	
 	public void playMove(final Piece p, final Square to) {
 		final Move m;
-		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination()) {
+		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
 			m = new Castling((King) p, to);
 		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getCoordinate().x != to.getCoordinate().x)) {
-			m = new EnPassant((Pawn) p, to);
+			try {
+				m = new EnPassant((Pawn) p, to);
+			} catch (final OutOfBoardCoordinateException e) {
+				// no move could have been done outside board
+				Log.e(getClass().getName(), "Move is outside board", e);
+				return;
+			}
+		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
+			m = new Promotion((Pawn) p, to, PieceType.QUEEN);
 		} else {
 			m = new Move(p, to);
 		}
