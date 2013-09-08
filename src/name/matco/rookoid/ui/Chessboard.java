@@ -99,21 +99,21 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		
 		highlightedSquares.clear();
 		
-		final Square c = getSquareAt(event.getX(), event.getY());
+		final Square s = getSquareAt(event.getX(), event.getY());
 		
 		synchronized (drawLock) {
-			if (c != null) {
-				final Piece p = c.getPiece();
+			if (s != null) {
+				final Piece p = s.getPiece();
 				
 				if (selectedPiece != null) {
-					if (selectedPiece.getAllowedPositions().contains(c)) {
+					if (selectedPiece.getAllowedPositions().contains(s)) {
 						if (p != null) {
 							if (!p.is(selectedPiece.getPlayer())) {
-								moveSelectedPieceTo(c);
+								game.playMove(selectedPiece, s);
 							}
 						}
 						else {
-							moveSelectedPieceTo(c);
+							game.playMove(selectedPiece, s);
 						}
 						isMoving = true;
 						startMovingMillis = System.currentTimeMillis();
@@ -139,10 +139,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		doDraw();
 		return true;
-	}
-	
-	private void moveSelectedPieceTo(final Square to) {
-		game.playMove(selectedPiece, to);
 	}
 	
 	private Square getSquareAt(final float x, final float y) {
