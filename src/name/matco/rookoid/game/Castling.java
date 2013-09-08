@@ -19,16 +19,20 @@ public class Castling extends Move {
 		super.doMove(game);
 		
 		try {
-			// retrieve right rook
-			if (to.getCoordinate().x == 1) {
-				rook = (Rook) game.getSquareAt(0, to.getCoordinate().y).getPiece();
-				Log.d(getClass().getName(), String.format("Found rook %s at square 0, %d", rook, to.getCoordinate().y));
-				game.movePiece(rook, game.getSquareAt(2, to.getCoordinate().y));
+			final int rookFile;
+			final int kingFile;
+			if (to.isKingSide()) {
+				rookFile = 0;
+				kingFile = 2;
 			} else {
-				rook = (Rook) game.getSquareAt(7, to.getCoordinate().y).getPiece();
-				Log.d(getClass().getName(), String.format("Found rook %s at square 7, %d", rook, to.getCoordinate().y));
-				game.movePiece(rook, game.getSquareAt(4, to.getCoordinate().y));
+				rookFile = 7;
+				kingFile = 4;
 			}
+			// retrieve right rook
+			rook = (Rook) game.getSquareAt(rookFile, to.getCoordinate().y).getPiece();
+			Log.d(getClass().getName(), String.format("Found rook %s at square %d, %d", rook, rookFile, to.getCoordinate().y));
+			game.movePiece(rook, game.getSquareAt(kingFile, to.getCoordinate().y));
+			
 			rook.setHasMoved(true);
 		} catch (final OutOfBoardCoordinateException e) {
 			// no move could have been done outside board
@@ -46,7 +50,7 @@ public class Castling extends Move {
 				piece.setHasMoved(false);
 				
 				try {
-					if (to.getCoordinate().x == 1) {
+					if (to.isKingSide()) {
 						game.movePiece(rook, game.getSquareAt(0, to.getCoordinate().y));
 					} else {
 						game.movePiece(rook, game.getSquareAt(7, to.getCoordinate().y));
@@ -62,8 +66,7 @@ public class Castling extends Move {
 	
 	@Override
 	public String getAlgebraic() {
-		// FIXME : update this when WHITE will move to the bottom
-		return to.getFile() == 'b' ? "0-0" : "0-0-0";
+		return to.isKingSide() ? "0-0" : "0-0-0";
 	}
 	
 	@Override

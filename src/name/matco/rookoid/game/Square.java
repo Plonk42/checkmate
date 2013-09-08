@@ -63,6 +63,16 @@ public class Square {
 		return getPiece() == null;
 	}
 	
+	public boolean isQueenSide() {
+		// FIXME : update this when WHITE will move to the bottom
+		return getCoordinate().x >= 4;
+	}
+	
+	public boolean isKingSide() {
+		// FIXME : update this when WHITE will move to the bottom
+		return getCoordinate().x <= 3;
+	}
+	
 	public boolean isPromotionDestination(final Player player) {
 		// FIXME : update this when WHITE will move to the bottom
 		return getCoordinate().y == (Player.WHITE.equals(player) ? 7 : 0);
