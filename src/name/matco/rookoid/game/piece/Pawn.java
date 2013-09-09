@@ -1,6 +1,7 @@
 package name.matco.rookoid.game.piece;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import name.matco.rookoid.R;
@@ -44,33 +45,36 @@ public class Pawn extends Piece {
 					}
 				}
 			}
-			// pawn can move on diagonal if there is a piece to capture
+			
+			// pawn can move on diagonal if there is a piece to capture or "en passant"capture
+			final Move lastMove = Game.getInstance().getLastMove();
 			final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
 			if (getSquare().apply(withEast).getPiece() != null) {
 				movements.add(withEast);
+			} else {
+				// "en passant"
+				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getCoordinate().y - lastMove.getTo().getCoordinate().y) == 2) {
+					if (lastMove.getPiece().equals(getSquare().apply(Direction.EAST.getMovement()).getPiece())) {
+						movements.add(withEast);
+					}
+				}
 			}
 			// pawn can move on diagonal if there is a piece to capture
 			final Movement withWest = forward.getMovement().withAdd(Direction.WEST.getMovement());
 			if (getSquare().apply(withWest).getPiece() != null) {
 				movements.add(withWest);
-			}
-			
-			// "en passant" capture
-			final Move lastMove = Game.getInstance().getLastMove();
-			if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && lastMove.isPieceFirstMove()) {
-				if (lastMove.getPiece().equals(getSquare().apply(Direction.EAST.getMovement()).getPiece())) {
-					movements.add(withEast);
-				}
-				if (lastMove.getPiece().equals(getSquare().apply(Direction.WEST.getMovement()).getPiece())) {
-					movements.add(withWest);
+			} else {
+				// "en passant"
+				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getCoordinate().y - lastMove.getTo().getCoordinate().y) == 2) {
+					if (lastMove.getPiece().equals(getSquare().apply(Direction.WEST.getMovement()).getPiece())) {
+						movements.add(withWest);
+					}
 				}
 			}
 		} catch (final OutOfBoardCoordinateException e) {
 			// out of board moves not allowed
 		}
 		
-		final List<List<Movement>> ret = new ArrayList<List<Movement>>();
-		ret.add(movements);
-		return ret;
+		return Collections.singletonList(movements);
 	}
 }

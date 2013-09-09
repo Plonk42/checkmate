@@ -44,6 +44,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private int x0;
 	private int y0;
+	private int boardSize;
 	private int squareSize;
 	
 	private final Game game;
@@ -147,22 +148,23 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		final int squareX = (int) ((x - x0) / squareSize);
-		final int squareY = (int) ((y - y0) / squareSize);
-		return game.getBoard()[squareY * 8 + squareX];
+		final int squareY = (int) ((y0 + boardSize - y) / squareSize);
+		return game.getBoard()[squareY * GameUtils.CHESSBOARD_SIZE + squareX];
 	}
 	
 	@Override
 	public void draw(final Canvas canvas) {
 		super.draw(canvas);
 		
-		final int width = (canvas.getWidth() - BOARD_MARGIN * 2) / 8;
-		final int height = (canvas.getHeight() - BOARD_MARGIN * 2) / 8;
-		squareSize = Math.min(width, height);
+		final int width = (canvas.getWidth() - BOARD_MARGIN * 2);
+		final int height = (canvas.getHeight() - BOARD_MARGIN * 2);
+		boardSize = Math.min(width, height);
+		squareSize = boardSize / GameUtils.CHESSBOARD_SIZE;
 		
 		Log.v(getClass().getName(), String.format("Draw canvas [dimension = %dx%d, size = %d]", width, height, squareSize));
 		
-		x0 = (canvas.getWidth() - squareSize * 8) / 2;
-		y0 = (canvas.getHeight() - squareSize * 8) / 2;
+		x0 = (canvas.getWidth() - boardSize) / 2;
+		y0 = (canvas.getHeight() - boardSize) / 2;
 		
 		canvas.translate(x0, y0);
 		for (final Square c : game.getBoard()) {
@@ -170,7 +172,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 			final int y = c.getCoordinate().y;
 			final int left = x * squareSize;
 			final int right = left + squareSize;
-			final int top = y * squareSize;
+			final int top = boardSize - (y + 1) * squareSize;
 			final int bottom = top + squareSize;
 			
 			canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
@@ -188,12 +190,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 				}
 				
 				final Drawable drawable = drawableCache.get(p.getResource());
-				
 				final int x = i % 8;
 				final int y = i / 8;
 				final int left = x * squareSize + PIECE_MARGIN;
 				final int right = left + squareSize - 2 * PIECE_MARGIN;
-				final int top = y * squareSize + PIECE_MARGIN;
+				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
 				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
 				
 				final long now = System.currentTimeMillis();
@@ -211,7 +212,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 					
 					final Movement m = game.getLastMove().getMovement();
 					final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
-					final int dy = (int) ((coeff - 1.0) * m.dy * squareSize);
+					final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
 					final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
 					Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy);
 					drawable.setBounds(
@@ -236,22 +237,22 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	private void drawCapturedPieces(final Canvas canvas) {
-		final int capturedWhiteY = -squareSize / 2;
-		int offsetWhite = 0;
-		
-		final int capturedBlackY = GameUtils.CHESSBOARD_SIZE * squareSize;
+		final int capturedBlackY = -squareSize / 2;
 		int offsetBlack = 0;
+		
+		final int capturedWhiteY = boardSize;
+		int offsetWhite = 0;
 		synchronized (game.getCapturedPieces()) {
 			for (final Piece p : game.getCapturedPieces()) {
 				final Drawable drawable = drawableCache.get(p.getResource());
-				if (p.is(Player.WHITE)) {
-					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + squareSize / 2)),
-							(int) (isometricScaleFactor * (capturedWhiteY + squareSize / 2)));
-					offsetWhite += squareSize / 2;
-				} else {
+				if (p.is(Player.BLACK)) {
 					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + squareSize / 2)),
 							(int) (isometricScaleFactor * (capturedBlackY + squareSize / 2)));
 					offsetBlack += squareSize / 2;
+				} else {
+					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + squareSize / 2)),
+							(int) (isometricScaleFactor * (capturedWhiteY + squareSize / 2)));
+					offsetWhite += squareSize / 2;
 				}
 				drawable.draw(canvas);
 			}

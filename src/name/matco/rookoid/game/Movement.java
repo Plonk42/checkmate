@@ -10,13 +10,13 @@ public class Movement {
 		NORTH {
 			@Override
 			public Movement getMovement() {
-				return new Movement(0, -1);
+				return new Movement(0, 1);
 			}
 		},
 		NORTH_EAST {
 			@Override
 			public Movement getMovement() {
-				return new Movement(1, -1);
+				return new Movement(1, 1);
 			}
 		},
 		EAST {
@@ -28,19 +28,19 @@ public class Movement {
 		SOUTH_EAST {
 			@Override
 			public Movement getMovement() {
-				return new Movement(1, 1);
+				return new Movement(1, -1);
 			}
 		},
 		SOUTH {
 			@Override
 			public Movement getMovement() {
-				return new Movement(0, 1);
+				return new Movement(0, -1);
 			}
 		},
 		SOUTH_WEST {
 			@Override
 			public Movement getMovement() {
-				return new Movement(-1, 1);
+				return new Movement(-1, -1);
 			}
 		},
 		WEST {
@@ -52,7 +52,7 @@ public class Movement {
 		NORTH_WEST {
 			@Override
 			public Movement getMovement() {
-				return new Movement(-1, -1);
+				return new Movement(-1, 1);
 			}
 		};
 		
@@ -135,7 +135,7 @@ public class Movement {
 	
 	@Override
 	public String toString() {
-		return String.format("(%d,%d)", dx, dy);
+		return new StringBuilder().append("(").append(dx).append(",").append(dy).append(")").toString();
 	}
 	
 }

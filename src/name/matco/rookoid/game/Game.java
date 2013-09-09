@@ -77,8 +77,8 @@ public class Game {
 		addPiece(0, new Rook(Player.WHITE));
 		addPiece(1, new Knight(Player.WHITE));
 		addPiece(2, new Bishop(Player.WHITE));
-		addPiece(3, whiteKing);
-		addPiece(4, new Queen(Player.WHITE));
+		addPiece(3, new Queen(Player.WHITE));
+		addPiece(4, whiteKing);
 		addPiece(5, new Bishop(Player.WHITE));
 		addPiece(6, new Knight(Player.WHITE));
 		addPiece(7, new Rook(Player.WHITE));
@@ -92,8 +92,8 @@ public class Game {
 		addPiece(63 - 0, new Rook(Player.BLACK));
 		addPiece(63 - 1, new Knight(Player.BLACK));
 		addPiece(63 - 2, new Bishop(Player.BLACK));
-		addPiece(63 - 3, new Queen(Player.BLACK));
-		addPiece(63 - 4, blackKing);
+		addPiece(63 - 3, blackKing);
+		addPiece(63 - 4, new Queen(Player.BLACK));
 		addPiece(63 - 5, new Bishop(Player.BLACK));
 		addPiece(63 - 6, new Knight(Player.BLACK));
 		addPiece(63 - 7, new Rook(Player.BLACK));
@@ -167,6 +167,7 @@ public class Game {
 				return;
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
+			// FIXME : choose piece type
 			m = new Promotion((Pawn) p, to, PieceType.QUEEN);
 		} else {
 			m = new Move(p, to);

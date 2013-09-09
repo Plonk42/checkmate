@@ -7,10 +7,12 @@ import android.util.Log;
 
 public class Castling extends Move {
 	
+	private final int kingFile;
 	private Rook rook;
 	
 	public Castling(final King king, final Square to) {
 		super(king, to);
+		kingFile = getPiece().getSquare().getCoordinate().x + (to.isKingSide() ? 2 : -2);
 	}
 	
 	@Override
@@ -19,18 +21,8 @@ public class Castling extends Move {
 		super.doMove(game);
 		
 		try {
-			final int rookFile;
-			final int kingFile;
-			if (to.isKingSide()) {
-				rookFile = 0;
-				kingFile = 2;
-			} else {
-				rookFile = 7;
-				kingFile = 4;
-			}
-			// retrieve right rook
-			rook = (Rook) game.getSquareAt(rookFile, to.getCoordinate().y).getPiece();
-			Log.d(getClass().getName(), String.format("Found rook %s at square %d, %d", rook, rookFile, to.getCoordinate().y));
+			rook = (Rook) game.getSquareAt(to.isKingSide() ? game.getActivePlayer().getKingCorner() : game.getActivePlayer().getQueenCorner()).getPiece();
+			Log.d(getClass().getName(), String.format("Found rook %s at square %d, %d", rook, rook.getSquare(), to.getCoordinate().y));
 			game.movePiece(rook, game.getSquareAt(kingFile, to.getCoordinate().y));
 			
 			rook.setHasMoved(true);
@@ -49,12 +41,9 @@ public class Castling extends Move {
 				game.movePiece(piece, Castling.this.getFrom());
 				piece.setHasMoved(false);
 				
+				// revert rook move
 				try {
-					if (to.isKingSide()) {
-						game.movePiece(rook, game.getSquareAt(0, to.getCoordinate().y));
-					} else {
-						game.movePiece(rook, game.getSquareAt(7, to.getCoordinate().y));
-					}
+					game.movePiece(rook, game.getSquareAt(kingFile, to.getCoordinate().y));
 				} catch (final OutOfBoardCoordinateException e) {
 					// no move could have been done outside board
 					Log.e(getClass().getName(), "Move is outside board", e);

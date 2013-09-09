@@ -2,6 +2,7 @@ package name.matco.rookoid.game;
 
 import name.matco.rookoid.R;
 import name.matco.rookoid.game.Movement.Direction;
+import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 
 public enum Player {
 	
@@ -18,12 +19,12 @@ public enum Player {
 		
 		@Override
 		public Direction getForward() {
-			return Direction.NORTH;
+			return Direction.SOUTH;
 		}
 		
 		@Override
 		public int getBaseline() {
-			return 0;
+			return 7;
 		}
 	},
 	WHITE {
@@ -39,12 +40,12 @@ public enum Player {
 		
 		@Override
 		public Direction getForward() {
-			return Direction.SOUTH;
+			return Direction.NORTH;
 		}
 		
 		@Override
 		public int getBaseline() {
-			return 7;
+			return 0;
 		}
 	};
 	
@@ -55,5 +56,23 @@ public enum Player {
 	abstract public Direction getForward();
 	
 	abstract public int getBaseline();
+	
+	public Coordinate getKingCorner() {
+		try {
+			return new Coordinate(getBaseline(), 7);
+		} catch (final OutOfBoardCoordinateException e) {
+			// hard-coded coordinate
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Coordinate getQueenCorner() {
+		try {
+			return new Coordinate(getBaseline(), 0);
+		} catch (final OutOfBoardCoordinateException e) {
+			// hard-coded coordinate
+			throw new RuntimeException(e);
+		}
+	}
 	
 }

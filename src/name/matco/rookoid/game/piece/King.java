@@ -47,72 +47,52 @@ public class King extends Piece {
 		} else {
 			try {
 				// rook must be at its original square
-				final Square kingCorner = getSquare().getGame().getSquareAt(7, getSquare().getCoordinate().y);
-				if (!kingCorner.getPiece().is(PieceType.ROOK) || !kingCorner.getPiece().is(getPlayer())) {
+				final Square kingCorner = getSquare().getGame().getSquareAt(getPlayer().getKingCorner());
+				if (kingCorner.getPiece() == null || kingCorner.getPiece().hasMoved() || !kingCorner.getPiece().is(PieceType.ROOK, getPlayer())) {
 					isKingSideCastlingValid = false;
 				}
-				final Square queenCorner = getSquare().getGame().getSquareAt(0, getSquare().getCoordinate().y);
-				if (!queenCorner.getPiece().is(PieceType.ROOK) || !queenCorner.getPiece().is(getPlayer())) {
+				final Square queenCorner = getSquare().getGame().getSquareAt(getPlayer().getQueenCorner());
+				if (queenCorner.getPiece() == null || queenCorner.getPiece().hasMoved() || !queenCorner.getPiece().is(PieceType.ROOK, getPlayer())) {
 					isQueenSideCastlingValid = false;
 				}
-				Log.i(getClass().getName(), String.format("Kingside catsling seems to be possible? " + isKingSideCastlingValid));
-				Log.i(getClass().getName(), String.format("Queenside catsling seems to be possible? " + isQueenSideCastlingValid));
+				Log.i(getClass().getName(), String.format("Kingside castling seems to be possible? " + isKingSideCastlingValid));
+				Log.i(getClass().getName(), String.format("Queenside castling seems to be possible? " + isQueenSideCastlingValid));
 				
 				// kingside castling
-				// all squares between king and rook must be empty
+				// all squares between king and rook must be empty and king must no be in check in all squares
 				if (isKingSideCastlingValid) {
-					for (int i = 1; i <= 2; i++) {
-						final Square s = getSquare().getGame().getSquareAt(i, getSquare().getCoordinate().y);
+					for (int i = kingCorner.getCoordinate().x + 1; i <= getSquare().getCoordinate().x - 1; i++) {
+						final Square s = getSquare().getGame().getSquareAt(i, getPlayer().getBaseline());
 						if (!s.isEmpty()) {
 							isKingSideCastlingValid = false;
 							break;
 						}
-					}
-				}
-				Log.i(getClass().getName(), String.format("All squares between king and rook are empty for kingside castling " + isKingSideCastlingValid));
-				
-				// king must no be in check in all squares
-				if (isKingSideCastlingValid) {
-					final Square originalKingSquare = getSquare();
-					for (int i = 1; i <= 2; i++) {
-						final Square s = getSquare().getGame().getSquareAt(i, getSquare().getCoordinate().y);
 						getSquare().getGame().movePiece(this, s);
 						if (getSquare().getGame().isCheck(getPlayer())) {
 							isKingSideCastlingValid = false;
 							break;
 						}
 					}
-					getSquare().getGame().movePiece(this, originalKingSquare);
 				}
-				Log.i(getClass().getName(), String.format("King is not in check in all squares for kingside castling " + isKingSideCastlingValid));
+				Log.i(getClass().getName(), String.format("Kingside castling : all squares between king and rook are empty and king is not in check in all squares for kingside castling = " + isKingSideCastlingValid));
 				
 				// queenside castling
-				// all squares between king and rook must be empty
+				// all squares between king and rook must be empty and king must no be in check in all squares
 				if (isQueenSideCastlingValid) {
-					for (int i = 4; i <= 6; i++) {
-						final Square s = getSquare().getGame().getSquareAt(i, getSquare().getCoordinate().y);
+					for (int i = getSquare().getCoordinate().x + 1; i <= queenCorner.getCoordinate().x - 1; i++) {
+						final Square s = getSquare().getGame().getSquareAt(i, getPlayer().getBaseline());
 						if (!s.isEmpty()) {
 							isQueenSideCastlingValid = false;
 							break;
 						}
-					}
-				}
-				Log.i(getClass().getName(), String.format("All squares between king and rook are empty for queenside castling " + isQueenSideCastlingValid));
-				
-				// king must no be in check in all squares
-				if (isQueenSideCastlingValid) {
-					final Square originalKingSquare = getSquare();
-					for (int i = 4; i <= 6; i++) {
-						final Square s = getSquare().getGame().getSquareAt(i, getSquare().getCoordinate().y);
 						getSquare().getGame().movePiece(this, s);
 						if (getSquare().getGame().isCheck(getPlayer())) {
 							isQueenSideCastlingValid = false;
 							break;
 						}
 					}
-					getSquare().getGame().movePiece(this, originalKingSquare);
 				}
-				Log.i(getClass().getName(), String.format("King is not in check in all squares for queenside castling " + isQueenSideCastlingValid));
+				Log.i(getClass().getName(), String.format("Queenside castling : all squares between king and rook are empty and king is not in check in all squares for queenside castling = " + isQueenSideCastlingValid));
 			} catch (final OutOfBoardCoordinateException e) {
 				// no way to come here, all retrieved square are obviously inside the board
 			}
@@ -121,10 +101,10 @@ public class King extends Piece {
 		final List<List<Movement>> movements = new ArrayList<List<Movement>>();
 		movements.addAll(Movement.KING_MOVEMENTS);
 		if (isKingSideCastlingValid) {
-			movements.add(Collections.singletonList(new Movement(-2, 0)));
+			movements.add(Collections.singletonList(new Movement(2, 0)));
 		}
 		if (isQueenSideCastlingValid) {
-			movements.add(Collections.singletonList(new Movement(2, 0)));
+			movements.add(Collections.singletonList(new Movement(-2, 0)));
 		}
 		return movements;
 	}

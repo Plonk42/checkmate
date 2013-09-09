@@ -64,13 +64,11 @@ public class Square {
 	}
 	
 	public boolean isQueenSide() {
-		// FIXME : update this when WHITE will move to the bottom
-		return getCoordinate().x >= 4;
+		return getCoordinate().x <= 3;
 	}
 	
 	public boolean isKingSide() {
-		// FIXME : update this when WHITE will move to the bottom
-		return getCoordinate().x <= 3;
+		return getCoordinate().x >= 4;
 	}
 	
 	public boolean isPromotionDestination(final Player player) {
