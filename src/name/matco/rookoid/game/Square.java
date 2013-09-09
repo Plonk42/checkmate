@@ -74,13 +74,11 @@ public class Square {
 	}
 	
 	public boolean isPromotionDestination(final Player player) {
-		// FIXME : update this when WHITE will move to the bottom
-		return getCoordinate().y == (Player.WHITE.equals(player) ? 7 : 0);
+		return getCoordinate().y == player.getBaseline();
 	}
 	
 	public boolean isCastlingDestination(final Player player) {
-		// FIXME : update this when WHITE will move to the bottom
-		final int side = Player.WHITE.equals(player) ? 0 : 7;
+		final int side = player.getOpponent().getBaseline();
 		return getCoordinate().y == side && (getCoordinate().x == 1 || getCoordinate().x == 5);
 	}
 }

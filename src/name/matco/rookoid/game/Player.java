@@ -20,6 +20,11 @@ public enum Player {
 		public Direction getForward() {
 			return Direction.NORTH;
 		}
+		
+		@Override
+		public int getBaseline() {
+			return 0;
+		}
 	},
 	WHITE {
 		@Override
@@ -36,6 +41,11 @@ public enum Player {
 		public Direction getForward() {
 			return Direction.SOUTH;
 		}
+		
+		@Override
+		public int getBaseline() {
+			return 7;
+		}
 	};
 	
 	abstract public Player getOpponent();
@@ -43,5 +53,7 @@ public enum Player {
 	abstract public int getShortname();
 	
 	abstract public Direction getForward();
+	
+	abstract public int getBaseline();
 	
 }
