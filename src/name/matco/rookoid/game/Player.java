@@ -1,6 +1,7 @@
 package name.matco.rookoid.game;
 
 import name.matco.rookoid.R;
+import name.matco.rookoid.game.Movement.Direction;
 
 public enum Player {
 	
@@ -14,6 +15,11 @@ public enum Player {
 		public int getShortname() {
 			return R.string.black_short;
 		}
+		
+		@Override
+		public Direction getForward() {
+			return Direction.NORTH;
+		}
 	},
 	WHITE {
 		@Override
@@ -25,10 +31,17 @@ public enum Player {
 		public int getShortname() {
 			return R.string.white_short;
 		}
+		
+		@Override
+		public Direction getForward() {
+			return Direction.SOUTH;
+		}
 	};
 	
 	abstract public Player getOpponent();
 	
 	abstract public int getShortname();
+	
+	abstract public Direction getForward();
 	
 }

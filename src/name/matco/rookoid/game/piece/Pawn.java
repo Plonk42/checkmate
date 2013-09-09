@@ -30,7 +30,7 @@ public class Pawn extends Piece {
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
 		final List<Movement> movements = new ArrayList<Movement>();
-		final Direction forward = is(Player.WHITE) ? Direction.SOUTH : Direction.NORTH;
+		final Direction forward = getPlayer().getForward();
 		
 		try {
 			// pawn can not capture on line movements
