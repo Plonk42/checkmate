@@ -12,4 +12,6 @@
     
     <string name="white_short">W</string>
     <string name="black_short">B</string>
+    
+    <string name="promotion_dialog_title">Promote pawn to</string>
 </resources>

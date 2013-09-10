@@ -7,10 +7,13 @@ import android.util.Log;
 
 public class Promotion extends Move {
 	
-	private final PieceType chosenType;
+	private PieceType chosenType;
 	
-	public Promotion(final Pawn pawn, final Square to, final PieceType chosenType) {
+	public Promotion(final Pawn pawn, final Square to) {
 		super(pawn, to);
+	}
+	
+	public void setChosenType(final PieceType chosenType) {
 		this.chosenType = chosenType;
 	}
 	
@@ -62,4 +65,10 @@ public class Promotion extends Move {
 		algebraic.append(chosenType.getAlgebraic());
 		return algebraic.toString();
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s is promoted by move %s", piece, movement);
+	}
+	
 }

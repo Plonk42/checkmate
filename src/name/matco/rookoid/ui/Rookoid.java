@@ -3,6 +3,7 @@ package name.matco.rookoid.ui;
 import name.matco.rookoid.R;
 import name.matco.rookoid.game.CheckListener;
 import name.matco.rookoid.game.Game;
+import name.matco.rookoid.game.Move;
 import name.matco.rookoid.game.MovementListener;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
@@ -21,6 +22,7 @@ public class Rookoid extends Activity {
 		setContentView(R.layout.activity_fullscreen);
 		
 		final Chessboard chessboard = (Chessboard) findViewById(R.id.chessboard);
+		chessboard.setContainer(this);
 		
 		final Button restartButton = (Button) findViewById(R.id.restart_button);
 		final Button previousMoveButton = (Button) findViewById(R.id.previous_move_button);
@@ -64,7 +66,7 @@ public class Rookoid extends Activity {
 		
 		Game.getInstance().addMovementListener(new MovementListener() {
 			@Override
-			public void onMovement(final Piece p, final Square from, final Square to) {
+			public void onMovement(final Move m) {
 				previousMoveButton.setEnabled(Game.getInstance().getProgression() != 0);
 				nextMoveButton.setEnabled(Game.getInstance().getMoves().size() != Game.getInstance().getProgression());
 			}

@@ -72,11 +72,11 @@ public class Square {
 	}
 	
 	public boolean isPromotionDestination(final Player player) {
-		return getCoordinate().y == player.getBaseline();
+		return getCoordinate().y == player.getOpponent().getBaseline();
 	}
 	
 	public boolean isCastlingDestination(final Player player) {
-		final int side = player.getOpponent().getBaseline();
+		final int side = player.getBaseline();
 		return getCoordinate().y == side && (getCoordinate().x == 1 || getCoordinate().x == 5);
 	}
 }

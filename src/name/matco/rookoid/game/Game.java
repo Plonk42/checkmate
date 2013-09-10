@@ -154,7 +154,7 @@ public class Game {
 		return capturedPieces;
 	}
 	
-	public void playMove(final Piece p, final Square to) {
+	public Move getMove(final Piece p, final Square to) {
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
 			m = new Castling((King) p, to);
@@ -164,14 +164,18 @@ public class Game {
 			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 				Log.e(getClass().getName(), "Move is outside board", e);
-				return;
+				return null;
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
 			// FIXME : choose piece type
-			m = new Promotion((Pawn) p, to, PieceType.QUEEN);
+			m = new Promotion((Pawn) p, to);
 		} else {
 			m = new Move(p, to);
 		}
+		return m;
+	}
+	
+	public void playMove(final Move m) {
 		Log.i(getClass().getName(), String.format("Logging : %s = %s", m.getAlgebraic(), m));
 		
 		// log movement
@@ -212,12 +216,12 @@ public class Game {
 		Log.i(getClass().getName(), String.format("Playing : %s = %s", m.getAlgebraic(), m));
 		m.doMove(this);
 		
+		for (final MovementListener mv : movementListeners) {
+			mv.onMovement(m);
+		}
+		
 		// change active player
 		activePlayer = activePlayer.getOpponent();
-		
-		for (final MovementListener mv : movementListeners) {
-			mv.onMovement(m.getPiece(), m.getFrom(), m.getTo());
-		}
 	}
 	
 	public void movePiece(final Piece p, final Square to) {
