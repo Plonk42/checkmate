@@ -178,60 +178,44 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		y0 = (canvas.getHeight() - boardSize) / 2;
 		
 		canvas.translate(x0, y0);
-		for (final Square c : game.getBoard()) {
-			final int x = c.getCoordinate().x;
-			final int y = c.getCoordinate().y;
+		
+		final long now = System.currentTimeMillis();
+		
+		// synchronized (drawLock) {
+		
+		// draw squares
+		for (final Square s : game.getBoard()) {
+			
+			final int x = s.getCoordinate().x;
+			final int y = s.getCoordinate().y;
 			final int left = x * squareSize;
 			final int right = left + squareSize;
 			final int top = boardSize - (y + 1) * squareSize;
 			final int bottom = top + squareSize;
 			
 			canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
-			if (highlightedSquares.contains(c)) {
+			if (highlightedSquares.contains(s)) {
 				canvas.drawRect(left, top, right, bottom, hightlightPainter);
 			}
 		}
 		
-		// synchronized (drawLock) {
-		for (int i = 0; i < game.getBoard().length; i++) {
-			final Square s = game.getBoard()[i];
+		// draw pieces
+		for (final Square s : game.getBoard()) {
+			
 			final Piece p = s.getPiece();
-			if (p == null) {
-				continue;
-			}
-			
-			final Drawable drawable = drawableCache.get(p.getResource());
-			final int x = i % 8;
-			final int y = i / 8;
-			final int left = x * squareSize + PIECE_MARGIN;
-			final int right = left + squareSize - 2 * PIECE_MARGIN;
-			final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
-			final int bottom = top + squareSize - 2 * PIECE_MARGIN;
-			
-			final long now = System.currentTimeMillis();
-			
-			// piece could have changed during a promotion
-			if (movingPiece != null && s.equals(movingPiece.getSquare())) {
-				final float coeff;
-				if (now >= startMovingMillis + MOVE_DURATION) {
-					movingPiece = null;
-					coeff = 1;
-					Log.i(getClass().getName(), "Move finished at " + now);
-				} else {
-					coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
-				}
+			// draw piece if it's not moving piece
+			// piece could have changed during a promotion so the only way to check if it is the moving piece is to rely on its current square
+			if (p != null && (movingPiece == null || !s.equals(movingPiece.getSquare()))) {
 				
-				final Movement m = game.getLastMove().getMovement();
-				final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
-				final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
-				final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
-				Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy);
-				drawable.setBounds(
-						(int) (isometricScaleFactor * (left + dx - factor)),
-						(int) (isometricScaleFactor * (top + dy - factor)),
-						(int) (isometricScaleFactor * (right + dx + factor)),
-						(int) (isometricScaleFactor * (bottom + dy + factor)));
-			} else {
+				final Drawable drawable = drawableCache.get(p.getResource());
+				
+				final int x = s.getCoordinate().x;
+				final int y = s.getCoordinate().y;
+				final int left = x * squareSize + PIECE_MARGIN;
+				final int right = left + squareSize - 2 * PIECE_MARGIN;
+				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
+				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
+				
 				// FIXME : reset offset to 0 when unselected
 				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(now / 200.0) + 8.0) : 0;
 				drawable.setBounds(
@@ -239,11 +223,51 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 						(int) (isometricScaleFactor * top - offset),
 						(int) (isometricScaleFactor * right),
 						(int) (isometricScaleFactor * bottom - offset));
+				drawable.draw(canvas);
 			}
-			drawable.draw(canvas);
-			
-			drawCapturedPieces(canvas);
 		}
+		
+		// draw moving piece
+		// moving piece must be drawn after all other pieces to appear over all other pieces (knight jump over other pieces)
+		if (movingPiece != null) {
+			
+			final Drawable drawable = drawableCache.get(movingPiece.getResource());
+			
+			final Square s = movingPiece.getSquare();
+			
+			// calculate current position offset
+			final float coeff;
+			if (now >= startMovingMillis + MOVE_DURATION) {
+				movingPiece = null;
+				coeff = 1;
+				Log.i(getClass().getName(), "Move finished at " + now);
+			} else {
+				coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
+			}
+			
+			final Movement m = game.getLastMove().getMovement();
+			final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
+			final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
+			final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
+			
+			final int x = s.getCoordinate().x;
+			final int y = s.getCoordinate().y;
+			final int left = x * squareSize + PIECE_MARGIN;
+			final int right = left + squareSize - 2 * PIECE_MARGIN;
+			final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
+			final int bottom = top + squareSize - 2 * PIECE_MARGIN;
+			
+			Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy + ", factor " + factor);
+			drawable.setBounds(
+					(int) (isometricScaleFactor * (left + dx - factor)),
+					(int) (isometricScaleFactor * (top + dy - factor)),
+					(int) (isometricScaleFactor * (right + dx + factor)),
+					(int) (isometricScaleFactor * (bottom + dy + factor)));
+			drawable.draw(canvas);
+		}
+		
+		drawCapturedPieces(canvas);
+		
 		// }
 	}
 	
