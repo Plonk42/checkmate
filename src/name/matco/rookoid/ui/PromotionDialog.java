@@ -34,7 +34,7 @@ public class PromotionDialog extends DialogFragment {
 		
 		final List<PieceType> types = new ArrayList<PieceType>(Arrays.asList(PieceType.values()));
 		types.remove(PieceType.KING);
-		final ArrayAdapter<PieceType> adapter = new ArrayAdapter<PieceType>(getActivity(), android.R.layout.select_dialog_multichoice, types);
+		final ArrayAdapter<PieceType> adapter = new ArrayAdapter<PieceType>(getActivity(), R.layout.piece, types);
 		
 		builder.setTitle(R.string.promotion_dialog_title)
 				.setAdapter(adapter, new DialogInterface.OnClickListener() {

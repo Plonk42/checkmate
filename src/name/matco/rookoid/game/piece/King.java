@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import name.matco.rookoid.R;
 import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
@@ -20,11 +19,6 @@ public class King extends Piece {
 	@Override
 	public PieceType getType() {
 		return PieceType.KING;
-	}
-	
-	@Override
-	public int getResource() {
-		return player.equals(Player.BLACK) ? R.drawable.black_king : R.drawable.white_king;
 	}
 	
 	@Override

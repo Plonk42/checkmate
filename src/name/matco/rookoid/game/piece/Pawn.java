@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import name.matco.rookoid.R;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.Move;
 import name.matco.rookoid.game.Movement;
@@ -21,11 +20,6 @@ public class Pawn extends Piece {
 	@Override
 	public PieceType getType() {
 		return PieceType.PAWN;
-	}
-	
-	@Override
-	public int getResource() {
-		return player.equals(Player.BLACK) ? R.drawable.black_pawn : R.drawable.white_pawn;
 	}
 	
 	@Override

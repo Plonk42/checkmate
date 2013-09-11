@@ -34,17 +34,19 @@ public abstract class Piece {
 	
 	public abstract PieceType getType();
 	
-	public abstract int getResource();
+	public final int getResource() {
+		return getType().getResource(getPlayer());
+	}
 	
-	public boolean is(final Player player) {
+	public final boolean is(final Player player) {
 		return is(this, player);
 	}
 	
-	public boolean is(final PieceType type) {
+	public final boolean is(final PieceType type) {
 		return is(this, type);
 	}
 	
-	public boolean is(final PieceType type, final Player player) {
+	public final boolean is(final PieceType type, final Player player) {
 		return is(this, type, player);
 	}
 	
@@ -89,23 +91,23 @@ public abstract class Piece {
 		return player + " " + getType();
 	}
 	
-	public boolean hasMoved() {
+	public final boolean hasMoved() {
 		return hasMoved;
 	}
 	
-	public void setHasMoved(final boolean hasMoved) {
+	public final void setHasMoved(final boolean hasMoved) {
 		this.hasMoved = hasMoved;
 	}
 	
-	public Square getSquare() {
+	public final Square getSquare() {
 		return square;
 	}
 	
-	public void setSquare(final Square place) {
+	public final void setSquare(final Square place) {
 		this.square = place;
 	}
 	
-	public Player getPlayer() {
+	public final Player getPlayer() {
 		return player;
 	}
 	

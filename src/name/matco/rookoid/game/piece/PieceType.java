@@ -1,5 +1,8 @@
 package name.matco.rookoid.game.piece;
 
+import name.matco.rookoid.R;
+import name.matco.rookoid.game.Player;
+
 public enum PieceType {
 	
 	PAWN {
@@ -17,6 +20,11 @@ public enum PieceType {
 		public Class<? extends Piece> getPieceClass() {
 			return Pawn.class;
 		}
+		
+		@Override
+		int getResource(final Player player) {
+			return Player.BLACK.equals(player) ? R.drawable.black_pawn : R.drawable.white_pawn;
+		}
 	},
 	ROOK {
 		@Override
@@ -32,6 +40,11 @@ public enum PieceType {
 		@Override
 		public Class<? extends Piece> getPieceClass() {
 			return Rook.class;
+		}
+		
+		@Override
+		int getResource(final Player player) {
+			return Player.BLACK.equals(player) ? R.drawable.black_rook : R.drawable.white_rook;
 		}
 	},
 	KNIGHT {
@@ -49,6 +62,11 @@ public enum PieceType {
 		public Class<? extends Piece> getPieceClass() {
 			return Knight.class;
 		}
+		
+		@Override
+		int getResource(final Player player) {
+			return Player.BLACK.equals(player) ? R.drawable.black_knight : R.drawable.white_knight;
+		}
 	},
 	BISHOP {
 		@Override
@@ -64,6 +82,11 @@ public enum PieceType {
 		@Override
 		public Class<? extends Piece> getPieceClass() {
 			return Bishop.class;
+		}
+		
+		@Override
+		int getResource(final Player player) {
+			return Player.BLACK.equals(player) ? R.drawable.black_bishop : R.drawable.white_bishop;
 		}
 	},
 	QUEEN {
@@ -81,6 +104,11 @@ public enum PieceType {
 		public Class<? extends Piece> getPieceClass() {
 			return Queen.class;
 		}
+		
+		@Override
+		public int getResource(final Player player) {
+			return Player.BLACK.equals(player) ? R.drawable.black_queen : R.drawable.white_queen;
+		}
 	},
 	KING {
 		@Override
@@ -97,9 +125,16 @@ public enum PieceType {
 		public Class<? extends Piece> getPieceClass() {
 			return King.class;
 		}
+		
+		@Override
+		public int getResource(final Player player) {
+			return Player.BLACK.equals(player) ? R.drawable.black_king : R.drawable.white_king;
+		}
 	};
 	
 	abstract public String getAlgebraic();
 	
 	abstract public Class<? extends Piece> getPieceClass();
+	
+	abstract int getResource(Player player);
 }
