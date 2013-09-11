@@ -5,8 +5,8 @@ import name.matco.rookoid.game.piece.Pawn;
 
 public class EnPassant extends Move {
 	
-	public EnPassant(final Pawn pawn, final Square to) throws OutOfBoardCoordinateException {
-		super(pawn, to);
+	public EnPassant(final Player player, final Pawn pawn, final Square to) throws OutOfBoardCoordinateException {
+		super(player, pawn, to);
 		this.capturedPiece = Game.getInstance().getSquareAt(to.getCoordinate().x, pawn.getSquare().getCoordinate().y).getPiece();
 	}
 	

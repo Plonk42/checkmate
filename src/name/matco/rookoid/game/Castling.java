@@ -7,12 +7,12 @@ import android.util.Log;
 
 public class Castling extends Move {
 	
-	private final int kingFile;
+	private final int rookFile;
 	private Rook rook;
 	
-	public Castling(final King king, final Square to) {
-		super(king, to);
-		kingFile = getPiece().getSquare().getCoordinate().x + (to.isKingSide() ? 2 : -2);
+	public Castling(final Player player, final King king, final Square to) {
+		super(player, king, to);
+		rookFile = to.getCoordinate().x + (to.isKingSide() ? -1 : 1);
 	}
 	
 	@Override
@@ -21,9 +21,9 @@ public class Castling extends Move {
 		super.doMove(game);
 		
 		try {
-			rook = (Rook) game.getSquareAt(to.isKingSide() ? game.getActivePlayer().getKingCorner() : game.getActivePlayer().getQueenCorner()).getPiece();
-			Log.d(getClass().getName(), String.format("Found rook %s at square %d, %d", rook, rook.getSquare(), to.getCoordinate().y));
-			game.movePiece(rook, game.getSquareAt(kingFile, to.getCoordinate().y));
+			rook = (Rook) game.getSquareAt(to.isKingSide() ? player.getKingCorner() : player.getQueenCorner()).getPiece();
+			Log.d(getClass().getName(), String.format("Found %s at square %s, %d", rook, rook.getSquare(), to.getCoordinate().y));
+			game.movePiece(rook, game.getSquareAt(rookFile, to.getCoordinate().y));
 			
 			rook.setHasMoved(true);
 		} catch (final OutOfBoardCoordinateException e) {
@@ -33,24 +33,14 @@ public class Castling extends Move {
 	}
 	
 	@Override
-	public Move getRevertMove() {
-		return new Move(piece, to) {
-			@Override
-			public void doMove(final Game game) {
-				// revert king move
-				game.movePiece(piece, Castling.this.getFrom());
-				piece.setHasMoved(false);
-				
-				// revert rook move
-				try {
-					game.movePiece(rook, game.getSquareAt(kingFile, to.getCoordinate().y));
-				} catch (final OutOfBoardCoordinateException e) {
-					// no move could have been done outside board
-					Log.e(getClass().getName(), "Move is outside board", e);
-				}
-				rook.setHasMoved(false);
-			}
-		};
+	public void revertMove(final Game game) {
+		// revert king move
+		game.movePiece(piece, from);
+		piece.setHasMoved(false);
+		
+		// revert rook move
+		game.movePiece(rook, game.getSquareAt(to.isKingSide() ? player.getKingCorner() : player.getQueenCorner()));
+		rook.setHasMoved(false);
 	}
 	
 	@Override

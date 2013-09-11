@@ -66,7 +66,7 @@ public class Rookoid extends Activity {
 		
 		Game.getInstance().addMovementListener(new MovementListener() {
 			@Override
-			public void onMovement(final Move m) {
+			public void onMovement(final Move m, final boolean way) {
 				previousMoveButton.setEnabled(Game.getInstance().getProgression() != 0);
 				nextMoveButton.setEnabled(Game.getInstance().getMoves().size() != Game.getInstance().getProgression());
 			}

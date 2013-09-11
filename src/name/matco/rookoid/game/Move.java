@@ -5,6 +5,7 @@ import name.matco.rookoid.game.piece.PieceType;
 
 public class Move {
 	
+	protected final Player player;
 	protected final Piece piece;
 	protected Piece capturedPiece;
 	protected boolean pieceFirstMove;
@@ -13,7 +14,8 @@ public class Move {
 	protected final Square to;
 	protected final Movement movement;
 	
-	public Move(final Piece piece, final Square to) {
+	public Move(final Player player, final Piece piece, final Square to) {
+		this.player = player;
 		this.piece = piece;
 		this.pieceFirstMove = !piece.hasMoved();
 		this.from = piece.getSquare();
@@ -55,21 +57,15 @@ public class Move {
 		piece.setHasMoved(true);
 	}
 	
-	public Move getRevertMove() {
-		final Move self = this;
-		return new Move(piece, to) {
-			@Override
-			public void doMove(final Game game) {
-				game.movePiece(self.getPiece(), self.getFrom());
-				if (self.getCapturedPiece() != null) {
-					self.getCapturedPiece().getSquare().setPiece(self.getCapturedPiece());
-					game.getCapturedPieces().remove(self.getCapturedPiece());
-				}
-				if (self.isPieceFirstMove()) {
-					self.getPiece().setHasMoved(false);
-				}
-			}
-		};
+	public void revertMove(final Game game) {
+		game.movePiece(piece, from);
+		if (capturedPiece != null) {
+			capturedPiece.getSquare().setPiece(capturedPiece);
+			game.getCapturedPieces().remove(capturedPiece);
+		}
+		if (pieceFirstMove) {
+			piece.setHasMoved(false);
+		}
 	}
 	
 	// TODO : Disambiguating moves

@@ -155,12 +155,13 @@ public class Game {
 	}
 	
 	public Move getMove(final Piece p, final Square to) {
+		Log.d(getClass().getName(), String.format("Retrieve move for %s - has moved: %s, to is castling destination: %s, to is empty: %s", p, p.hasMoved(), to.isCastlingDestination(getActivePlayer()), to.isEmpty()));
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
-			m = new Castling((King) p, to);
+			m = new Castling(getActivePlayer(), (King) p, to);
 		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getCoordinate().x != to.getCoordinate().x)) {
 			try {
-				m = new EnPassant((Pawn) p, to);
+				m = new EnPassant(getActivePlayer(), (Pawn) p, to);
 			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 				Log.e(getClass().getName(), "Move is outside board", e);
@@ -168,9 +169,9 @@ public class Game {
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
 			// FIXME : choose piece type
-			m = new Promotion((Pawn) p, to);
+			m = new Promotion(getActivePlayer(), (Pawn) p, to);
 		} else {
-			m = new Move(p, to);
+			m = new Move(getActivePlayer(), p, to);
 		}
 		return m;
 	}
@@ -212,16 +213,25 @@ public class Game {
 	/**
 	 * @param m the move
 	 */
-	private void playMoveWithoutLog(final Move m) {
+	private void playMoveWithoutLog(final Move m, final boolean way) {
 		Log.i(getClass().getName(), String.format("Playing : %s = %s", m.getAlgebraic(), m));
-		m.doMove(this);
 		
+		if (way) {
+			m.doMove(this);
+		}
+		else {
+			m.revertMove(this);
+		}
 		for (final MovementListener mv : movementListeners) {
-			mv.onMovement(m);
+			mv.onMovement(m, way);
 		}
 		
 		// change active player
 		activePlayer = activePlayer.getOpponent();
+	}
+	
+	private void playMoveWithoutLog(final Move m) {
+		playMoveWithoutLog(m, true);
 	}
 	
 	public void movePiece(final Piece p, final Square to) {
@@ -236,7 +246,7 @@ public class Game {
 	
 	public boolean goPrevious() {
 		if (progression > 0) {
-			playMoveWithoutLog(moves.get(--progression).getRevertMove());
+			playMoveWithoutLog(moves.get(--progression), false);
 			return true;
 		}
 		return false;

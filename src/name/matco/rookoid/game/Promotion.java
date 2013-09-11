@@ -8,9 +8,10 @@ import android.util.Log;
 public class Promotion extends Move {
 	
 	private PieceType chosenType;
+	private Piece promotedPiece;
 	
-	public Promotion(final Pawn pawn, final Square to) {
-		super(pawn, to);
+	public Promotion(final Player player, final Pawn pawn, final Square to) {
+		super(player, pawn, to);
 	}
 	
 	public void setChosenType(final PieceType chosenType) {
@@ -24,7 +25,7 @@ public class Promotion extends Move {
 		
 		// create new piece
 		try {
-			final Piece promotedPiece = this.chosenType.getPieceClass().getConstructor(Player.class).newInstance(getPiece().getPlayer());
+			promotedPiece = this.chosenType.getPieceClass().getConstructor(Player.class).newInstance(getPiece().getPlayer());
 			to.setPiece(promotedPiece);
 			promotedPiece.setSquare(to);
 			Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
@@ -39,22 +40,13 @@ public class Promotion extends Move {
 	}
 	
 	@Override
-	public Move getRevertMove() {
-		return new Move(piece, from) {
-			@Override
-			public void doMove(final Game game) {
-				capturedPiece = null;
-				from = Promotion.this.from;
-				
-				// remove promoted piece from pieces list
-				game.getPieces().remove(Promotion.this.getPiece());
-				// re add pawn in pieces list
-				game.getPieces().add(Promotion.this.getPiece());
-				
-				// use revert move
-				getRevertMove().doMove(game);
-			}
-		};
+	public void revertMove(final Game game) {
+		// remove promoted piece from pieces list
+		game.getPieces().remove(promotedPiece);
+		// re add pawn in pieces list
+		game.getPieces().add(piece);
+		
+		super.revertMove(game);
 	}
 	
 	@Override

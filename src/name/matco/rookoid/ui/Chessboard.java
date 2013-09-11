@@ -42,7 +42,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	private Timer paintTimer;
 	private final Object drawLock = new Object();
 	
-	private Piece movingPiece;
+	private Move animatedMove;
+	private boolean animatedMoveWay;
 	private long startMovingMillis = 0;
 	
 	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
@@ -102,7 +103,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
 		Log.i(getClass().getName(), String.format("Touch Event [x = %.1f, y = %.1f, action = %d]", event.getX(), event.getY(), event.getAction()));
-		if (event.getAction() != MotionEvent.ACTION_DOWN || movingPiece != null) {
+		if (event.getAction() != MotionEvent.ACTION_DOWN || animatedMove != null) {
 			return false;
 		}
 		
@@ -204,8 +205,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 			
 			final Piece p = s.getPiece();
 			// draw piece if it's not moving piece
-			// piece could have changed during a promotion so the only way to check if it is the moving piece is to rely on its current square
-			if (p != null && (movingPiece == null || !s.equals(movingPiece.getSquare()))) {
+			if (p != null && (animatedMove == null || !p.equals(animatedMove.getPiece()))) {
 				
 				final Drawable drawable = drawableCache.get(p.getResource());
 				
@@ -229,23 +229,23 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		
 		// draw moving piece
 		// moving piece must be drawn after all other pieces to appear over all other pieces (knight jump over other pieces)
-		if (movingPiece != null) {
+		if (animatedMove != null) {
 			
-			final Drawable drawable = drawableCache.get(movingPiece.getResource());
+			final Drawable drawable = drawableCache.get(animatedMove.getPiece().getResource());
 			
-			final Square s = movingPiece.getSquare();
+			final Square s = animatedMoveWay ? animatedMove.getTo() : animatedMove.getFrom();
+			final Movement m = animatedMoveWay ? animatedMove.getMovement() : animatedMove.getMovement().withInversion();
 			
 			// calculate current position offset
 			final float coeff;
 			if (now >= startMovingMillis + MOVE_DURATION) {
-				movingPiece = null;
+				animatedMove = null;
 				coeff = 1;
 				Log.i(getClass().getName(), "Move finished at " + now);
 			} else {
 				coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
 			}
 			
-			final Movement m = game.getLastMove().getMovement();
 			final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
 			final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
 			final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
@@ -312,7 +312,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	
 	public void reset() {
 		// synchronized (drawLock) {
-		movingPiece = null;
+		animatedMove = null;
 		selectedPiece = null;
 		highlightedSquares.clear();
 		// }
@@ -330,7 +330,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		paintTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				if (selectedPiece != null || movingPiece != null) {
+				if (selectedPiece != null || animatedMove != null) {
 					doDraw();
 				}
 			}
@@ -351,8 +351,10 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	}
 	
 	@Override
-	public void onMovement(final Move m) {
-		movingPiece = m.getTo().getPiece();
+	public void onMovement(final Move m, final boolean way) {
+		Log.i(getClass().getName(), String.format("Prepare to draw movement %s", m));
+		animatedMove = m;
+		animatedMoveWay = way;
 		startMovingMillis = System.currentTimeMillis();
 		Log.i(getClass().getName(), "Move started at " + startMovingMillis);
 	}
