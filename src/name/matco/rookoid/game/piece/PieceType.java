@@ -22,7 +22,7 @@ public enum PieceType {
 		}
 		
 		@Override
-		public int getResource(final Player player) {
+		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_pawn : R.drawable.white_pawn;
 		}
 	},
@@ -43,7 +43,7 @@ public enum PieceType {
 		}
 		
 		@Override
-		public int getResource(final Player player) {
+		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_rook : R.drawable.white_rook;
 		}
 	},
@@ -64,7 +64,7 @@ public enum PieceType {
 		}
 		
 		@Override
-		public int getResource(final Player player) {
+		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_knight : R.drawable.white_knight;
 		}
 	},
@@ -85,7 +85,7 @@ public enum PieceType {
 		}
 		
 		@Override
-		public int getResource(final Player player) {
+		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_bishop : R.drawable.white_bishop;
 		}
 	},
@@ -106,7 +106,7 @@ public enum PieceType {
 		}
 		
 		@Override
-		public int getResource(final Player player) {
+		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_queen : R.drawable.white_queen;
 		}
 	},
@@ -127,7 +127,7 @@ public enum PieceType {
 		}
 		
 		@Override
-		public int getResource(final Player player) {
+		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_king : R.drawable.white_king;
 		}
 	};
@@ -136,5 +136,5 @@ public enum PieceType {
 	
 	abstract public Class<? extends Piece> getPieceClass();
 	
-	abstract public int getResource(Player player);
+	abstract public int getIconResource(Player player);
 }
