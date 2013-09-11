@@ -87,7 +87,7 @@ public class Move {
 	
 	@Override
 	public String toString() {
-		return capturedPiece == null ? String.format("%s moves %s", piece, movement) : String.format("%s moves %s and captures %s", piece, movement, capturedPiece);
+		return capturedPiece == null ? String.format("%s moves %s from %s to %s", piece, movement, from, to) : String.format("%s moves %s  from %s to %s and captures %s", piece, movement, from, to, capturedPiece);
 	}
 	
 }
