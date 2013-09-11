@@ -55,8 +55,7 @@ public class PieceTypeAdapter extends ArrayAdapter<PieceType> {
 		
 		final PieceType pieceType = pieceTypes.get(position);
 		holder.icon.setImageResource(pieceType.getIconResource(player));
-		// TODO use string resource
-		holder.name.setText(pieceType.toString());
+		holder.name.setText(pieceType.getNameResource());
 		
 		return row;
 	}

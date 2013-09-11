@@ -7,6 +7,13 @@
     <string name="previous_move">Previous</string>
     <string name="next_move">Next</string>
     
+    <string name="pawn">Pawn</string>
+    <string name="rook">Rook</string>
+    <string name="knight">Knight</string>
+    <string name="bishop">Bishop</string>
+    <string name="king">King</string>
+    <string name="queen">Queen</string>
+    
     <string name="white">White</string>
     <string name="black">Black</string>
     

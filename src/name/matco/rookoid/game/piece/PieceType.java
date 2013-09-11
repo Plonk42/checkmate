@@ -25,6 +25,11 @@ public enum PieceType {
 		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_pawn : R.drawable.white_pawn;
 		}
+		
+		@Override
+		public int getNameResource() {
+			return R.string.pawn;
+		}
 	},
 	ROOK {
 		@Override
@@ -45,6 +50,11 @@ public enum PieceType {
 		@Override
 		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_rook : R.drawable.white_rook;
+		}
+		
+		@Override
+		public int getNameResource() {
+			return R.string.rook;
 		}
 	},
 	KNIGHT {
@@ -67,6 +77,11 @@ public enum PieceType {
 		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_knight : R.drawable.white_knight;
 		}
+		
+		@Override
+		public int getNameResource() {
+			return R.string.knight;
+		}
 	},
 	BISHOP {
 		@Override
@@ -87,6 +102,11 @@ public enum PieceType {
 		@Override
 		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_bishop : R.drawable.white_bishop;
+		}
+		
+		@Override
+		public int getNameResource() {
+			return R.string.bishop;
 		}
 	},
 	QUEEN {
@@ -109,6 +129,11 @@ public enum PieceType {
 		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_queen : R.drawable.white_queen;
 		}
+		
+		@Override
+		public int getNameResource() {
+			return R.string.queen;
+		}
 	},
 	KING {
 		@Override
@@ -130,6 +155,11 @@ public enum PieceType {
 		public int getIconResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_king : R.drawable.white_king;
 		}
+		
+		@Override
+		public int getNameResource() {
+			return R.string.king;
+		}
 	};
 	
 	abstract public String getAlgebraic();
@@ -137,4 +167,6 @@ public enum PieceType {
 	abstract public Class<? extends Piece> getPieceClass();
 	
 	abstract public int getIconResource(Player player);
+	
+	abstract public int getNameResource();
 }
