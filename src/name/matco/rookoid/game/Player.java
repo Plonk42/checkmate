@@ -59,7 +59,7 @@ public enum Player {
 	
 	public Coordinate getKingCorner() {
 		try {
-			return new Coordinate(getBaseline(), 7);
+			return new Coordinate(7, getBaseline());
 		} catch (final OutOfBoardCoordinateException e) {
 			// hard-coded coordinate
 			throw new RuntimeException(e);
@@ -68,7 +68,7 @@ public enum Player {
 	
 	public Coordinate getQueenCorner() {
 		try {
-			return new Coordinate(getBaseline(), 0);
+			return new Coordinate(0, getBaseline());
 		} catch (final OutOfBoardCoordinateException e) {
 			// hard-coded coordinate
 			throw new RuntimeException(e);
