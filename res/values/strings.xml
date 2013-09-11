@@ -14,4 +14,5 @@
     <string name="black_short">B</string>
     
     <string name="promotion_dialog_title">Promote pawn to</string>
+    <string name="promotion_dialog_piece_type_icon_description">Piece type icon</string>
 </resources>

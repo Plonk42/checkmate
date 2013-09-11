@@ -4,24 +4,23 @@
     android:padding="6dip" >
 
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/piece_icon"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
+        android:gravity="center_vertical"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="6dip"
-        android:contentDescription="TODO"
-        android:src="@drawable/ic_launcher" />
+        android:layout_marginRight="10sp"
+        android:contentDescription="@string/promotion_dialog_piece_type_icon_description" />
 
     <TextView
-        android:id="@+id/secondLine"
+        android:id="@+id/piece_name"
         android:layout_width="fill_parent"
-        android:layout_height="26dip"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/icon"
-        android:ellipsize="marquee"
+        android:layout_toRightOf="@id/piece_icon"
         android:singleLine="true"
-        android:text="Description"
-        android:textSize="12sp" />
+        android:textSize="20sp" />
 </RelativeLayout>

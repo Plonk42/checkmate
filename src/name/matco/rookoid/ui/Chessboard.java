@@ -122,7 +122,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 						Log.i(getClass().getName(), "Move is " + m);
 						if (m instanceof Promotion) {
 							final PromotionDialog dialog = new PromotionDialog();
-							dialog.setMove((Promotion) m);
+							dialog.setMove((Promotion) m).setPlayer(selectedPiece.getPlayer());
 							dialog.show(container.getFragmentManager(), "promotion");
 						} else {
 							game.playMove(m);

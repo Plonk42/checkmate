@@ -7,6 +7,7 @@ import java.util.List;
 import name.matco.rookoid.R;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.Move;
+import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Promotion;
 import name.matco.rookoid.game.piece.PieceType;
 import android.app.AlertDialog;
@@ -19,13 +20,24 @@ import android.widget.ArrayAdapter;
 public class PromotionDialog extends DialogFragment {
 	
 	private Promotion move;
+	private Player player;
 	
 	public Move getMove() {
 		return move;
 	}
 	
-	public void setMove(final Promotion move) {
+	public PromotionDialog setMove(final Promotion move) {
 		this.move = move;
+		return this;
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public PromotionDialog setPlayer(final Player player) {
+		this.player = player;
+		return this;
 	}
 	
 	@Override
@@ -34,7 +46,7 @@ public class PromotionDialog extends DialogFragment {
 		
 		final List<PieceType> types = new ArrayList<PieceType>(Arrays.asList(PieceType.values()));
 		types.remove(PieceType.KING);
-		final ArrayAdapter<PieceType> adapter = new ArrayAdapter<PieceType>(getActivity(), R.layout.piece, types);
+		final ArrayAdapter<PieceType> adapter = new PieceTypeAdapter(getActivity(), R.layout.piece, types, player);
 		
 		builder.setTitle(R.string.promotion_dialog_title)
 				.setAdapter(adapter, new DialogInterface.OnClickListener() {
