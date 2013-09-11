@@ -77,6 +77,6 @@ public class Square {
 	
 	public boolean isCastlingDestination(final Player player) {
 		final int side = player.getBaseline();
-		return getCoordinate().y == side && (getCoordinate().x == 1 || getCoordinate().x == 5);
+		return getCoordinate().y == side && (getCoordinate().x == 1 || getCoordinate().x == 6);
 	}
 }
