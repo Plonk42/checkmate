@@ -1,5 +1,8 @@
 package name.matco.rookoid.game;
 
+import java.util.Collections;
+import java.util.Set;
+
 import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.PieceType;
 
@@ -30,6 +33,10 @@ public class Move {
 	
 	public Piece getPiece() {
 		return piece;
+	}
+	
+	public Set<Piece> getRelatedPieces() {
+		return Collections.singleton(getPiece());
 	}
 	
 	public boolean isPieceFirstMove() {

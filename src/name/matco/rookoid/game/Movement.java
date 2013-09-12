@@ -125,6 +125,14 @@ public class Movement {
 		this.dy = dy;
 	}
 	
+	public Movement(final Coordinate from, final Coordinate to) {
+		this(to.x - from.x, to.y - from.y);
+	}
+	
+	public Movement(final Square from, final Square to) {
+		this(from.getCoordinate(), to.getCoordinate());
+	}
+	
 	public Movement withAdd(final Movement m) {
 		return new Movement(dx + m.dx, dy + m.dy);
 	}

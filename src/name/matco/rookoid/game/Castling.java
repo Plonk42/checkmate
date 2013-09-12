@@ -1,7 +1,11 @@
 package name.matco.rookoid.game;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.King;
+import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.Rook;
 import android.util.Log;
 
@@ -15,21 +19,42 @@ public class Castling extends Move {
 		rookFile = to.getCoordinate().x + (to.isKingSide() ? -1 : 1);
 	}
 	
+	public Rook getRook() {
+		return rook;
+	}
+	
+	public Coordinate getCorner() {
+		return to.isKingSide() ? player.getKingCorner() : player.getQueenCorner();
+	}
+	
+	public Coordinate getRookDestination() {
+		try {
+			return new Coordinate(rookFile, to.getCoordinate().y);
+		} catch (final OutOfBoardCoordinateException e) {
+			// no move could have been done outside board
+			Log.e(getClass().getName(), "Move is outside board", e);
+			return null;
+		}
+	}
+	
+	@Override
+	public Set<Piece> getRelatedPieces() {
+		final Set<Piece> relatedPieces = new HashSet<Piece>();
+		relatedPieces.add(piece);
+		relatedPieces.add(rook);
+		return relatedPieces;
+	}
+	
 	@Override
 	public void doMove(final Game game) {
 		// move the king
 		super.doMove(game);
 		
-		try {
-			rook = (Rook) game.getSquareAt(to.isKingSide() ? player.getKingCorner() : player.getQueenCorner()).getPiece();
-			Log.d(getClass().getName(), String.format("Found %s at square %s, %d", rook, rook.getSquare(), to.getCoordinate().y));
-			game.movePiece(rook, game.getSquareAt(rookFile, to.getCoordinate().y));
-			
-			rook.setHasMoved(true);
-		} catch (final OutOfBoardCoordinateException e) {
-			// no move could have been done outside board
-			Log.e(getClass().getName(), "Move is outside board", e);
-		}
+		// move rook
+		rook = (Rook) game.getSquareAt(getCorner()).getPiece();
+		Log.d(getClass().getName(), String.format("Found %s at square %s, %d", rook, rook.getSquare(), to.getCoordinate().y));
+		game.movePiece(rook, game.getSquareAt(getRookDestination()));
+		rook.setHasMoved(true);
 	}
 	
 	@Override

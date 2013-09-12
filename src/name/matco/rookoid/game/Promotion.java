@@ -1,5 +1,8 @@
 package name.matco.rookoid.game;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import name.matco.rookoid.game.piece.Pawn;
 import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.PieceType;
@@ -16,6 +19,18 @@ public class Promotion extends Move {
 	
 	public void setChosenType(final PieceType chosenType) {
 		this.chosenType = chosenType;
+	}
+	
+	public Piece getPromotedPiece() {
+		return promotedPiece;
+	}
+	
+	@Override
+	public Set<Piece> getRelatedPieces() {
+		final Set<Piece> relatedPieces = new HashSet<Piece>();
+		relatedPieces.add(piece);
+		relatedPieces.add(promotedPiece);
+		return relatedPieces;
 	}
 	
 	@Override
