@@ -50,7 +50,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	private boolean animatedMoveWay;
 	private long startMovingMillis = 0;
 	
-	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
+	private final Hashtable<Piece, Drawable> drawableCache = new Hashtable<Piece, Drawable>();
 	
 	private int x0;
 	private int y0;
@@ -99,7 +99,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		for (final Square c : game.getBoard()) {
 			final Piece p = c.getPiece();
 			if (p != null) {
-				drawableCache.put(p.getResource(), getContext().getResources().getDrawable(p.getResource()));
+				drawableCache.put(p, getContext().getResources().getDrawable(p.getResource()));
 			}
 		}
 	}
@@ -211,7 +211,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 			// draw piece if it's not moving piece(s)
 			if (p != null && (animatedMove == null || !animatedMove.getRelatedPieces().contains(p))) {
 				
-				final Drawable drawable = drawableCache.get(p.getResource());
+				final Drawable drawable = drawableCache.get(p);
 				
 				final int x = s.getCoordinate().x;
 				final int y = s.getCoordinate().y;
@@ -264,7 +264,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 			}
 			
 			for (final PieceMovement pa : pieceMovements) {
-				final Drawable drawable = drawableCache.get(pa.getPiece().getResource());
+				final Drawable drawable = drawableCache.get(pa.getPiece());
 				
 				final Square s = animatedMoveWay ? pa.getTo() : pa.getFrom();
 				final Movement pam = new Movement(pa.getFrom(), pa.getTo());
@@ -317,7 +317,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		int offsetWhite = 0;
 		synchronized (game.getCapturedPieces()) {
 			for (final Piece p : game.getCapturedPieces()) {
-				final Drawable drawable = drawableCache.get(p.getResource());
+				final Drawable drawable = drawableCache.get(p);
 				if (p.is(Player.BLACK)) {
 					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + squareSize / 2)),
 							(int) (isometricScaleFactor * (capturedBlackY + squareSize / 2)));
