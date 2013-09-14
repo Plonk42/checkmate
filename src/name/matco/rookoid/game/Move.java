@@ -8,6 +8,7 @@ import name.matco.rookoid.game.piece.PieceType;
 
 public class Move {
 	
+	protected final Game game;
 	protected final Player player;
 	protected final Piece piece;
 	protected Piece capturedPiece;
@@ -17,7 +18,8 @@ public class Move {
 	protected final Square to;
 	protected final Movement movement;
 	
-	public Move(final Player player, final Piece piece, final Square to) {
+	public Move(final Game game, final Player player, final Piece piece, final Square to) {
+		this.game = game;
 		this.player = player;
 		this.piece = piece;
 		this.pieceFirstMove = !piece.hasMoved();

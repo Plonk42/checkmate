@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.Move;
 import name.matco.rookoid.game.Movement;
 import name.matco.rookoid.game.Movement.Direction;
@@ -41,7 +40,7 @@ public class Pawn extends Piece {
 			}
 			
 			// pawn can move on diagonal if there is a piece to capture or "en passant"capture
-			final Move lastMove = Game.getInstance().getLastMove();
+			final Move lastMove = getSquare().getGame().getLastMove();
 			final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
 			if (getSquare().apply(withEast).getPiece() != null) {
 				movements.add(withEast);

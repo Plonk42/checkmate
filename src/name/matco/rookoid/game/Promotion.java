@@ -13,8 +13,8 @@ public class Promotion extends Move {
 	private PieceType chosenType;
 	private Piece promotedPiece;
 	
-	public Promotion(final Player player, final Pawn pawn, final Square to) {
-		super(player, pawn, to);
+	public Promotion(final Game game, final Player player, final Pawn pawn, final Square to) {
+		super(game, player, pawn, to);
 	}
 	
 	public void setChosenType(final PieceType chosenType) {

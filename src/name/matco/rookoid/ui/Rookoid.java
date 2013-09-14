@@ -16,13 +16,20 @@ import android.widget.Chronometer;
 
 public class Rookoid extends Activity {
 	
+	private Game game;
+	
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fullscreen);
 		
+		// create game
+		game = new Game();
+		
+		// create chessboard representation
 		final Chessboard chessboard = (Chessboard) findViewById(R.id.chessboard);
 		chessboard.setContainer(this);
+		chessboard.setGame(game);
 		
 		final Button restartButton = (Button) findViewById(R.id.restart_button);
 		final Button previousMoveButton = (Button) findViewById(R.id.previous_move_button);
@@ -34,7 +41,7 @@ public class Rookoid extends Activity {
 		restartButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				Game.getInstance().reset();
+				game.reset();
 				chessboard.reset();
 				previousMoveButton.setEnabled(false);
 				nextMoveButton.setEnabled(false);
@@ -48,7 +55,7 @@ public class Rookoid extends Activity {
 		previousMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				if (Game.getInstance().goPrevious()) {
+				if (game.goPrevious()) {
 					chessboard.refresh();
 				}
 			}
@@ -58,21 +65,21 @@ public class Rookoid extends Activity {
 		nextMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				if (Game.getInstance().goNext()) {
+				if (game.goNext()) {
 					chessboard.refresh();
 				}
 			}
 		});
 		
-		Game.getInstance().addMovementListener(new MovementListener() {
+		game.addMovementListener(new MovementListener() {
 			@Override
 			public void onMovement(final Move m, final boolean way) {
-				previousMoveButton.setEnabled(Game.getInstance().getProgression() != 0);
-				nextMoveButton.setEnabled(Game.getInstance().getMoves().size() != Game.getInstance().getProgression());
+				previousMoveButton.setEnabled(game.getProgression() != 0);
+				nextMoveButton.setEnabled(game.getMoves().size() != game.getProgression());
 			}
 		});
 		
-		Game.getInstance().addCheckListener(new CheckListener() {
+		game.addCheckListener(new CheckListener() {
 			@Override
 			public void onCheck(final Piece p, final Square from, final Square to) {
 				UIUtils.playCheckSound();
@@ -98,9 +105,9 @@ public class Rookoid extends Activity {
 		return new Chronometer.OnChronometerTickListener() {
 			@Override
 			public void onChronometerTick(final Chronometer chronometer) {
-				long time = Game.getInstance().getTimers().get(player) + (System.currentTimeMillis() - Game.getInstance().getLastMoveTime()) / 1000l;
-				if (Game.getInstance().getActivePlayer().equals(player)) {
-					time += (System.currentTimeMillis() - Game.getInstance().getLastMoveTime());
+				long time = game.getTimers().get(player) + (System.currentTimeMillis() - game.getLastMoveTime()) / 1000l;
+				if (game.getActivePlayer().equals(player)) {
+					time += (System.currentTimeMillis() - game.getLastMoveTime());
 				}
 				time /= 1000;
 				chronometer.setText(String.format("%s %02d:%02d", getResources().getText(player.getShortname()), (int) time / 60, time % 60));

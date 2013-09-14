@@ -19,6 +19,7 @@ import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Promotion;
 import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.piece.Piece;
+import name.matco.rookoid.game.piece.PieceType;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -38,6 +39,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	private static final int MOVE_DURATION = 200; // ms
 	
 	private Rookoid container;
+	private Game game;
 	
 	private static Paint blackPainter;
 	private static Paint whitePainter;
@@ -56,8 +58,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	private int y0;
 	private int boardSize;
 	private int squareSize;
-	
-	private final Game game;
 	
 	private Piece selectedPiece;
 	private final List<Square> highlightedSquares = new ArrayList<Square>();
@@ -85,10 +85,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		super(context, attrs);
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
 		getHolder().addCallback(this);
-		
-		game = Game.getInstance();
-		game.addMovementListener(this);
 		buildDrawableCache();
+	}
+	
+	public void setGame(final Game game) {
+		this.game = game;
+		game.addMovementListener(this);
 	}
 	
 	public void setContainer(final Rookoid container) {
@@ -96,10 +98,10 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	}
 	
 	private void buildDrawableCache() {
-		for (final Square c : game.getBoard()) {
-			final Piece p = c.getPiece();
-			if (p != null) {
-				drawableCache.put(p.getImageResource(), getContext().getResources().getDrawable(p.getImageResource()));
+		for (final Player player : Player.values()) {
+			for (final PieceType pieceType : PieceType.values()) {
+				final int resourceId = pieceType.getImageResource(player);
+				drawableCache.put(resourceId, getContext().getResources().getDrawable(resourceId));
 			}
 		}
 	}
@@ -131,7 +133,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 						Log.i(getClass().getName(), "Move is " + m);
 						if (m instanceof Promotion) {
 							final PromotionDialog dialog = new PromotionDialog();
-							dialog.setMove((Promotion) m).setPlayer(selectedPiece.getPlayer());
+							dialog.setGame(game).setMove((Promotion) m).setPlayer(selectedPiece.getPlayer());
 							dialog.show(container.getFragmentManager(), "promotion");
 						} else {
 							game.playMove(m);
@@ -175,6 +177,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	@Override
 	public void draw(final Canvas canvas) {
 		super.draw(canvas);
+		
+		// TODO improve this
+		if (game == null) {
+			return;
+		}
 		
 		final int width = (canvas.getWidth() - BOARD_MARGIN * 2);
 		final int height = (canvas.getHeight() - BOARD_MARGIN * 2);

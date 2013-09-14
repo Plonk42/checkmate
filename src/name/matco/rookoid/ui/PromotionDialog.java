@@ -19,8 +19,14 @@ import android.widget.ArrayAdapter;
 
 public class PromotionDialog extends DialogFragment {
 	
+	private Game game;
 	private Promotion move;
 	private Player player;
+	
+	public PromotionDialog setGame(final Game game) {
+		this.game = game;
+		return this;
+	}
 	
 	public Move getMove() {
 		return move;
@@ -53,7 +59,7 @@ public class PromotionDialog extends DialogFragment {
 					@Override
 					public void onClick(final DialogInterface dialog, final int which) {
 						move.setChosenType(types.get(which));
-						Game.getInstance().playMove(move);
+						game.playMove(move);
 					}
 				});
 		return builder.create();

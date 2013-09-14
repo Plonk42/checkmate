@@ -38,18 +38,8 @@ public class Game {
 	private final Map<Player, Integer> timers = new TreeMap<Player, Integer>();
 	private long lastMoveTime;
 	
-	// singleton
-	private static Game instance;
-	
-	private Game() {
+	public Game() {
 		init();
-	}
-	
-	public static synchronized Game getInstance() {
-		if (instance == null) {
-			instance = new Game();
-		}
-		return instance;
 	}
 	
 	private void init() {
@@ -158,10 +148,10 @@ public class Game {
 		Log.d(getClass().getName(), String.format("Retrieve move for %s - has moved: %s, to is castling destination: %s, to is empty: %s", p, p.hasMoved(), to.isCastlingDestination(getActivePlayer()), to.isEmpty()));
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
-			m = new Castling(getActivePlayer(), (King) p, to);
+			m = new Castling(this, getActivePlayer(), (King) p, to);
 		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getCoordinate().x != to.getCoordinate().x)) {
 			try {
-				m = new EnPassant(getActivePlayer(), (Pawn) p, to);
+				m = new EnPassant(this, getActivePlayer(), (Pawn) p, to);
 			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 				Log.e(getClass().getName(), "Move is outside board", e);
@@ -169,9 +159,9 @@ public class Game {
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
 			// FIXME : choose piece type
-			m = new Promotion(getActivePlayer(), (Pawn) p, to);
+			m = new Promotion(this, getActivePlayer(), (Pawn) p, to);
 		} else {
-			m = new Move(getActivePlayer(), p, to);
+			m = new Move(this, getActivePlayer(), p, to);
 		}
 		return m;
 	}
