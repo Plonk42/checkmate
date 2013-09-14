@@ -34,8 +34,8 @@ public abstract class Piece {
 	
 	public abstract PieceType getType();
 	
-	public final int getResource() {
-		return getType().getIconResource(getPlayer());
+	public final int getImageResource() {
+		return getType().getImageResource(getPlayer());
 	}
 	
 	public final boolean is(final Player player) {

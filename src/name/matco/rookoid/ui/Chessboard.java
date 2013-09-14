@@ -99,13 +99,13 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		for (final Square c : game.getBoard()) {
 			final Piece p = c.getPiece();
 			if (p != null) {
-				drawableCache.put(p.getResource(), getContext().getResources().getDrawable(p.getResource()));
+				drawableCache.put(p.getImageResource(), getContext().getResources().getDrawable(p.getImageResource()));
 			}
 		}
 	}
 	
 	public Drawable getPieceImage(final Piece piece) {
-		return drawableCache.get(piece.getResource());
+		return drawableCache.get(piece.getImageResource());
 	}
 	
 	@Override
