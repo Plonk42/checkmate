@@ -7,6 +7,7 @@
     <uses-sdk
         android:minSdkVersion="17"
         android:targetSdkVersion="18" />
+    <instrumentation android:targetPackage="name.matco.rookoid" android:name="android.test.InstrumentationTestRunner"></instrumentation>
 
     <application
         android:allowBackup="true"
@@ -24,6 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <uses-library android:name="android.test.runner" />
     </application>
 
 </manifest>
