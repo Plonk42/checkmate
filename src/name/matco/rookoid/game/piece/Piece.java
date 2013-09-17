@@ -60,29 +60,34 @@ public abstract class Piece {
 					// there is a piece on square
 					if (p != null) {
 						// player can not capture his own pieces or capture the opponent's king
-						if (p.is(getPlayer()) || p.is(PieceType.KING)) {
-							break;
+						if (!p.is(getPlayer()) && !p.is(PieceType.KING)) {
+							checkCheckAndAdd(s, allowed);
 						}
+						break;
 					}
-					// check if moving this piece to this square does not set the player in check
-					final Square originalSquare = getSquare();
-					getSquare().getGame().movePiece(this, s);
-					if (!getSquare().getGame().isCheck(getPlayer())) {
-						allowed.add(s);
-					}
-					
-					// revert back to original position
-					getSquare().getGame().movePiece(this, originalSquare);
-					if (p != null) {
-						getSquare().getGame().movePiece(p, s);
-					}
+					// square is empty
+					checkCheckAndAdd(s, allowed);
 				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
 				}
 			}
 		}
+		
 		return allowed;
+	}
+	
+	private void checkCheckAndAdd(final Square candidate, final List<Square> to) {
+		// ensure that moving this piece does not set the player in check
+		final Piece previous = candidate.getPiece();
+		getSquare().setPiece(null);
+		candidate.setPiece(this);
+		if (!getSquare().getGame().isCheck(getPlayer())) {
+			to.add(candidate);
+		}
+		// restore state
+		getSquare().setPiece(this);
+		candidate.setPiece(previous);
 	}
 	
 	public abstract List<List<Movement>> getAllowedMovements();
