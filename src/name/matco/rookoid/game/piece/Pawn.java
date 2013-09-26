@@ -23,44 +23,46 @@ public class Pawn extends Piece {
 	
 	@Override
 	public List<List<Movement>> getAllowedMovements() {
-		final List<Movement> movements = new ArrayList<Movement>();
+		final List<List<Movement>> movements = new ArrayList<List<Movement>>();
 		final Direction forward = getPlayer().getForward();
 		
 		try {
+			final List<Movement> forwardMovements = new ArrayList<Movement>();
 			// pawn can not capture on line movements
 			if (getSquare().apply(forward.getMovement()).getPiece() == null) {
-				movements.add(forward.getMovement());
+				forwardMovements.add(forward.getMovement());
 				// not been played yet
 				if (!hasMoved()) {
 					final Movement twoSquares = forward.getMovement().withAdd(forward.getMovement());
 					if (getSquare().apply(twoSquares).getPiece() == null) {
-						movements.add(twoSquares);
+						forwardMovements.add(twoSquares);
 					}
 				}
 			}
+			movements.add(forwardMovements);
 			
 			// pawn can move on diagonal if there is a piece to capture or "en passant"capture
 			final Move lastMove = getSquare().getGame().getLastMove();
 			final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
 			if (getSquare().apply(withEast).getPiece() != null) {
-				movements.add(withEast);
+				movements.add(Collections.singletonList(withEast));
 			} else {
 				// "en passant"
 				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getCoordinate().y - lastMove.getTo().getCoordinate().y) == 2) {
 					if (lastMove.getPiece().equals(getSquare().apply(Direction.EAST.getMovement()).getPiece())) {
-						movements.add(withEast);
+						movements.add(Collections.singletonList(withEast));
 					}
 				}
 			}
 			// pawn can move on diagonal if there is a piece to capture
 			final Movement withWest = forward.getMovement().withAdd(Direction.WEST.getMovement());
 			if (getSquare().apply(withWest).getPiece() != null) {
-				movements.add(withWest);
+				movements.add(Collections.singletonList(withWest));
 			} else {
 				// "en passant"
 				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getCoordinate().y - lastMove.getTo().getCoordinate().y) == 2) {
 					if (lastMove.getPiece().equals(getSquare().apply(Direction.WEST.getMovement()).getPiece())) {
-						movements.add(withWest);
+						movements.add(Collections.singletonList(withWest));
 					}
 				}
 			}
@@ -68,6 +70,6 @@ public class Pawn extends Piece {
 			// out of board moves not allowed
 		}
 		
-		return Collections.singletonList(movements);
+		return movements;
 	}
 }
