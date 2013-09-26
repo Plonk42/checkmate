@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import name.matco.rookoid.game.exception.OutOfBoardCoordinateException;
 import name.matco.rookoid.game.piece.Bishop;
@@ -17,10 +15,13 @@ import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.PieceType;
 import name.matco.rookoid.game.piece.Queen;
 import name.matco.rookoid.game.piece.Rook;
+import name.matco.rookoid.ui.GameListener;
+import name.matco.rookoid.ui.GameStateListener;
 import android.util.Log;
 
 public class Game {
 	
+	private final Set<GameStateListener> gameStateListeners = new HashSet<GameStateListener>();
 	private final Set<MovementListener> movementListeners = new HashSet<MovementListener>();
 	private final Set<CheckListener> checkListeners = new HashSet<CheckListener>();
 	
@@ -35,24 +36,13 @@ public class Game {
 	private Piece whiteKing;
 	private Piece blackKing;
 	
-	private final Map<Player, Integer> timers = new TreeMap<Player, Integer>();
-	private long lastMoveTime;
-	
 	public Game() {
-		init();
 	}
 	
-	private void init() {
-		activePlayer = Player.WHITE;
+	public void init() {
 		moves.clear();
 		capturedPieces.clear();
 		progression = 0;
-		
-		// manage timers
-		for (final Player player : Player.values()) {
-			timers.put(player, 0);
-		}
-		lastMoveTime = System.currentTimeMillis();
 		
 		for (int i = 0; i < 64; i++) {
 			try {
@@ -91,22 +81,28 @@ public class Game {
 		for (int i = 8; i < 16; i++) {
 			addPiece(63 - i, new Pawn(Player.BLACK));
 		}
+		
+		for (final GameStateListener gl : gameStateListeners) {
+			gl.onGameInit();
+		}
+		
+		setPlayer(Player.WHITE);
 	}
 	
 	public int getProgression() {
 		return progression;
 	}
 	
+	public boolean isFirstMove() {
+		return progression == 0;
+	}
+	
+	public boolean isLastMove() {
+		return progression == moves.size();
+	}
+	
 	public List<Move> getMoves() {
 		return moves;
-	}
-	
-	public long getLastMoveTime() {
-		return lastMoveTime;
-	}
-	
-	public Map<Player, Integer> getTimers() {
-		return timers;
 	}
 	
 	public Move getLastMove() {
@@ -178,11 +174,6 @@ public class Game {
 		
 		playMoveWithoutLog(m);
 		
-		// manage timer
-		final long now = System.currentTimeMillis();
-		timers.put(activePlayer, (int) (timers.get(activePlayer) + now - lastMoveTime));
-		lastMoveTime = now;
-		
 		Log.i(getClass().getName(), String.format("Check check for player %s", getActivePlayer()));
 		if (isCheck(getActivePlayer())) {
 			Log.i(getClass().getName(), String.format("Check"));
@@ -217,7 +208,7 @@ public class Game {
 		}
 		
 		// change active player
-		activePlayer = activePlayer.getOpponent();
+		nextPlayer();
 	}
 	
 	private void playMoveWithoutLog(final Move m) {
@@ -232,6 +223,17 @@ public class Game {
 	
 	public Player getActivePlayer() {
 		return activePlayer;
+	}
+	
+	private void nextPlayer() {
+		setPlayer(activePlayer.getOpponent());
+	}
+	
+	private void setPlayer(final Player player) {
+		activePlayer = player;
+		for (final GameStateListener gl : gameStateListeners) {
+			gl.onPlayerChange(activePlayer);
+		}
 	}
 	
 	public boolean goPrevious() {
@@ -338,6 +340,30 @@ public class Game {
 			}
 		}
 		return true;
+	}
+	
+	/*
+	 * Listeners
+	 */
+	
+	public void addGameListener(final GameListener gui) {
+		addGameStateListeners(gui);
+		addMovementListener(gui);
+		addCheckListener(gui);
+	}
+	
+	public void removeGameListener(final GameListener gui) {
+		removeGameStateListeners(gui);
+		removeMovementListener(gui);
+		removeCheckListener(gui);
+	}
+	
+	public void addGameStateListeners(final GameStateListener gsl) {
+		gameStateListeners.add(gsl);
+	}
+	
+	public void removeGameStateListeners(final GameStateListener gsl) {
+		gameStateListeners.remove(gsl);
 	}
 	
 	public void addMovementListener(final MovementListener ml) {

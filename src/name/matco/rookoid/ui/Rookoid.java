@@ -1,20 +1,27 @@
 package name.matco.rookoid.ui;
 
 import name.matco.rookoid.R;
-import name.matco.rookoid.game.CheckListener;
 import name.matco.rookoid.game.Game;
 import name.matco.rookoid.game.Move;
-import name.matco.rookoid.game.MovementListener;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.piece.Piece;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 
-public class Rookoid extends Activity {
+public class Rookoid extends Activity implements GameListener {
+	
+	private Button restartButton;
+	private Button previousMoveButton;
+	private Button nextMoveButton;
+	
+	private long playerChangeTime;
+	private Chronometer whiteTimer;
+	private Chronometer blackTimer;
 	
 	private Game game;
 	
@@ -23,95 +30,87 @@ public class Rookoid extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fullscreen);
 		
+		restartButton = (Button) findViewById(R.id.restart_button);
+		previousMoveButton = (Button) findViewById(R.id.previous_move_button);
+		nextMoveButton = (Button) findViewById(R.id.next_move_button);
+		
+		whiteTimer = (Chronometer) findViewById(R.id.white_timer);
+		blackTimer = (Chronometer) findViewById(R.id.black_timer);
+		
 		// create game
 		game = new Game();
+		game.addGameListener(this);
 		
 		// create chessboard representation
 		final Chessboard chessboard = (Chessboard) findViewById(R.id.chessboard);
 		chessboard.setContainer(this);
 		chessboard.setGame(game);
 		
-		final Button restartButton = (Button) findViewById(R.id.restart_button);
-		final Button previousMoveButton = (Button) findViewById(R.id.previous_move_button);
-		final Button nextMoveButton = (Button) findViewById(R.id.next_move_button);
-		
-		final Chronometer whiteTimer = (Chronometer) findViewById(R.id.white_timer);
-		final Chronometer blackTimer = (Chronometer) findViewById(R.id.black_timer);
-		
 		restartButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
 				game.reset();
-				chessboard.reset();
-				previousMoveButton.setEnabled(false);
-				nextMoveButton.setEnabled(false);
-				whiteTimer.setText(String.format("%s 00:00", getResources().getText(Player.WHITE.getShortname())));
-				blackTimer.setText(String.format("%s 00:00", getResources().getText(Player.BLACK.getShortname())));
 			}
 		});
 		
 		// TODO : unselect currently selected piece when touching buttons
-		previousMoveButton.setEnabled(false);
 		previousMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				if (game.goPrevious()) {
-					chessboard.refresh();
-				}
+				game.goPrevious();
 			}
 		});
 		
-		nextMoveButton.setEnabled(false);
 		nextMoveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {
-				if (game.goNext()) {
-					chessboard.refresh();
-				}
+				game.goNext();
 			}
 		});
 		
-		game.addMovementListener(new MovementListener() {
-			@Override
-			public void onMovement(final Move m, final boolean way) {
-				previousMoveButton.setEnabled(game.getProgression() != 0);
-				nextMoveButton.setEnabled(game.getMoves().size() != game.getProgression());
-			}
-		});
-		
-		game.addCheckListener(new CheckListener() {
-			@Override
-			public void onCheck(final Piece p, final Square from, final Square to) {
-				UIUtils.playCheckSound();
-			}
-			
-			@Override
-			public void onCheckmate(final Piece p, final Square from, final Square to) {
-				UIUtils.playCheckmateSound();
-			}
-		});
-		
-		whiteTimer.setOnChronometerTickListener(getTimerChronomoterTickListener(Player.WHITE));
-		blackTimer.setOnChronometerTickListener(getTimerChronomoterTickListener(Player.BLACK));
-		
-		whiteTimer.setBase(1000);
-		blackTimer.setBase(1000);
-		
-		whiteTimer.start();
-		blackTimer.start();
+		game.init();
 	}
 	
-	private Chronometer.OnChronometerTickListener getTimerChronomoterTickListener(final Player player) {
-		return new Chronometer.OnChronometerTickListener() {
-			@Override
-			public void onChronometerTick(final Chronometer chronometer) {
-				long time = game.getTimers().get(player) + (System.currentTimeMillis() - game.getLastMoveTime()) / 1000l;
-				if (game.getActivePlayer().equals(player)) {
-					time += (System.currentTimeMillis() - game.getLastMoveTime());
-				}
-				time /= 1000;
-				chronometer.setText(String.format("%s %02d:%02d", getResources().getText(player.getShortname()), (int) time / 60, time % 60));
-			}
-		};
+	@Override
+	public void onMovement(final Move m, final boolean way) {
+		previousMoveButton.setEnabled(!game.isFirstMove());
+		nextMoveButton.setEnabled(!game.isLastMove());
+	}
+	
+	@Override
+	public void onCheck(final Piece p, final Square from, final Square to) {
+		UIUtils.playCheckSound();
+	}
+	
+	@Override
+	public void onCheckmate(final Piece p, final Square from, final Square to) {
+		UIUtils.playCheckmateSound();
+	}
+	
+	@Override
+	public void onGameInit() {
+		previousMoveButton.setEnabled(false);
+		nextMoveButton.setEnabled(false);
+		
+		playerChangeTime = SystemClock.elapsedRealtime();
+		whiteTimer.stop();
+		whiteTimer.setBase(playerChangeTime);
+		blackTimer.stop();
+		blackTimer.setBase(playerChangeTime);
+	}
+	
+	@Override
+	public void onPlayerChange(final Player player) {
+		final long time = SystemClock.elapsedRealtime();
+		if (player == Player.WHITE) {
+			whiteTimer.setBase(whiteTimer.getBase() + (time - playerChangeTime));
+			whiteTimer.start();
+			blackTimer.stop();
+		} else {
+			blackTimer.setBase(blackTimer.getBase() + (time - playerChangeTime));
+			blackTimer.start();
+			whiteTimer.stop();
+		}
+		playerChangeTime = time;
 	}
 }

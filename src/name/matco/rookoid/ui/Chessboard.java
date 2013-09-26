@@ -31,7 +31,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, MovementListener {
+public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, GameStateListener, MovementListener {
 	
 	private static final int BOARD_MARGIN = 10;
 	private static final int PIECE_MARGIN = 5;
@@ -91,6 +91,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 	public void setGame(final Game game) {
 		this.game = game;
 		game.addMovementListener(this);
+		game.addGameStateListeners(this);
 	}
 	
 	public void setContainer(final Rookoid container) {
@@ -355,10 +356,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		}
 	}
 	
-	public void refresh() {
-		doDraw();
-	}
-	
 	public void reset() {
 		// synchronized (drawLock) {
 		animatedMove = null;
@@ -366,7 +363,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		highlightedSquares.clear();
 		// }
 		
-		refresh();
+		doDraw();
 	}
 	
 	@Override
@@ -397,6 +394,16 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, M
 		
 		paintTimer.cancel();
 		paintTimer = null;
+	}
+	
+	@Override
+	public void onGameInit() {
+		reset();
+	}
+	
+	@Override
+	public void onPlayerChange(final Player player) {
+		// no-op
 	}
 	
 	@Override
