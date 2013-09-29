@@ -51,6 +51,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	private Move animatedMove;
 	private boolean animatedMoveWay;
 	private long startMovingMillis = 0;
+	private long selectionMillis = 0;
 	
 	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
 	
@@ -149,6 +150,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 					final List<Square> allowedPositions = p.getAllowedPositions();
 					if (!allowedPositions.isEmpty()) {
 						selectedPiece = p;
+						selectionMillis = System.currentTimeMillis();
 						highlightedSquares.addAll(selectedPiece.getAllowedPositions());
 					}
 					
@@ -232,8 +234,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
 				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
 				
-				// FIXME : reset offset to 0 when unselected
-				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.cos(now / 200.0) + 8.0) : 0;
+				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.sin((now - selectionMillis) / 200.0) + 8.0) : 0;
 				drawable.setBounds(
 						(int) (isometricScaleFactor * left),
 						(int) (isometricScaleFactor * top - offset),
