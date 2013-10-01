@@ -1,7 +1,6 @@
-package name.matco.rookoid.ui;
+package name.matco.rookoid.ui.listeners;
 
 import name.matco.rookoid.game.CheckListener;
-import name.matco.rookoid.game.MovementListener;
 
 public interface GameListener extends GameStateListener, MovementListener, CheckListener {
 	// composite interface

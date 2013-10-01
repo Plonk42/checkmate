@@ -15,8 +15,9 @@ import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.PieceType;
 import name.matco.rookoid.game.piece.Queen;
 import name.matco.rookoid.game.piece.Rook;
-import name.matco.rookoid.ui.GameListener;
-import name.matco.rookoid.ui.GameStateListener;
+import name.matco.rookoid.ui.listeners.GameListener;
+import name.matco.rookoid.ui.listeners.GameStateListener;
+import name.matco.rookoid.ui.listeners.MovementListener;
 import android.util.Log;
 
 public class Game {

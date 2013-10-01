@@ -6,6 +6,7 @@ import name.matco.rookoid.game.Move;
 import name.matco.rookoid.game.Player;
 import name.matco.rookoid.game.Square;
 import name.matco.rookoid.game.piece.Piece;
+import name.matco.rookoid.ui.listeners.GameListener;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemClock;

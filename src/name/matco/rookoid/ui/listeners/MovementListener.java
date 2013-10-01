@@ -1,4 +1,6 @@
-package name.matco.rookoid.game;
+package name.matco.rookoid.ui.listeners;
+
+import name.matco.rookoid.game.Move;
 
 public interface MovementListener {
 	
