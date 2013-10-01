@@ -1,72 +1,80 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="#424242"
-	tools:context=".Rookoid">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#424242"
+    android:paddingTop="50dip"
+    tools:context=".Rookoid" >
 
-	<name.matco.rookoid.ui.Chessboard
-		android:id="@+id/chessboard"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" 
-		android:layout_marginTop="100dip"/>
+    <Button
+        android:id="@+id/restart_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/restart_text" />
 
-	<RelativeLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="45dip"
-		android:padding="5dip">
+    <Button
+        android:id="@+id/previous_move_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/restart_button"
+        android:text="@string/previous_move" />
 
-		<Button
-			android:id="@+id/restart_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:text="@string/restart_text" />
-		
-		<Button
-			android:id="@+id/previous_move_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@+id/restart_button"
-			android:text="@string/previous_move" />
-		
-		<Button
-			android:id="@+id/next_move_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@+id/previous_move_button"
-			android:text="@string/next_move" />
-		
-		<TextView 
-			android:id="@+id/white_timer_label"
-			android:layout_width="20dp"
-			android:layout_height="15dp"
-			android:layout_toRightOf="@+id/next_move_button"
-			android:textColor="@color/white"
-			android:text="@string/white_short" />
-		
-		<Chronometer
-			android:id="@+id/white_timer"
-			android:layout_width="wrap_content"
-			android:layout_height="15dp"
-			android:layout_toRightOf="@+id/white_timer_label" />
-		
-		<TextView 
-			android:id="@+id/black_timer_label"
-			android:layout_width="20dp"
-			android:layout_height="15dp"
-			android:layout_toRightOf="@+id/next_move_button"
-			android:layout_below="@+id/white_timer_label"
-			android:textColor="@color/white"
-			android:text="@string/black_short" />
-		
-		<Chronometer
-			android:id="@+id/black_timer"
-			android:layout_width="wrap_content"
-			android:layout_height="15dp"
-			android:layout_toRightOf="@+id/black_timer_label"
-			android:layout_below="@+id/white_timer" />
+    <Button
+        android:id="@+id/next_move_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/previous_move_button"
+        android:text="@string/next_move" />
 
-	</RelativeLayout>
+    <TextView
+        android:id="@+id/white_timer_label"
+        android:layout_width="20dp"
+        android:layout_height="15dp"
+        android:layout_alignTop="@+id/white_timer"
+        android:layout_toRightOf="@+id/next_move_button"
+        android:text="@string/white_short"
+        android:textColor="@color/white" />
+
+    <Chronometer
+        android:id="@+id/white_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/white_timer_label" />
+
+    <TextView
+        android:id="@+id/black_timer_label"
+        android:layout_width="20dp"
+        android:layout_height="15dp"
+        android:layout_alignTop="@+id/black_timer"
+        android:layout_below="@+id/white_timer_label"
+        android:layout_toRightOf="@+id/next_move_button"
+        android:text="@string/black_short"
+        android:textColor="@color/white" />
+
+    <Chronometer
+        android:id="@+id/black_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/white_timer"
+        android:layout_toRightOf="@+id/black_timer_label" />
+    <name.matco.rookoid.ui.CapturedPieces
+        android:id="@+id/captured_black_pieces"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_below="@+id/next_move_button" />
+
+    <name.matco.rookoid.ui.Chessboard
+        android:id="@+id/chessboard"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_below="@+id/captured_black_pieces" />
+
+    <name.matco.rookoid.ui.CapturedPieces
+        android:id="@+id/captured_white_pieces"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_below="@+id/chessboard" />
+
 </RelativeLayout>
