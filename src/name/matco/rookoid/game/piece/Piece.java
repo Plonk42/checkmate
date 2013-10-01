@@ -57,16 +57,19 @@ public abstract class Piece {
 				try {
 					final Square s = square.apply(m);
 					final Piece p = s.getPiece();
+					// square is empty
+					if (p == null) {
+						checkCheckAndAdd(s, allowed);
+					}
 					// there is a piece on square
-					if (p != null) {
-						// player can not capture his own pieces or capture the opponent's king
+					else {
+						// if piece is capturable, movement is possible only if it does not set player in check
 						if (!p.is(getPlayer()) && !p.is(PieceType.KING)) {
 							checkCheckAndAdd(s, allowed);
 						}
+						// once a piece has been encountered, direction is blocked
 						break;
 					}
-					// square is empty
-					checkCheckAndAdd(s, allowed);
 				} catch (final OutOfBoardCoordinateException e) {
 					// outside the board; stop going in this direction
 					break;
