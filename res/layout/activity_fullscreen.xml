@@ -1,59 +1,72 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#424242"
-    tools:context=".Rookoid">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="#424242"
+	tools:context=".Rookoid">
 
 	<name.matco.rookoid.ui.Chessboard
-	    android:id="@+id/chessboard"
+		android:id="@+id/chessboard"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" 
 		android:layout_marginTop="100dip"/>
 
-	<LinearLayout
-		android:orientation="horizontal"
-		android:gravity="top"
-		android:layout_alignParentTop="true"
+	<RelativeLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:padding="5dip"
-		android:layout_marginTop="45dip">
+		android:layout_marginTop="45dip"
+		android:padding="5dip">
 
 		<Button
-		    android:id="@+id/restart_button"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/restart_text" />
+			android:id="@+id/restart_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:text="@string/restart_text" />
 		
 		<Button
-		    android:id="@+id/previous_move_button"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/previous_move" />
+			android:id="@+id/previous_move_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@+id/restart_button"
+			android:text="@string/previous_move" />
 		
 		<Button
-		    android:id="@+id/next_move_button"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/next_move" />
+			android:id="@+id/next_move_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@+id/previous_move_button"
+			android:text="@string/next_move" />
 		
-			<LinearLayout
-				android:orientation="vertical"
-				android:gravity="top"
-				android:layout_width="wrap_content"
-				android:layout_height="fill_parent">
+		<TextView 
+			android:id="@+id/white_timer_label"
+			android:layout_width="20dp"
+			android:layout_height="15dp"
+			android:layout_toRightOf="@+id/next_move_button"
+			android:textColor="@color/white"
+			android:text="@string/white_short" />
+		
+		<Chronometer
+			android:id="@+id/white_timer"
+			android:layout_width="wrap_content"
+			android:layout_height="15dp"
+			android:layout_toRightOf="@+id/white_timer_label" />
+		
+		<TextView 
+			android:id="@+id/black_timer_label"
+			android:layout_width="20dp"
+			android:layout_height="15dp"
+			android:layout_toRightOf="@+id/next_move_button"
+			android:layout_below="@+id/white_timer_label"
+			android:textColor="@color/white"
+			android:text="@string/black_short" />
+		
+		<Chronometer
+			android:id="@+id/black_timer"
+			android:layout_width="wrap_content"
+			android:layout_height="15dp"
+			android:layout_toRightOf="@+id/black_timer_label"
+			android:layout_below="@+id/white_timer" />
 
-				<Chronometer
-				    android:id="@+id/white_timer"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content" />
-				
-				<Chronometer
-				    android:id="@+id/black_timer"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content" />
-			</LinearLayout>
-	</LinearLayout>
-
+	</RelativeLayout>
 </RelativeLayout>
