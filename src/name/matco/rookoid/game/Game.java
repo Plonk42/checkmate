@@ -154,7 +154,6 @@ public class Game {
 				return null;
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
-			// FIXME : choose piece type
 			m = new Promotion(this, getActivePlayer(), (Pawn) p, to);
 		} else {
 			m = new Move(this, getActivePlayer(), p, to);
