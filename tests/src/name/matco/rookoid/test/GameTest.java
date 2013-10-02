@@ -15,18 +15,23 @@ import name.matco.rookoid.game.piece.PieceType;
 import name.matco.rookoid.ui.PieceMovement;
 import android.test.InstrumentationTestCase;
 
-//TODO modify all asserts: junit asserts parameters are "expected" then "actual"... 
 public class GameTest extends InstrumentationTestCase {
 	
 	public void testGame() {
 		final Game game = new Game();
+		game.init();
+
 		assertEquals(game.getBoard().length, 64);
 		
 		try {
+			//check some squares
+			assertNotNull(game.getBoard()[0]);
+			assertNotNull(game.getBoard()[3]);
+			assertNotNull(game.getBoard()[63]);
 			// check some piece positions
-			assertEquals(game.getSquareAt(0, 0), game.getBoard()[0]);
-			assertEquals(game.getSquareAt(3, 0), game.getBoard()[3]);
-			assertEquals(game.getSquareAt(7, 7), game.getBoard()[63]);
+			assertEquals(game.getBoard()[0], game.getSquareAt(0, 0));
+			assertEquals(game.getBoard()[3], game.getSquareAt(3, 0));
+			assertEquals(game.getBoard()[63], game.getSquareAt(7, 7));
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -34,6 +39,7 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testInitialGame() {
 		final Game game = new Game();
+		game.init();
 		
 		// check some piece positions
 		assertTrue(game.getBoard()[0].getPiece().is(PieceType.ROOK, Player.WHITE));
@@ -63,6 +69,7 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testInitialAllowedPositions() {
 		final Game game = new Game();
+		game.init();
 		
 		final Piece whiteQueen = game.getBoard()[3].getPiece();
 		final Piece whiteKing = game.getBoard()[4].getPiece();
@@ -75,7 +82,7 @@ public class GameTest extends InstrumentationTestCase {
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
 		
 		try {
-			assertEquals(whiteQueenPawnAllowedPosition.size(), 2);
+			assertEquals(2, whiteQueenPawnAllowedPosition.size());
 			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getSquareAt(3, 2)));
 			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getSquareAt(3, 3)));
 		} catch (final OutOfBoardCoordinateException e) {
@@ -112,6 +119,8 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testMove() {
 		final Game game = new Game();
+		game.init();
+
 		final Piece whiteQueenPawn = game.getBoard()[11].getPiece();
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
 		
@@ -123,7 +132,7 @@ public class GameTest extends InstrumentationTestCase {
 		try {
 			checkBoardConsistency(game);
 			assertEquals(1, movements.size());
-			assertEquals(movements.get(0).getPiece(), whiteQueenPawn);
+			assertEquals(whiteQueenPawn, movements.get(0).getPiece());
 			assertEquals(movements.get(0).getFrom(), game.getSquareAt(3, 1));
 			assertEquals(movements.get(0).getTo(), game.getSquareAt(3, 2));
 		} catch (final OutOfBoardCoordinateException e) {
