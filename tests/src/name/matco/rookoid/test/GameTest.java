@@ -24,7 +24,7 @@ public class GameTest extends InstrumentationTestCase {
 		assertEquals(game.getBoard().length, 64);
 		
 		try {
-			//check some squares
+			// check some squares
 			assertNotNull(game.getBoard()[0]);
 			assertNotNull(game.getBoard()[3]);
 			assertNotNull(game.getBoard()[63]);
