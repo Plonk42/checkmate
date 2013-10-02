@@ -59,7 +59,7 @@ public class Move {
 	
 	public void doMove(final Game game) {
 		if (capturedPiece != null) {
-			game.getCapturedPieces().add(capturedPiece);
+			game.addCapturedPiece(capturedPiece);
 			capturedPiece.getSquare().setPiece(null);
 		}
 		game.movePiece(piece, to);
@@ -70,7 +70,7 @@ public class Move {
 		game.movePiece(piece, from);
 		if (capturedPiece != null) {
 			capturedPiece.getSquare().setPiece(capturedPiece);
-			game.getCapturedPieces().remove(capturedPiece);
+			game.removeCapturedPiece(capturedPiece);
 		}
 		if (pieceFirstMove) {
 			piece.setHasMoved(false);

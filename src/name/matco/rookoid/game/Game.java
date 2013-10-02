@@ -15,6 +15,7 @@ import name.matco.rookoid.game.piece.Piece;
 import name.matco.rookoid.game.piece.PieceType;
 import name.matco.rookoid.game.piece.Queen;
 import name.matco.rookoid.game.piece.Rook;
+import name.matco.rookoid.ui.listeners.CaptureListener;
 import name.matco.rookoid.ui.listeners.GameListener;
 import name.matco.rookoid.ui.listeners.GameStateListener;
 import name.matco.rookoid.ui.listeners.MovementListener;
@@ -25,6 +26,7 @@ public class Game {
 	private final Set<GameStateListener> gameStateListeners = new HashSet<GameStateListener>();
 	private final Set<MovementListener> movementListeners = new HashSet<MovementListener>();
 	private final Set<CheckListener> checkListeners = new HashSet<CheckListener>();
+	private final Set<CaptureListener> captureListeners = new HashSet<CaptureListener>();
 	
 	private final Square[] board = new Square[64];
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
@@ -138,7 +140,21 @@ public class Game {
 	}
 	
 	public List<Piece> getCapturedPieces() {
-		return capturedPieces;
+		return Collections.unmodifiableList(capturedPieces);
+	}
+	
+	public void addCapturedPiece(final Piece piece) {
+		capturedPieces.add(piece);
+		for (final CaptureListener cl : captureListeners) {
+			cl.onCapture(piece);
+		}
+	}
+	
+	public void removeCapturedPiece(final Piece piece) {
+		capturedPieces.remove(piece);
+		for (final CaptureListener cl : captureListeners) {
+			cl.onRelease(piece);
+		}
 	}
 	
 	public Move getMove(final Piece p, final Square to) {
@@ -380,6 +396,14 @@ public class Game {
 	
 	public void removeCheckListener(final CheckListener cl) {
 		checkListeners.remove(cl);
+	}
+	
+	public void addCaptureListener(final CaptureListener cl) {
+		captureListeners.add(cl);
+	}
+	
+	public void removeCaptureListener(final CaptureListener cl) {
+		captureListeners.remove(cl);
 	}
 	
 }

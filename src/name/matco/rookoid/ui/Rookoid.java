@@ -47,6 +47,17 @@ public class Rookoid extends Activity implements GameListener {
 		chessboard.setContainer(this);
 		chessboard.setGame(game);
 		
+		// create captured pieces representations
+		final CapturedPieces whiteCapturedPieces = (CapturedPieces) findViewById(R.id.captured_white_pieces);
+		whiteCapturedPieces.setGame(game);
+		whiteCapturedPieces.setPlayer(Player.WHITE);
+		whiteCapturedPieces.setChessboard(chessboard);
+		
+		final CapturedPieces blackCapturedPieces = (CapturedPieces) findViewById(R.id.captured_black_pieces);
+		blackCapturedPieces.setGame(game);
+		blackCapturedPieces.setPlayer(Player.BLACK);
+		blackCapturedPieces.setChessboard(chessboard);
+		
 		restartButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(final View v) {

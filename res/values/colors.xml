@@ -3,5 +3,7 @@
 	<color name="black_overlay">#66000000</color>
 	<color name="white">#FFFFFFFF</color>
 	<color name="black">#FF000000</color>
+	<color name="grey">#FF444444</color>
+	<color name="red">#FFFF0000</color>
 
 </resources>

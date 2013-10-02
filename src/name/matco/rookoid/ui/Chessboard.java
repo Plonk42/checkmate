@@ -47,7 +47,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	
 	private static Paint hightlightPainter;
 	private Timer paintTimer;
-	private final Object drawLock = new Object();
+	// private final Object drawLock = new Object();
 	
 	private Move animatedMove;
 	private boolean animatedMoveWay;
@@ -58,13 +58,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	
 	private int x0;
 	private int y0;
-	private int boardSize;
-	private int squareSize;
+	int boardSize;
+	int squareSize;
+	float isometricScaleFactor = 1;
 	
 	private Piece selectedPiece;
 	private final List<Square> highlightedSquares = new ArrayList<Square>();
-	
-	float isometricScaleFactor = 1;
 	
 	static {
 		blackPainter = new Paint();
@@ -88,6 +87,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
 		getHolder().addCallback(this);
 		buildDrawableCache();
+		
+		// TODO make chessboard a square
+		
 	}
 	
 	public void setGame(final Game game) {
@@ -115,7 +117,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	
 	@Override
 	public boolean onTouchEvent(final MotionEvent event) {
-		Log.i(getClass().getName(), String.format("Touch Event [x = %.1f, y = %.1f, action = %d]", event.getX(), event.getY(), event.getAction()));
+		Log.v(getClass().getName(), String.format("Touch Event [x = %.1f, y = %.1f, action = %d]", event.getX(), event.getY(), event.getAction()));
 		if (event.getAction() != MotionEvent.ACTION_DOWN || animatedMove != null) {
 			return false;
 		}
@@ -226,8 +228,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 			// draw piece if it's not moving piece(s)
 			if (p != null && (animatedMove == null || !animatedMove.getRelatedPieces().contains(p))) {
 				
-				final Drawable drawable = getPieceImage(p);
-				
 				final int x = s.getCoordinate().x;
 				final int y = s.getCoordinate().y;
 				final int left = x * squareSize + PIECE_MARGIN;
@@ -236,6 +236,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
 				
 				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.sin((now - selectionMillis) / 200.0) + 8.0) : 0;
+				
+				final Drawable drawable = getPieceImage(p);
 				drawable.setBounds(
 						(int) (isometricScaleFactor * left),
 						(int) (isometricScaleFactor * top - offset),
@@ -318,32 +320,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 			}
 		}
 		
-		drawCapturedPieces(canvas);
-		
 		// }
-	}
-	
-	private void drawCapturedPieces(final Canvas canvas) {
-		final int capturedBlackY = -squareSize / 2;
-		int offsetBlack = 0;
-		
-		final int capturedWhiteY = boardSize;
-		int offsetWhite = 0;
-		synchronized (game.getCapturedPieces()) {
-			for (final Piece p : game.getCapturedPieces()) {
-				final Drawable drawable = getPieceImage(p);
-				if (p.is(Player.BLACK)) {
-					drawable.setBounds((int) (isometricScaleFactor * offsetBlack), (int) (isometricScaleFactor * capturedBlackY), (int) (isometricScaleFactor * (offsetBlack + squareSize / 2)),
-							(int) (isometricScaleFactor * (capturedBlackY + squareSize / 2)));
-					offsetBlack += squareSize / 2;
-				} else {
-					drawable.setBounds((int) (isometricScaleFactor * offsetWhite), (int) (isometricScaleFactor * capturedWhiteY), (int) (isometricScaleFactor * (offsetWhite + squareSize / 2)),
-							(int) (isometricScaleFactor * (capturedWhiteY + squareSize / 2)));
-					offsetWhite += squareSize / 2;
-				}
-				drawable.draw(canvas);
-			}
-		}
 	}
 	
 	private void doDraw() {
