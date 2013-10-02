@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import name.matco.rookoid.game.Castling;
 import name.matco.rookoid.game.Game;
@@ -32,7 +30,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, GameStateListener, MovementListener {
+public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, GameDrawer, GameStateListener, MovementListener {
 	
 	private static final int BOARD_MARGIN = 10;
 	private static final int PIECE_MARGIN = 5;
@@ -44,16 +42,14 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	
 	private static Paint blackPainter;
 	private static Paint whitePainter;
-	
 	private static Paint hightlightPainter;
-	private Timer paintTimer;
-	// private final Object drawLock = new Object();
 	
 	private Move animatedMove;
 	private boolean animatedMoveWay;
 	private long startMovingMillis = 0;
 	private long selectionMillis = 0;
 	
+	private final DrawerTimer drawerTimer;
 	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
 	
 	private int x0;
@@ -88,8 +84,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		getHolder().addCallback(this);
 		buildDrawableCache();
 		
-		// TODO make chessboard a square
+		drawerTimer = new DrawerTimer(this);
 		
+		// TODO make chessboard a square
 	}
 	
 	public void setGame(final Game game) {
@@ -126,7 +123,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		
 		final Square s = getSquareAt(event.getX(), event.getY());
 		
-		// synchronized (drawLock) {
 		if (s != null) {
 			final Piece p = s.getPiece();
 			
@@ -146,6 +142,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 					}
 				}
 				selectedPiece = null;
+				drawerTimer.unforce();
 			}
 			// select target piece
 			else {
@@ -154,6 +151,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 					if (!allowedPositions.isEmpty()) {
 						selectedPiece = p;
 						selectionMillis = System.currentTimeMillis();
+						
+						drawerTimer.force();
 						highlightedSquares.addAll(selectedPiece.getAllowedPositions());
 					}
 					
@@ -164,9 +163,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		}
 		else {
 			selectedPiece = null;
+			drawerTimer.unforce();
 		}
-		// }
-		doDraw();
+		drawerTimer.drawOnce();
 		return true;
 	}
 	
@@ -202,8 +201,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		canvas.translate(x0, y0);
 		
 		final long now = System.currentTimeMillis();
-		
-		// synchronized (drawLock) {
 		
 		// draw squares
 		for (final Square s : game.getBoard()) {
@@ -319,11 +316,10 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 				animatedMove = null;
 			}
 		}
-		
-		// }
 	}
 	
-	private void doDraw() {
+	@Override
+	public void doDraw() {
 		final SurfaceHolder holder = getHolder();
 		final Canvas theCanvas = holder.lockCanvas();
 		if (theCanvas != null) {
@@ -336,30 +332,18 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	}
 	
 	public void reset() {
-		// synchronized (drawLock) {
 		animatedMove = null;
 		selectedPiece = null;
 		highlightedSquares.clear();
-		// }
 		
-		doDraw();
+		drawerTimer.drawOnce();
 	}
 	
 	@Override
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
 		
-		doDraw();
-		
-		paintTimer = new Timer();
-		paintTimer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				if (selectedPiece != null || animatedMove != null) {
-					doDraw();
-				}
-			}
-		}, 0, 25);
+		drawerTimer.start();
 	}
 	
 	@Override
@@ -371,8 +355,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	public void surfaceDestroyed(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface destroyed");
 		
-		paintTimer.cancel();
-		paintTimer = null;
+		drawerTimer.stop();
 	}
 	
 	@Override
@@ -391,6 +374,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		animatedMove = m;
 		animatedMoveWay = way;
 		startMovingMillis = System.currentTimeMillis();
+		drawerTimer.drawFor(MOVE_DURATION);
 		Log.i(getClass().getName(), "Move started at " + startMovingMillis);
 	}
 	
