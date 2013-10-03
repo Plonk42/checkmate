@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import name.matco.rookoid.game.Castling;
 import name.matco.rookoid.game.Game;
@@ -32,22 +30,23 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, GameStateListener, MovementListener {
+public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, GameStateListener, MovementListener, Runnable {
 	
 	private static final int BOARD_MARGIN = 10;
 	private static final int PIECE_MARGIN = 5;
 	
+	private static final int SELECTION_ANIMATION_DURATION = 200; // ms
 	private static final int MOVE_DURATION = 200; // ms
 	
 	private Rookoid container;
 	private Game game;
 	
+	private ChessboardDrawer drawer;
+	// private final Object drawLock = new Object();
+	
 	private static Paint blackPainter;
 	private static Paint whitePainter;
-	
 	private static Paint hightlightPainter;
-	private Timer paintTimer;
-	// private final Object drawLock = new Object();
 	
 	private Move animatedMove;
 	private boolean animatedMoveWay;
@@ -127,46 +126,44 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		final Square s = getSquareAt(event.getX(), event.getY());
 		
 		// synchronized (drawLock) {
-		if (s != null) {
-			final Piece p = s.getPiece();
-			
-			// move selected piece
-			if (selectedPiece != null) {
-				if (selectedPiece.getAllowedPositions().contains(s)) {
-					if (p == null || !p.is(selectedPiece.getPlayer())) {
-						final Move m = game.getMove(selectedPiece, s);
-						Log.i(getClass().getName(), "Move is " + m);
-						if (m instanceof Promotion) {
-							final PromotionDialog dialog = new PromotionDialog();
-							dialog.setGame(game).setMove((Promotion) m).setPlayer(selectedPiece.getPlayer());
-							dialog.show(container.getFragmentManager(), "promotion");
-						} else {
-							game.playMove(m);
-						}
+		final Piece p = s.getPiece();
+		
+		// move selected piece
+		if (selectedPiece != null) {
+			// let time to selection animation to f
+			drawer.drawFor(SELECTION_ANIMATION_DURATION);
+			if (selectedPiece.getAllowedPositions().contains(s)) {
+				if (p == null || !p.is(selectedPiece.getPlayer())) {
+					final Move m = game.getMove(selectedPiece, s);
+					Log.i(getClass().getName(), "Move is " + m);
+					if (m instanceof Promotion) {
+						final PromotionDialog dialog = new PromotionDialog();
+						dialog.setGame(game).setMove((Promotion) m).setPlayer(selectedPiece.getPlayer());
+						dialog.show(container.getFragmentManager(), "promotion");
+					} else {
+						game.playMove(m);
 					}
 				}
-				selectedPiece = null;
 			}
-			// select target piece
-			else {
-				if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
-					final List<Square> allowedPositions = p.getAllowedPositions();
-					if (!allowedPositions.isEmpty()) {
-						selectedPiece = p;
-						selectionMillis = System.currentTimeMillis();
-						highlightedSquares.addAll(selectedPiece.getAllowedPositions());
-					}
-					
-					final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
-					Log.i(getClass().getName(), String.format("Selected piece : %s", str));
-				}
-			}
-		}
-		else {
 			selectedPiece = null;
 		}
+		// select target piece
+		else {
+			if (p != null && game.getActivePlayer().equals(p.getPlayer())) {
+				final List<Square> allowedPositions = p.getAllowedPositions();
+				if (!allowedPositions.isEmpty()) {
+					selectedPiece = p;
+					selectionMillis = System.currentTimeMillis();
+					highlightedSquares.addAll(selectedPiece.getAllowedPositions());
+					drawer.startDrawing();
+				}
+				
+				final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
+				Log.i(getClass().getName(), String.format("Selected piece : %s", str));
+			}
+		}
 		// }
-		doDraw();
+		
 		return true;
 	}
 	
@@ -235,7 +232,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
 				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
 				
-				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.sin((now - selectionMillis) / 200.0) + 8.0) : 0;
+				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.sin((now - selectionMillis) / (float) SELECTION_ANIMATION_DURATION) + 8.0) : 0;
 				
 				final Drawable drawable = getPieceImage(p);
 				drawable.setBounds(
@@ -348,18 +345,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	@Override
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
-		
+		drawer = new ChessboardDrawer(this);
 		doDraw();
 		
-		paintTimer = new Timer();
-		paintTimer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				if (selectedPiece != null || animatedMove != null) {
-					doDraw();
-				}
-			}
-		}, 0, 25);
 	}
 	
 	@Override
@@ -370,9 +358,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	@Override
 	public void surfaceDestroyed(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface destroyed");
-		
-		paintTimer.cancel();
-		paintTimer = null;
+		drawer.shutdown();
 	}
 	
 	@Override
@@ -391,7 +377,13 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		animatedMove = m;
 		animatedMoveWay = way;
 		startMovingMillis = System.currentTimeMillis();
+		drawer.drawFor(MOVE_DURATION);
 		Log.i(getClass().getName(), "Move started at " + startMovingMillis);
+	}
+	
+	@Override
+	public void run() {
+		doDraw();
 	}
 	
 }
