@@ -49,7 +49,7 @@ public class ChessboardDrawer {
 		this.drawer.run();
 	}
 	
-	public void startDrawing() {
+	public void drawStart() {
 		// cancel current canceller
 		if (canceller != null) {
 			canceller.cancel(false);
@@ -60,7 +60,7 @@ public class ChessboardDrawer {
 		}
 	}
 	
-	public void stopDrawing() {
+	public void drawStop() {
 		handler.cancel(false);
 		handler = null;
 	}

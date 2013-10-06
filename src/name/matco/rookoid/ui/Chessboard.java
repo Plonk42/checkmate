@@ -155,7 +155,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 					selectedPiece = p;
 					selectionMillis = System.currentTimeMillis();
 					highlightedSquares.addAll(selectedPiece.getAllowedPositions());
-					drawer.startDrawing();
+					drawer.drawStart();
 				}
 				
 				final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
