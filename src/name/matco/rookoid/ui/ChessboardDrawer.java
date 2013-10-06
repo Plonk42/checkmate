@@ -26,7 +26,7 @@ public class ChessboardDrawer {
 		this.scheduler.shutdown();
 	}
 	
-	public void drawFor(final int ms) {
+	public void drawFor(final int milliseconds) {
 		// cancel current canceller
 		if (canceller != null) {
 			canceller.cancel(false);
@@ -42,7 +42,7 @@ public class ChessboardDrawer {
 				handler.cancel(false);
 				handler = null;
 			}
-		}, ms, TimeUnit.MILLISECONDS);
+		}, milliseconds, TimeUnit.MILLISECONDS);
 	}
 	
 	public void drawNow() {

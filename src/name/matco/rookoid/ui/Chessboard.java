@@ -130,7 +130,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		
 		// move selected piece
 		if (selectedPiece != null) {
-			// let time to selection animation to f
+			// let time to selection animation to finish
 			drawer.drawFor(SELECTION_ANIMATION_DURATION);
 			if (selectedPiece.getAllowedPositions().contains(s)) {
 				if (p == null || !p.is(selectedPiece.getPlayer())) {
