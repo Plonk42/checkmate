@@ -29,12 +29,16 @@ public class Move {
 		this.capturedPiece = to.getPiece();
 	}
 	
-	public Movement getMovement() {
-		return movement;
+	public Player getPlayer() {
+		return player;
 	}
 	
 	public Piece getPiece() {
 		return piece;
+	}
+	
+	public Movement getMovement() {
+		return movement;
 	}
 	
 	public Set<Piece> getRelatedPieces() {
