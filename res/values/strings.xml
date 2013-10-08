@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Rookoid</string>
     <string name="restart_text">Restart</string>
+   
+    <string name="algebraic">Algebraic</string>
+    <string name="algebraic_separator">.</string>
 
     <string name="previous_move">Previous</string>
     <string name="next_move">Next</string>
+    <string name="moves">Moves</string>
     
     <string name="pawn">Pawn</string>
     <string name="rook">Rook</string>
