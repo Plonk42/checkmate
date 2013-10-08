@@ -5,8 +5,9 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="18"
         android:targetSdkVersion="18" />
+  
     <instrumentation android:targetPackage="name.matco.rookoid" android:name="android.test.InstrumentationTestRunner"></instrumentation>
 
     <application
@@ -21,7 +22,6 @@
             android:theme="@style/FullscreenTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
