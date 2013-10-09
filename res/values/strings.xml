@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Rookoid</string>
-    <string name="restart_text">Restart</string>
    
     <string name="algebraic">Algebraic</string>
     <string name="algebraic_separator">.</string>
 
+    <string name="moves">Moves</string>
+
+    <!-- menu -->
+    <string name="restart">Restart</string>
+    <string name="restart_sure">Are you sure you want to restart this game? You will lose your progression</string>
+    <string name="restart_confirm">Confirm</string>
+    <string name="restart_cancel">Cancel</string>
     <string name="previous_move">Previous</string>
     <string name="next_move">Next</string>
-    <string name="moves">Moves</string>
     
+    <!-- pieces -->
     <string name="pawn">Pawn</string>
     <string name="rook">Rook</string>
     <string name="knight">Knight</string>
@@ -17,6 +23,7 @@
     <string name="king">King</string>
     <string name="queen">Queen</string>
     
+    <!-- player -->
     <string name="white">White</string>
     <string name="black">Black</string>
     

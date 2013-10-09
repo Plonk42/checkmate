@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/action_previous_move"
+		android:icon="@drawable/icon_previous_move"
+		android:title="@string/previous_move"
+		android:showAsAction="always" />
+	
+	<item android:id="@+id/action_next_move"
+		android:icon="@drawable/icon_next_move"
+		android:title="@string/next_move"
+		android:showAsAction="always" />
+	
+	<item android:id="@+id/action_restart"
+		android:icon="@drawable/icon_restart"
+		android:title="@string/restart"
+		android:showAsAction="ifRoom" />
+</menu>

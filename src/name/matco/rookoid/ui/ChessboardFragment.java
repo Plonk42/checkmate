@@ -13,7 +13,6 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Chronometer;
 
 public class ChessboardFragment extends Fragment implements GameListener {
@@ -22,9 +21,6 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	
 	private Chronometer whiteTimer;
 	private Chronometer blackTimer;
-	
-	private Button previousMoveButton;
-	private Button nextMoveButton;
 	
 	private long playerChangeTime;
 	
@@ -37,10 +33,6 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	@Override
 	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		final Button restartButton = (Button) getActivity().findViewById(R.id.restart_button);
-		previousMoveButton = (Button) getActivity().findViewById(R.id.previous_move_button);
-		nextMoveButton = (Button) getActivity().findViewById(R.id.next_move_button);
 		
 		whiteTimer = (Chronometer) getActivity().findViewById(R.id.white_timer);
 		blackTimer = (Chronometer) getActivity().findViewById(R.id.black_timer);
@@ -61,28 +53,6 @@ public class ChessboardFragment extends Fragment implements GameListener {
 		blackCapturedPieces.setPlayer(Player.BLACK);
 		blackCapturedPieces.setChessboard(chessboard);
 		
-		restartButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(final View v) {
-				game.reset();
-			}
-		});
-		
-		// TODO : unselect currently selected piece when touching buttons
-		previousMoveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(final View v) {
-				game.goPrevious();
-			}
-		});
-		
-		nextMoveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(final View v) {
-				game.goNext();
-			}
-		});
-		
 		game.init();
 	}
 	
@@ -93,8 +63,7 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	
 	@Override
 	public void onMovement(final Move m, final boolean way) {
-		previousMoveButton.setEnabled(!game.isFirstMove());
-		nextMoveButton.setEnabled(!game.isLastMove());
+		// nothing to do
 	}
 	
 	@Override
@@ -109,9 +78,6 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	
 	@Override
 	public void onGameInit() {
-		previousMoveButton.setEnabled(false);
-		nextMoveButton.setEnabled(false);
-		
 		playerChangeTime = SystemClock.elapsedRealtime();
 		whiteTimer.stop();
 		whiteTimer.setBase(playerChangeTime);

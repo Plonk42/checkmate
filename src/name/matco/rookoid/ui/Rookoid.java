@@ -5,19 +5,28 @@ import java.util.List;
 
 import name.matco.rookoid.R;
 import name.matco.rookoid.game.Game;
+import name.matco.rookoid.game.Move;
+import name.matco.rookoid.game.Player;
+import name.matco.rookoid.ui.listeners.GameStateListener;
+import name.matco.rookoid.ui.listeners.MovementListener;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-public class Rookoid extends FragmentActivity {
+public class Rookoid extends FragmentActivity implements MovementListener, GameStateListener {
 	
 	public static final int FRAGMENT_ONE = 0;
 	public static final int FRAGMENT_TWO = 1;
 	public static final int FRAGMENTS = 2;
 	
 	private Game game;
+	
+	private Menu menu;
 	
 	private ChessboardFragment chessboardFragment;
 	private AlgebraicFragment algebraicFragment;
@@ -29,6 +38,7 @@ public class Rookoid extends FragmentActivity {
 		
 		// create game
 		game = new Game();
+		game.addMovementListener(this);
 		
 		chessboardFragment = new ChessboardFragment();
 		chessboardFragment.setArguments(getIntent().getExtras());
@@ -79,5 +89,51 @@ public class Rookoid extends FragmentActivity {
 		
 		chessboardFragment.setGame(game);
 		algebraicFragment.setGame(game);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		this.menu = menu;
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		// TODO : unselect currently selected piece when touching buttons
+		switch (item.getItemId()) {
+			case R.id.action_previous_move:
+				game.goPrevious();
+				return true;
+			case R.id.action_next_move:
+				game.goNext();
+				return true;
+			case R.id.action_restart:
+				final RestartDialog dialog = new RestartDialog();
+				dialog.setGame(game);
+				dialog.show(getFragmentManager(), "restart");
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	@Override
+	public void onMovement(final Move m, final boolean way) {
+		menu.findItem(R.id.action_previous_move).setEnabled(!game.isFirstMove());
+		menu.findItem(R.id.action_next_move).setEnabled(!game.isLastMove());
+	}
+	
+	@Override
+	public void onGameInit() {
+		menu.findItem(R.id.action_previous_move).setEnabled(false);
+		menu.findItem(R.id.action_next_move).setEnabled(false);
+	}
+	
+	@Override
+	public void onPlayerChange(final Player player) {
+		// nothing to do
+		
 	}
 }
