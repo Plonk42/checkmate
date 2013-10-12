@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 public class Rookoid extends FragmentActivity implements MovementListener, GameStateListener {
 	
@@ -44,6 +45,7 @@ public class Rookoid extends FragmentActivity implements MovementListener, GameS
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.rookoid);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
 		// create game
 		game = new Game();
