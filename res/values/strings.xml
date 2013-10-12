@@ -14,6 +14,7 @@
     <string name="restart_cancel">Cancel</string>
     <string name="previous_move">Previous</string>
     <string name="next_move">Next</string>
+    <string name="two_players_mode">2 players modes</string>
     
     <!-- pieces -->
     <string name="pawn">Pawn</string>

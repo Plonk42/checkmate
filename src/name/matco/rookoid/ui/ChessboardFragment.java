@@ -56,9 +56,9 @@ public class ChessboardFragment extends Fragment implements GameListener {
 		game.init();
 	}
 	
-	public void setGame(final Game g) {
-		game = g;
-		game.addGameListener(this);
+	public void setGame(final Game game) {
+		this.game = game;
+		this.game.addGameListener(this);
 	}
 	
 	@Override

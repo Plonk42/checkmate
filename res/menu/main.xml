@@ -13,4 +13,10 @@
 		android:icon="@drawable/icon_restart"
 		android:title="@string/restart"
 		android:showAsAction="ifRoom" />
+	
+	<item android:id="@+id/action_two_players_mode"
+		android:icon="@drawable/icon_two_players_mode"
+		android:title="@string/two_players_mode"
+		android:showAsAction="never"
+		android:checkable="true" />
 </menu>

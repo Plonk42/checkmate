@@ -25,11 +25,20 @@ public class Rookoid extends FragmentActivity implements MovementListener, GameS
 	public static final int FRAGMENTS = 2;
 	
 	private Game game;
+	private boolean twoPlayerMode;
 	
 	private Menu menu;
 	
 	private ChessboardFragment chessboardFragment;
 	private AlgebraicFragment algebraicFragment;
+	
+	public void setTwoPlayerMode(final boolean twoPlayerMode) {
+		this.twoPlayerMode = twoPlayerMode;
+	}
+	
+	public boolean getTwoPlayerMode() {
+		return twoPlayerMode;
+	}
 	
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -114,6 +123,10 @@ public class Rookoid extends FragmentActivity implements MovementListener, GameS
 				dialog.setGame(game);
 				dialog.show(getFragmentManager(), "restart");
 				return true;
+			case R.id.action_two_players_mode:
+				twoPlayerMode = !twoPlayerMode;
+				item.setChecked(twoPlayerMode);
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -134,6 +147,5 @@ public class Rookoid extends FragmentActivity implements MovementListener, GameS
 	@Override
 	public void onPlayerChange(final Player player) {
 		// nothing to do
-		
 	}
 }
