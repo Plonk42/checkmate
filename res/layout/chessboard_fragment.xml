@@ -4,7 +4,7 @@
 	android:layout_height="match_parent"
 	android:background="#424242"
 	android:paddingTop="50dip"
-	tools:context=".Rookoid">
+	tools:context=".Checkmate">
 
 	<TextView
 		android:id="@+id/white_timer_label"
@@ -38,19 +38,19 @@
 		android:layout_below="@+id/white_timer"
 		android:layout_toRightOf="@+id/black_timer_label" />
 
-	<name.matco.rookoid.ui.CapturedPieces
+	<name.matco.checkmate.ui.CapturedPieces
 		android:id="@+id/captured_black_pieces"
 		android:layout_width="match_parent"
 		android:layout_height="25dp"
 		android:layout_below="@+id/next_move_button" />
 
-	<name.matco.rookoid.ui.Chessboard
+	<name.matco.checkmate.ui.Chessboard
 		android:id="@+id/chessboard"
 		android:layout_width="match_parent"
 		android:layout_height="380dp"
 		android:layout_below="@+id/captured_black_pieces" />
 
-	<name.matco.rookoid.ui.CapturedPieces
+	<name.matco.checkmate.ui.CapturedPieces
 		android:id="@+id/captured_white_pieces"
 		android:layout_width="match_parent"
 		android:layout_height="25dp"

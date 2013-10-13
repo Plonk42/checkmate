@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Rookoid</string>
+    <string name="app_name">Checkmate</string>
    
     <string name="algebraic">Algebraic</string>
     <string name="algebraic_separator">.</string>
