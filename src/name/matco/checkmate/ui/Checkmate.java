@@ -128,6 +128,7 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 			case R.id.action_two_players_mode:
 				twoPlayerMode = !twoPlayerMode;
 				item.setChecked(twoPlayerMode);
+				chessboardFragment.redraw();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

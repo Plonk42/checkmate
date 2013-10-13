@@ -240,7 +240,16 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 						(int) (isometricScaleFactor * top - offset),
 						(int) (isometricScaleFactor * right),
 						(int) (isometricScaleFactor * bottom - offset));
+				
+				if (container.getTwoPlayerMode() && p.is(Player.BLACK)) {
+					canvas.save();
+					canvas.rotate(180, left - PIECE_MARGIN, top - PIECE_MARGIN);
+					canvas.translate(-squareSize, -squareSize);
+				}
 				drawable.draw(canvas);
+				if (container.getTwoPlayerMode() && p.is(Player.BLACK)) {
+					canvas.restore();
+				}
 			}
 		}
 		
@@ -304,12 +313,22 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
 				
 				Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy + ", factor " + factor);
+				
 				drawable.setBounds(
 						(int) (isometricScaleFactor * (left + dx - factor)),
 						(int) (isometricScaleFactor * (top + dy - factor)),
 						(int) (isometricScaleFactor * (right + dx + factor)),
 						(int) (isometricScaleFactor * (bottom + dy + factor)));
+				
+				if (container.getTwoPlayerMode() && pa.getPiece().is(Player.BLACK)) {
+					canvas.save();
+					canvas.rotate(180, left - PIECE_MARGIN + dx, top - PIECE_MARGIN + dy);
+					canvas.translate(-squareSize, -squareSize);
+				}
 				drawable.draw(canvas);
+				if (container.getTwoPlayerMode() && pa.getPiece().is(Player.BLACK)) {
+					canvas.restore();
+				}
 			}
 			
 			if (endOfMove) {

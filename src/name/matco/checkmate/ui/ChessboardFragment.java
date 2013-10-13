@@ -1,12 +1,12 @@
 package name.matco.checkmate.ui;
 
+import name.matco.checkmate.R;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.ui.listeners.GameListener;
-import name.matco.checkmate.R;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -21,6 +21,8 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	
 	private Chronometer whiteTimer;
 	private Chronometer blackTimer;
+	
+	private Chessboard chessboard;
 	
 	private long playerChangeTime;
 	
@@ -38,7 +40,7 @@ public class ChessboardFragment extends Fragment implements GameListener {
 		blackTimer = (Chronometer) getActivity().findViewById(R.id.black_timer);
 		
 		// manage chessboard representation
-		final Chessboard chessboard = (Chessboard) getActivity().findViewById(R.id.chessboard);
+		chessboard = (Chessboard) getActivity().findViewById(R.id.chessboard);
 		chessboard.setContainer((Checkmate) getActivity());
 		chessboard.setGame(game);
 		
@@ -98,6 +100,10 @@ public class ChessboardFragment extends Fragment implements GameListener {
 			whiteTimer.stop();
 		}
 		playerChangeTime = time;
+	}
+	
+	public void redraw() {
+		chessboard.run();
 	}
 	
 }
