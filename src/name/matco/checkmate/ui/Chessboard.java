@@ -86,9 +86,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
 		getHolder().addCallback(this);
 		buildDrawableCache();
-		
-		// TODO make chessboard a square
-		
 	}
 	
 	public void setGame(final Game game) {
@@ -366,7 +363,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 		Log.i(getClass().getName(), "Surface created");
 		drawer = new ChessboardDrawer(this);
 		doDraw();
-		
 	}
 	
 	@Override

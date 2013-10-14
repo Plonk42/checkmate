@@ -10,9 +10,11 @@ import name.matco.checkmate.ui.listeners.GameListener;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Chronometer;
 
 public class ChessboardFragment extends Fragment implements GameListener {
@@ -43,6 +45,16 @@ public class ChessboardFragment extends Fragment implements GameListener {
 		chessboard = (Chessboard) getActivity().findViewById(R.id.chessboard);
 		chessboard.setContainer((Checkmate) getActivity());
 		chessboard.setGame(game);
+		
+		getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				Log.i(getClass().getName(), String.format("View size %d, %d", getView().getMeasuredWidth(), getView().getMeasuredHeight()));
+				final int size = Math.min(getView().getMeasuredWidth(), getView().getMeasuredHeight());
+				// getHolder().setFixedSize(boardSize, boardSize);
+				chessboard.getHolder().setFixedSize(size, size);
+			}
+		});
 		
 		// create captured pieces representations
 		final CapturedPieces whiteCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_white_pieces);
