@@ -30,9 +30,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, GameStateListener, MovementListener, Runnable {
+public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, GameStateListener, MovementListener, Runnable {
 	
-	private static final int BOARD_MARGIN = 10;
 	private static final int PIECE_MARGIN = 5;
 	
 	private static final int SELECTION_ANIMATION_DURATION = 200; // ms
@@ -183,17 +182,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 			return;
 		}
 		
-		final int width = (canvas.getWidth() - BOARD_MARGIN * 2);
-		final int height = (canvas.getHeight() - BOARD_MARGIN * 2);
-		boardSize = Math.min(width, height);
-		squareSize = boardSize / GameUtils.CHESSBOARD_SIZE;
-		
-		Log.v(getClass().getName(), String.format("Draw canvas [dimension = %dx%d, size = %d]", width, height, squareSize));
-		
-		x0 = (canvas.getWidth() - boardSize) / 2;
-		y0 = (canvas.getHeight() - boardSize) / 2;
-		
-		canvas.translate(x0, y0);
+		Log.v(getClass().getName(), String.format("Draw canvas [board size = %dx%d, square size = %d]", canvas.getWidth(), canvas.getHeight(), squareSize));
 		
 		final long now = System.currentTimeMillis();
 		
@@ -338,12 +327,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	
 	private void doDraw() {
 		final SurfaceHolder holder = getHolder();
-		final Canvas theCanvas = holder.lockCanvas();
-		if (theCanvas != null) {
+		final Canvas canvas = holder.lockCanvas();
+		if (canvas != null) {
 			try {
-				draw(theCanvas);
+				draw(canvas);
 			} finally {
-				holder.unlockCanvasAndPost(theCanvas);
+				holder.unlockCanvasAndPost(canvas);
 			}
 		}
 	}
@@ -361,18 +350,28 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback, G
 	@Override
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
+		// create new drawer each time surface is created
 		drawer = new ChessboardDrawer(this);
-		doDraw();
 	}
 	
 	@Override
 	public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
-		Log.i(getClass().getName(), "Surface changed");
+		Log.i(getClass().getName(), String.format("Surface size changed to %d, %d", width, height));
+		// board and square sizes must be recalculated when surface size changes
+		boardSize = Math.min(width, height);
+		squareSize = boardSize / GameUtils.CHESSBOARD_SIZE;
+		holder.setFixedSize(boardSize, boardSize);
+	}
+	
+	@Override
+	public void surfaceRedrawNeeded(final SurfaceHolder holder) {
+		doDraw();
 	}
 	
 	@Override
 	public void surfaceDestroyed(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface destroyed");
+		// drawer is shutdown to stop scheduler
 		drawer.shutdown();
 	}
 	
