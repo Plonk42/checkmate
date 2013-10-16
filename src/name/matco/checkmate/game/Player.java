@@ -1,8 +1,8 @@
 package name.matco.checkmate.game;
 
+import name.matco.checkmate.R;
 import name.matco.checkmate.game.Movement.Direction;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
-import name.matco.checkmate.R;
 
 public enum Player {
 	

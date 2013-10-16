@@ -19,9 +19,14 @@ import name.matco.checkmate.ui.listeners.CaptureListener;
 import name.matco.checkmate.ui.listeners.GameListener;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Game {
+public class Game implements Parcelable {
+	
+	// TODO : choose a better key?
+	public static final String PARCELABLE_KEY = Game.class.getName();
 	
 	private final Set<GameStateListener> gameStateListeners = new HashSet<GameStateListener>();
 	private final Set<MovementListener> movementListeners = new HashSet<MovementListener>();
@@ -40,6 +45,20 @@ public class Game {
 	private Piece blackKing;
 	
 	public Game() {
+		// no-arg constructor
+	}
+	
+	public Game(final Parcel in) {
+		in.readList(this.pieces, null);
+		in.readList(this.capturedPieces, null);
+		this.activePlayer = (Player) in.readSerializable();
+		
+		// for (final Piece p :this.pieces) {
+		// getSquareAt(p.getSquare().getCoordinate());
+		// this.pieces.add(p);
+		// }
+		
+		// TODO : whiteKing && BlackKing
 	}
 	
 	public void init() {
@@ -55,6 +74,10 @@ public class Game {
 			}
 		}
 		
+		initPieces();
+	}
+	
+	private void initPieces() {
 		// white player
 		whiteKing = new King(Player.WHITE);
 		addPiece(0, new Rook(Player.WHITE));
@@ -405,5 +428,33 @@ public class Game {
 	public void removeCaptureListener(final CaptureListener cl) {
 		captureListeners.remove(cl);
 	}
+	
+	// parcelable implementation
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	
+	@Override
+	public void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeList(pieces);
+		dest.writeList(capturedPieces);
+		dest.writeSerializable(activePlayer);
+		// dest.writeParcelableArray(moves.toArray(new Move[moves.size()]), flags);
+		// dest.writeInt(progression);
+	}
+	
+	public static final Parcelable.Creator<Game> CREATOR = new Parcelable.Creator<Game>() {
+		@Override
+		public Game createFromParcel(final Parcel in) {
+			return new Game(in);
+		}
+		
+		@Override
+		public Game[] newArray(final int size) {
+			return new Game[size];
+		}
+	};
 	
 }

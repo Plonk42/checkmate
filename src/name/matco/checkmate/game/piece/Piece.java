@@ -7,8 +7,11 @@ import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
-public abstract class Piece {
+public abstract class Piece implements Parcelable {
 	
 	public static boolean is(final Piece piece, final Player player) {
 		return piece.getPlayer().equals(player);
@@ -22,6 +25,25 @@ public abstract class Piece {
 		return is(piece, player) && is(piece, type);
 	}
 	
+	public static final Parcelable.Creator<Piece> CREATOR = new Parcelable.Creator<Piece>() {
+		@Override
+		@SuppressWarnings("unchecked")
+		public Piece createFromParcel(final Parcel in) {
+			final Class<? extends Piece> _class = (Class<? extends Piece>) in.readSerializable();
+			try {
+				return _class.getConstructor(Parcel.class).newInstance(in);
+			} catch (final Exception e) {
+				Log.e(getClass().getName(), "Unable to load Piece from Parcel", e);
+				return null;
+			}
+		}
+		
+		@Override
+		public Piece[] newArray(final int size) {
+			return new Piece[size];
+		}
+	};
+	
 	protected final Player player;
 	
 	protected Square square;
@@ -30,6 +52,11 @@ public abstract class Piece {
 	
 	public Piece(final Player player) {
 		this.player = player;
+	}
+	
+	public Piece(final Parcel parcel) {
+		this.player = (Player) parcel.readSerializable();
+		this.hasMoved = (parcel.readByte() == 1);
 	}
 	
 	public abstract PieceType getType();
@@ -122,6 +149,17 @@ public abstract class Piece {
 	@Override
 	public String toString() {
 		return getDescription();
+	}
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	
+	@Override
+	public void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeSerializable(player);
+		dest.writeByte((byte) (hasMoved ? 1 : 0));
 	}
 	
 }

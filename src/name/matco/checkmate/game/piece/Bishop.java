@@ -20,4 +20,5 @@ public class Bishop extends Piece {
 	public List<List<Movement>> getAllowedMovements() {
 		return Movement.DIAGONAL_MOVEMENTS;
 	}
+	
 }

@@ -47,8 +47,11 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		setContentView(R.layout.checkmate);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
-		// create game
-		game = new Game();
+		// restore or create game
+		game = (Game) savedInstanceState.getParcelable(Game.PARCELABLE_KEY);
+		if (game == null) { // no game stored yet
+			game = new Game();
+		}
 		game.addMovementListener(this);
 		
 		chessboardFragment = new ChessboardFragment();
@@ -95,9 +98,14 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 	}
 	
 	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putParcelable(Game.PARCELABLE_KEY, game);
+	}
+	
+	@Override
 	protected void onStart() {
 		super.onStart();
-		
 		chessboardFragment.setGame(game);
 		algebraicFragment.setGame(game);
 	}
