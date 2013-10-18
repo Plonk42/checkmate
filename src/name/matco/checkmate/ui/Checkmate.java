@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,12 +44,17 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 	
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
+		Log.i(getClass().getName(), "onCreate()");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.checkmate);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
 		// restore or create game
-		game = (Game) savedInstanceState.getParcelable(Game.PARCELABLE_KEY);
+		Log.i(getClass().getName(), String.format("Looking for a Game in Bundle %s", savedInstanceState));
+		if (savedInstanceState != null) {
+			game = (Game) savedInstanceState.getParcelable(Game.PARCELABLE_KEY);
+			Log.i(getClass().getName(), String.format("Game %s found into Bundle %s", game, savedInstanceState));
+		}
 		if (game == null) { // no game stored yet
 			game = new Game();
 		}
@@ -98,16 +104,33 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 	}
 	
 	@Override
+	protected void onStart() {
+		Log.i(getClass().getName(), "onStart()");
+		super.onStart();
+		chessboardFragment.setGame(game);
+		algebraicFragment.setGame(game);
+	}
+	
+	@Override
 	protected void onSaveInstanceState(final Bundle outState) {
+		Log.i(getClass().getName(), "onSaveInstanceState()");
 		super.onSaveInstanceState(outState);
+		Log.i(getClass().getName(), String.format("Writing Game %s into Bundle %s", game, outState));
 		outState.putParcelable(Game.PARCELABLE_KEY, game);
 	}
 	
 	@Override
-	protected void onStart() {
-		super.onStart();
-		chessboardFragment.setGame(game);
-		algebraicFragment.setGame(game);
+	protected void onRestoreInstanceState(final Bundle savedInstanceState) {
+		Log.i(getClass().getName(), "onRestoreInstanceState()");
+		super.onRestoreInstanceState(savedInstanceState);
+		// restore or create game
+		// Log.i(getClass().getName(), String.format("Looking for a Game in Bundle %s", savedInstanceState));
+		// game = (Game) savedInstanceState.getParcelable(Game.PARCELABLE_KEY);
+		// Log.i(getClass().getName(), String.format("Game %s found into Bundle %s", game, savedInstanceState));
+		//
+		// game.addMovementListener(this);
+		// chessboardFragment.setGame(game);
+		// algebraicFragment.setGame(game);
 	}
 	
 	@Override

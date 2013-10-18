@@ -44,11 +44,13 @@ public class Game implements Parcelable {
 	private Piece whiteKing;
 	private Piece blackKing;
 	
+	// no-arg constructor
 	public Game() {
-		// no-arg constructor
+		Log.i(getClass().getName(), "Instantiating new Game()");
 	}
 	
 	public Game(final Parcel in) {
+		Log.i(getClass().getName(), "Restoring Game() from Parcel");
 		in.readList(this.pieces, null);
 		in.readList(this.capturedPieces, null);
 		this.activePlayer = (Player) in.readSerializable();
