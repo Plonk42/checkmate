@@ -33,8 +33,8 @@ public class ChessboardFragment extends Fragment implements GameStateListener {
 	}
 	
 	@Override
-	public void onActivityCreated(final Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	public void onStart() {
+		super.onStart();
 		
 		whiteTimer = (Chronometer) getActivity().findViewById(R.id.white_timer);
 		blackTimer = (Chronometer) getActivity().findViewById(R.id.black_timer);
