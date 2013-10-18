@@ -2,6 +2,7 @@ package name.matco.checkmate.game;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,9 @@ public class Game {
 	private final Set<CheckListener> checkListeners = new HashSet<CheckListener>();
 	private final Set<CaptureListener> captureListeners = new HashSet<CaptureListener>();
 	
+	private Date _startDate;
+	private Date _endDate;
+	
 	private final Square[] board = new Square[64];
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
 	private final List<Piece> capturedPieces = Collections.synchronizedList(new ArrayList<Piece>());
@@ -40,9 +44,10 @@ public class Game {
 	private Piece blackKing;
 	
 	public Game() {
+		init();
 	}
 	
-	public void init() {
+	private void init() {
 		moves.clear();
 		capturedPieces.clear();
 		progression = 0;
@@ -85,11 +90,21 @@ public class Game {
 			addPiece(63 - i, new Pawn(Player.BLACK));
 		}
 		
+		_startDate = new Date();
+		
 		for (final GameStateListener gl : gameStateListeners) {
 			gl.onGameInit();
 		}
 		
 		setPlayer(Player.WHITE);
+	}
+	
+	public Date getStartDate() {
+		return _startDate;
+	}
+	
+	public Date getEndDate() {
+		return _endDate;
 	}
 	
 	public int getProgression() {

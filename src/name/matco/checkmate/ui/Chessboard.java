@@ -89,8 +89,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	
 	public void setGame(final Game game) {
 		this.game = game;
-		game.addMovementListener(this);
-		game.addGameStateListeners(this);
+		this.game.addMovementListener(this);
+		this.game.addGameStateListeners(this);
 	}
 	
 	public void setContainer(final Checkmate container) {
@@ -399,5 +399,4 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	public void run() {
 		doDraw();
 	}
-	
 }

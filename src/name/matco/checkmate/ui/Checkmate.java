@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.checkmate.R;
+import name.matco.checkmate.game.CheckListener;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
+import name.matco.checkmate.game.Square;
+import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
 import android.app.Fragment;
@@ -14,12 +17,14 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-public class Checkmate extends FragmentActivity implements MovementListener, GameStateListener {
+public class Checkmate extends FragmentActivity implements MovementListener, GameStateListener, CheckListener {
 	
 	public static final int FRAGMENT_ONE = 0;
 	public static final int FRAGMENT_TWO = 1;
@@ -53,11 +58,13 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		
 		chessboardFragment = new ChessboardFragment();
 		chessboardFragment.setArguments(getIntent().getExtras());
+		chessboardFragment.setGame(game);
 		
 		// getFragmentManager().beginTransaction().add(R.id.checkmate, chessboardFragment).commit();
 		
 		algebraicFragment = new AlgebraicFragment();
 		algebraicFragment.setArguments(getIntent().getExtras());
+		algebraicFragment.setGame(game);
 		
 		// getFragmentManager().beginTransaction().add(R.id.checkmate, chessboardFragment).commit();
 		
@@ -92,14 +99,26 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		};
 		final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 		viewPager.setAdapter(fragmentPagerAdapter);
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		chessboardFragment.setGame(game);
-		algebraicFragment.setGame(game);
+		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(final int arg0) {
+				Log.i(getClass().getName(), "Page selected " + arg0);
+				// chessboardFragment.redraw();
+			}
+			
+			@Override
+			public void onPageScrolled(final int arg0, final float arg1, final int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(final int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 	
 	@Override
@@ -150,5 +169,15 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 	@Override
 	public void onPlayerChange(final Player player) {
 		// nothing to do
+	}
+	
+	@Override
+	public void onCheck(final Piece p, final Square from, final Square to) {
+		UIUtils.playCheckSound();
+	}
+	
+	@Override
+	public void onCheckmate(final Piece p, final Square from, final Square to) {
+		UIUtils.playCheckmateSound();
 	}
 }

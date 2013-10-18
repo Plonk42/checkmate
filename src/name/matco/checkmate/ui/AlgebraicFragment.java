@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import name.matco.checkmate.R;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
-import name.matco.checkmate.R;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,12 +47,16 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 		algebraic.setDividerHeight(0);
 		adapter = new SimpleAdapter(getActivity(), moves, R.layout.move, new String[] { MOVE_INDEX, MOVE_WHITE, MOVE_BLACK }, new int[] { R.id.move_index, R.id.move_white, R.id.move_black });
 		algebraic.setAdapter(adapter);
-	}
-	
-	public void setGame(final Game g) {
-		game = g;
+		
+		refresh();
+		
 		game.addMovementListener(this);
 		game.addGameStateListeners(this);
+	}
+	
+	public void setGame(final Game game) {
+		this.game = game;
+		
 	}
 	
 	public void refresh() {
@@ -95,10 +99,8 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 	
 	@Override
 	public void onGameInit() {
-		if (algebraic != null) {
-			moves.clear();
-			adapter.notifyDataSetChanged();
-		}
+		moves.clear();
+		adapter.notifyDataSetChanged();
 	}
 	
 	@Override

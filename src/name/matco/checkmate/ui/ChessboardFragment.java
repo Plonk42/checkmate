@@ -2,11 +2,8 @@ package name.matco.checkmate.ui;
 
 import name.matco.checkmate.R;
 import name.matco.checkmate.game.Game;
-import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
-import name.matco.checkmate.game.Square;
-import name.matco.checkmate.game.piece.Piece;
-import name.matco.checkmate.ui.listeners.GameListener;
+import name.matco.checkmate.ui.listeners.GameStateListener;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -15,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
 
-public class ChessboardFragment extends Fragment implements GameListener {
+public class ChessboardFragment extends Fragment implements GameStateListener {
 	
 	private Game game;
 	
@@ -23,6 +20,9 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	private Chronometer blackTimer;
 	
 	private Chessboard chessboard;
+	
+	private CapturedPieces whiteCapturedPieces;
+	private CapturedPieces blackCapturedPieces;
 	
 	private long playerChangeTime;
 	
@@ -55,41 +55,33 @@ public class ChessboardFragment extends Fragment implements GameListener {
 		});*/
 		
 		// create captured pieces representations
-		final CapturedPieces whiteCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_white_pieces);
+		whiteCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_white_pieces);
 		whiteCapturedPieces.setGame(game);
 		whiteCapturedPieces.setPlayer(Player.WHITE);
 		whiteCapturedPieces.setChessboard(chessboard);
 		
-		final CapturedPieces blackCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_black_pieces);
-		blackCapturedPieces.setGame(game);
+		blackCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_black_pieces);
 		blackCapturedPieces.setPlayer(Player.BLACK);
 		blackCapturedPieces.setChessboard(chessboard);
+		blackCapturedPieces.setGame(game);
 		
-		game.init();
+		// draw game in its current state
+		draw();
+		
+		// start to listen game
+		game.addGameStateListeners(this);
 	}
 	
 	public void setGame(final Game game) {
 		this.game = game;
-		this.game.addGameListener(this);
-	}
-	
-	@Override
-	public void onMovement(final Move m, final boolean way) {
-		// nothing to do
-	}
-	
-	@Override
-	public void onCheck(final Piece p, final Square from, final Square to) {
-		UIUtils.playCheckSound();
-	}
-	
-	@Override
-	public void onCheckmate(final Piece p, final Square from, final Square to) {
-		UIUtils.playCheckmateSound();
 	}
 	
 	@Override
 	public void onGameInit() {
+		draw();
+	}
+	
+	private void draw() {
 		playerChangeTime = SystemClock.elapsedRealtime();
 		whiteTimer.stop();
 		whiteTimer.setBase(playerChangeTime);
@@ -115,5 +107,4 @@ public class ChessboardFragment extends Fragment implements GameListener {
 	public void redraw() {
 		chessboard.run();
 	}
-	
 }

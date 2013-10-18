@@ -19,7 +19,6 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testGame() {
 		final Game game = new Game();
-		game.init();
 
 		assertEquals(game.getBoard().length, 64);
 		
@@ -39,7 +38,6 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testInitialGame() {
 		final Game game = new Game();
-		game.init();
 		
 		// check some piece positions
 		assertTrue(game.getBoard()[0].getPiece().is(PieceType.ROOK, Player.WHITE));
@@ -69,7 +67,6 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testInitialAllowedPositions() {
 		final Game game = new Game();
-		game.init();
 		
 		final Piece whiteQueen = game.getBoard()[3].getPiece();
 		final Piece whiteKing = game.getBoard()[4].getPiece();
@@ -119,7 +116,6 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testMove() {
 		final Game game = new Game();
-		game.init();
 
 		final Piece whiteQueenPawn = game.getBoard()[11].getPiece();
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
