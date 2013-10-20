@@ -26,7 +26,7 @@ public class ChessboardDrawer {
 		this.scheduler.shutdown();
 	}
 	
-	public void drawFor(final int milliseconds) {
+	public void drawStart() {
 		// cancel current canceller
 		if (canceller != null) {
 			canceller.cancel(false);
@@ -35,6 +35,11 @@ public class ChessboardDrawer {
 		if (handler == null) {
 			handler = scheduler.scheduleAtFixedRate(drawer, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
 		}
+	}
+	
+	public void drawFor(final int milliseconds) {
+		drawStart();
+		
 		// create a new canceller
 		canceller = scheduler.schedule(new Runnable() {
 			@Override
@@ -49,20 +54,11 @@ public class ChessboardDrawer {
 		this.drawer.run();
 	}
 	
-	public void drawStart() {
-		// cancel current canceller
-		if (canceller != null) {
-			canceller.cancel(false);
-		}
-		// create handler if it does not exists
-		if (handler == null) {
-			handler = scheduler.scheduleAtFixedRate(drawer, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
-		}
-	}
-	
 	public void drawStop() {
-		handler.cancel(false);
-		handler = null;
+		if (handler != null) {
+			handler.cancel(false);
+			handler = null;
+		}
 	}
 	
 }

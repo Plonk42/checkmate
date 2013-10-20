@@ -41,7 +41,7 @@ public class Game implements Parcelable {
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
 	private final List<Piece> capturedPieces = Collections.synchronizedList(new ArrayList<Piece>());
 	private List<Move> moves = new ArrayList<Move>();
-	private int progression;
+	private int progression = 0;
 	
 	private Player activePlayer;
 	
@@ -59,6 +59,12 @@ public class Game implements Parcelable {
 		in.readList(this.pieces, null);
 		in.readList(this.capturedPieces, null);
 		this.activePlayer = (Player) in.readSerializable();
+		this.progression = in.readInt();
+		// TODO : parcel moves;
+		// in.readList(this.moves, null);
+		for (int i = 0; i < progression; i++) {
+			moves.add(new Move(this, null, null, null));
+		}
 		
 		// for (final Piece p :this.pieces) {
 		// getSquareAt(p.getSquare().getCoordinate());
@@ -458,8 +464,9 @@ public class Game implements Parcelable {
 		dest.writeList(pieces);
 		dest.writeList(capturedPieces);
 		dest.writeSerializable(activePlayer);
-		// dest.writeParcelableArray(moves.toArray(new Move[moves.size()]), flags);
-		// dest.writeInt(progression);
+		dest.writeInt(progression);
+		// TODO : parcel moves
+		// dest.writeList(moves);
 	}
 	
 	public static final Parcelable.Creator<Game> CREATOR = new Parcelable.Creator<Game>() {

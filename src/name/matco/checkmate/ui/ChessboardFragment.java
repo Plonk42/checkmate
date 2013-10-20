@@ -7,14 +7,13 @@ import name.matco.checkmate.ui.listeners.GameStateListener;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
 
 public class ChessboardFragment extends Fragment implements GameStateListener {
-	
-	private Game game;
 	
 	private Chronometer whiteTimer;
 	private Chronometer blackTimer;
@@ -28,13 +27,17 @@ public class ChessboardFragment extends Fragment implements GameStateListener {
 	
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+		Log.i(getClass().getName(), "onCreateView()");
 		super.onCreate(savedInstanceState);
 		return inflater.inflate(R.layout.chessboard_fragment, container, false);
 	}
 	
 	@Override
-	public void onStart() {
-		super.onStart();
+	public void onActivityCreated(final Bundle savedInstanceState) {
+		Log.i(getClass().getName(), "onActivityCreated()");
+		super.onActivityCreated(savedInstanceState);
+		
+		final Game game = getArguments().getParcelable(Game.PARCELABLE_KEY);
 		
 		whiteTimer = (Chronometer) getActivity().findViewById(R.id.white_timer);
 		blackTimer = (Chronometer) getActivity().findViewById(R.id.black_timer);
@@ -56,24 +59,19 @@ public class ChessboardFragment extends Fragment implements GameStateListener {
 		
 		// create captured pieces representations
 		whiteCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_white_pieces);
-		whiteCapturedPieces.setGame(game);
 		whiteCapturedPieces.setPlayer(Player.WHITE);
 		whiteCapturedPieces.setChessboard(chessboard);
+		whiteCapturedPieces.setGame(game);
 		
 		blackCapturedPieces = (CapturedPieces) getActivity().findViewById(R.id.captured_black_pieces);
 		blackCapturedPieces.setPlayer(Player.BLACK);
 		blackCapturedPieces.setChessboard(chessboard);
 		blackCapturedPieces.setGame(game);
 		
+		game.addGameStateListeners(this);
+		
 		// draw game in its current state
 		draw();
-		
-		// start to listen game
-		game.addGameStateListeners(this);
-	}
-	
-	public void setGame(final Game game) {
-		this.game = game;
 	}
 	
 	@Override

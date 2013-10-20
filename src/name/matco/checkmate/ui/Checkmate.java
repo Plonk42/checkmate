@@ -53,26 +53,29 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		setContentView(R.layout.checkmate);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
+		Bundle fragmentParams = null;
+		
 		// restore or create game
-		Log.i(getClass().getName(), String.format("Looking for a Game in Bundle %s", savedInstanceState));
+		Log.i(getClass().getName(), "Looking for a Game in bundle");
 		if (savedInstanceState != null) {
 			game = (Game) savedInstanceState.getParcelable(Game.PARCELABLE_KEY);
-			Log.i(getClass().getName(), String.format("Game %s found into Bundle %s", game, savedInstanceState));
+			Log.i(getClass().getName(), String.format("Game %s found into bundle", game));
+			fragmentParams = savedInstanceState;
 		}
 		if (game == null) { // no game stored yet
 			game = new Game();
+			fragmentParams = new Bundle();
+			fragmentParams.putParcelable(Game.PARCELABLE_KEY, game);
 		}
 		game.addMovementListener(this);
 		
 		chessboardFragment = new ChessboardFragment();
-		chessboardFragment.setArguments(getIntent().getExtras());
-		chessboardFragment.setGame(game);
+		chessboardFragment.setArguments(fragmentParams);
 		
 		// getFragmentManager().beginTransaction().add(R.id.checkmate, chessboardFragment).commit();
 		
 		algebraicFragment = new AlgebraicFragment();
-		algebraicFragment.setArguments(getIntent().getExtras());
-		algebraicFragment.setGame(game);
+		algebraicFragment.setArguments(fragmentParams);
 		
 		// getFragmentManager().beginTransaction().add(R.id.checkmate, chessboardFragment).commit();
 		
@@ -139,7 +142,7 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 	protected void onSaveInstanceState(final Bundle outState) {
 		Log.i(getClass().getName(), "onSaveInstanceState()");
 		super.onSaveInstanceState(outState);
-		Log.i(getClass().getName(), String.format("Writing Game %s into Bundle %s", game, outState));
+		Log.i(getClass().getName(), String.format("Writing Game %s into bundle", game));
 		outState.putParcelable(Game.PARCELABLE_KEY, game);
 	}
 	
@@ -148,9 +151,9 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		Log.i(getClass().getName(), "onRestoreInstanceState()");
 		super.onRestoreInstanceState(savedInstanceState);
 		// restore or create game
-		// Log.i(getClass().getName(), String.format("Looking for a Game in Bundle %s", savedInstanceState));
+		// Log.i(getClass().getName(), "Looking for a Game in bundle");
 		// game = (Game) savedInstanceState.getParcelable(Game.PARCELABLE_KEY);
-		// Log.i(getClass().getName(), String.format("Game %s found into Bundle %s", game, savedInstanceState));
+		// Log.i(getClass().getName(), String.format("Game %s found into bundle", game));
 		//
 		// game.addMovementListener(this);
 		// chessboardFragment.setGame(game);

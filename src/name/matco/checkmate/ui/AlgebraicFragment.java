@@ -13,6 +13,7 @@ import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,22 +42,23 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		refresh();
+		game = getArguments().getParcelable(Game.PARCELABLE_KEY);
+		Log.i(getClass().getName(), String.format("Game restored from arguments : %s", game));
+		Log.i(getClass().getName(), String.format("Game move size : %s", game.getMoves().size()));
 		
 		algebraic = (ListView) getActivity().findViewById(R.id.algebraic);
 		algebraic.setDividerHeight(0);
 		adapter = new SimpleAdapter(getActivity(), moves, R.layout.move, new String[] { MOVE_INDEX, MOVE_WHITE, MOVE_BLACK }, new int[] { R.id.move_index, R.id.move_white, R.id.move_black });
 		algebraic.setAdapter(adapter);
 		
-		refresh();
-		
 		game.addMovementListener(this);
 		game.addGameStateListeners(this);
 	}
-	
-	public void setGame(final Game game) {
-		this.game = game;
 		
+	@Override
+	public void onStart() {
+		super.onStart();
+		refresh();
 	}
 	
 	public void refresh() {
@@ -70,7 +72,9 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 				final Move blackMove = game.getMoves().get(i + 1);
 				move.put(MOVE_BLACK, blackMove.getAlgebraic());
 			}
+			moves.add(move);
 		}
+		adapter.notifyDataSetChanged();
 	}
 	
 	@Override
@@ -99,8 +103,7 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 	
 	@Override
 	public void onGameInit() {
-		moves.clear();
-		adapter.notifyDataSetChanged();
+		refresh();
 	}
 	
 	@Override
