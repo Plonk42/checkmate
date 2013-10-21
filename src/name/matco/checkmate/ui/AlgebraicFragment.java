@@ -54,7 +54,7 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 		game.addMovementListener(this);
 		game.addGameStateListeners(this);
 	}
-		
+	
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -63,16 +63,18 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 	
 	public void refresh() {
 		moves.clear();
-		for (int i = 0; i < game.getMoves().size(); i += 2) {
-			final TreeMap<String, String> move = new TreeMap<String, String>();
-			move.put(MOVE_INDEX, Integer.toString(i / 2 + 1));
-			final Move whiteMove = game.getMoves().get(i);
-			move.put(MOVE_WHITE, whiteMove.getAlgebraic());
-			if (game.getMoves().size() < i + 1) {
-				final Move blackMove = game.getMoves().get(i + 1);
-				move.put(MOVE_BLACK, blackMove.getAlgebraic());
+		
+		// white -> black -> white -> black ...
+		TreeMap<String, String> move = null;
+		for (final Move m : game.getMoves()) {
+			if (Player.WHITE.equals(m.getPlayer())) {
+				move = new TreeMap<String, String>();
+				move.put(MOVE_INDEX, Integer.toString(moves.size() + 1));
+				move.put(MOVE_WHITE, m.getAlgebraic());
+				moves.add(move);
+			} else {
+				move.put(MOVE_BLACK, m.getAlgebraic());
 			}
-			moves.add(move);
 		}
 		adapter.notifyDataSetChanged();
 	}
@@ -82,7 +84,7 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 		if (way) {
 			if (Player.WHITE.equals(m.getPlayer())) {
 				final Map<String, String> move = new TreeMap<String, String>();
-				move.put(MOVE_INDEX, Integer.toString(moves.size()));
+				move.put(MOVE_INDEX, Integer.toString(moves.size() + 1));
 				move.put(MOVE_WHITE, m.getAlgebraic());
 				moves.add(move);
 			}
