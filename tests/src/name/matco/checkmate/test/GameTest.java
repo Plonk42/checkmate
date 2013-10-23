@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.matco.checkmate.game.CheckListener;
+import name.matco.checkmate.game.Coordinate;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
+import name.matco.checkmate.game.exception.InvalidAlgebraic;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
@@ -17,9 +20,34 @@ import android.test.InstrumentationTestCase;
 
 public class GameTest extends InstrumentationTestCase {
 	
+	public void testCoordinate() {
+		try {
+			assertEquals(0, Coordinate.fromAlgebraic("a1").x);
+			assertEquals(0, Coordinate.fromAlgebraic("a1").y);
+			
+			assertEquals(7, Coordinate.fromAlgebraic("h1").x);
+			assertEquals(0, Coordinate.fromAlgebraic("h1").y);
+			
+			assertEquals(0, Coordinate.fromAlgebraic("a8").x);
+			assertEquals(7, Coordinate.fromAlgebraic("a8").y);
+			
+			assertEquals(7, Coordinate.fromAlgebraic("h8").x);
+			assertEquals(7, Coordinate.fromAlgebraic("h8").y);
+			
+			assertEquals(3, Coordinate.fromAlgebraic("d1").x);
+			assertEquals(0, Coordinate.fromAlgebraic("d1").y);
+			
+			assertEquals(5, Coordinate.fromAlgebraic("f6").x);
+			assertEquals(5, Coordinate.fromAlgebraic("f6").y);
+			
+		} catch (final InvalidAlgebraic e) {
+			fail(e.getLocalizedMessage());
+		}
+	}
+	
 	public void testGame() {
 		final Game game = new Game();
-
+		
 		assertEquals(game.getBoard().length, 64);
 		
 		try {
@@ -27,10 +55,12 @@ public class GameTest extends InstrumentationTestCase {
 			assertNotNull(game.getBoard()[0]);
 			assertNotNull(game.getBoard()[3]);
 			assertNotNull(game.getBoard()[63]);
-			// check some piece positions
+			
+			// check square retrieving
 			assertEquals(game.getBoard()[0], game.getSquareAt(0, 0));
 			assertEquals(game.getBoard()[3], game.getSquareAt(3, 0));
 			assertEquals(game.getBoard()[63], game.getSquareAt(7, 7));
+			
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -39,7 +69,7 @@ public class GameTest extends InstrumentationTestCase {
 	public void testInitialGame() {
 		final Game game = new Game();
 		
-		// check some piece positions
+		// check piece positions
 		assertTrue(game.getBoard()[0].getPiece().is(PieceType.ROOK, Player.WHITE));
 		assertTrue(game.getBoard()[1].getPiece().is(PieceType.KNIGHT, Player.WHITE));
 		assertTrue(game.getBoard()[2].getPiece().is(PieceType.BISHOP, Player.WHITE));
@@ -116,7 +146,7 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testMove() {
 		final Game game = new Game();
-
+		
 		final Piece whiteQueenPawn = game.getBoard()[11].getPiece();
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
 		
@@ -134,5 +164,47 @@ public class GameTest extends InstrumentationTestCase {
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
+	}
+	
+	public void testScholarsMate() {
+		final Game game = new Game();
+		
+		final List<Piece> checks = new ArrayList<Piece>();
+		final List<Piece> checkMates = new ArrayList<Piece>();
+		
+		game.addCheckListener(new CheckListener() {
+			
+			@Override
+			public void onCheckmate(Piece p, Square from, Square to) {
+				checkMates.add(p);
+			}
+			
+			@Override
+			public void onCheck(Piece p, Square from, Square to) {
+				checks.add(p);
+			}
+		});
+		
+		try {
+			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "e4"));
+			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "e5"));
+			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Fc4"));
+			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Fc5"));
+			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Dh5"));
+			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Cc6"));
+			
+			assertEquals(0, checks.size());
+			assertEquals(0, checkMates.size());
+			
+			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Dxf7"));
+			
+			assertEquals(0, checks.size());
+			assertEquals(1, checkMates.size());
+			
+		} catch (final InvalidAlgebraic e) {
+			e.printStackTrace();
+			fail(e.getLocalizedMessage());
+		}
+		
 	}
 }
