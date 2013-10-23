@@ -174,7 +174,7 @@ public class Game implements Parcelable {
 		return board;
 	}
 	
-	public void addPiece(final int index, final Piece piece) {
+	private void addPiece(final int index, final Piece piece) {
 		final Square place = board[index];
 		place.setPiece(piece);
 		piece.setSquare(place);
@@ -182,6 +182,16 @@ public class Game implements Parcelable {
 	}
 	
 	public List<Piece> getPieces() {
+		return pieces;
+	}
+	
+	public List<Piece> getPieces(final Player player, final PieceType type) {
+		final List<Piece> pieces = new ArrayList<Piece>();
+		for (final Piece piece : this.pieces) {
+			if (piece.is(type, player)) {
+				pieces.add(piece);
+			}
+		}
 		return pieces;
 	}
 	

@@ -1,7 +1,7 @@
 package name.matco.checkmate.game.piece;
 
-import name.matco.checkmate.game.Player;
 import name.matco.checkmate.R;
+import name.matco.checkmate.game.Player;
 
 public enum PieceType {
 	
@@ -169,4 +169,13 @@ public enum PieceType {
 	abstract public int getImageResource(Player player);
 	
 	abstract public int getNameResource();
+	
+	public static PieceType fromAlgebraic(final String algebraic) {
+		for (final PieceType pt : PieceType.values()) {
+			if (pt.equals(algebraic)) {
+				return pt;
+			}
+		}
+		return PieceType.PAWN;
+	}
 }

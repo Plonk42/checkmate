@@ -1,8 +1,10 @@
 package name.matco.checkmate.game;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import name.matco.checkmate.game.exception.InvalidAlgebraic;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
 
@@ -17,6 +19,31 @@ public class Move {
 	protected Square from;
 	protected final Square to;
 	protected final Movement movement;
+	
+	public static Move fromAlgebraic(final Game game, final Player player, final String a) throws InvalidAlgebraic {
+		// TODO manage castling, en passant and promotion
+		final String algebraic = a.replaceAll("x", "");
+		int index = 0;
+		final String algebraicPiece = algebraic.length() == 3 ? Character.toString(algebraic.charAt(index++)) : null;
+		final Coordinate coordinate = Coordinate.fromAlgebraic(algebraic.subSequence(index, index + 2));
+		// retrieve piece
+		final PieceType type = PieceType.fromAlgebraic(algebraicPiece);
+		Piece piece = null;
+		final List<Piece> potentialPieces = game.getPieces(player, type);
+		if (potentialPieces.size() == 1) {
+			piece = potentialPieces.get(0);
+		}
+		else {
+			for (final Piece p : potentialPieces) {
+				if (p.getSquare().getCoordinate().x == coordinate.x) {
+					piece = p;
+				}
+			}
+		}
+		// retrieve destination square
+		final Square to = game.getSquareAt(coordinate);
+		return new Move(game, player, piece, to);
+	}
 	
 	public Move(final Game game, final Player player, final Piece piece, final Square to) {
 		this.game = game;
