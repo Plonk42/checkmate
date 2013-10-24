@@ -78,21 +78,22 @@ public abstract class Piece implements Parcelable {
 	}
 	
 	public List<Square> getAllowedPositions() {
+		Log.i(getClass().getName(), String.format("Check allowed positions for piece %s", this));
 		final ArrayList<Square> allowed = new ArrayList<Square>();
 		for (final List<Movement> directions : getAllowedMovements()) {
 			for (final Movement m : directions) {
 				try {
-					final Square s = square.apply(m);
-					final Piece p = s.getPiece();
+					final Square candidate = square.apply(m);
+					final Piece p = candidate.getPiece();
 					// square is empty
 					if (p == null) {
-						checkCheckAndAdd(s, allowed);
+						checkCheckAndAdd(candidate, allowed);
 					}
 					// there is a piece on square
 					else {
 						// if piece is capturable, movement is possible only if it does not set player in check
 						if (!p.is(getPlayer()) && !p.is(PieceType.KING)) {
-							checkCheckAndAdd(s, allowed);
+							checkCheckAndAdd(candidate, allowed);
 						}
 						// once a piece has been encountered, direction is blocked
 						break;
@@ -109,14 +110,18 @@ public abstract class Piece implements Parcelable {
 	
 	private void checkCheckAndAdd(final Square candidate, final List<Square> to) {
 		// ensure that moving this piece does not set the player in check
+		final Square previousSquare = getSquare();
 		final Piece previous = candidate.getPiece();
 		getSquare().setPiece(null);
+		// put piece on candidate
 		candidate.setPiece(this);
+		setSquare(candidate);
 		if (!getSquare().getGame().isCheck(getPlayer())) {
 			to.add(candidate);
 		}
 		// restore state
-		getSquare().setPiece(this);
+		setSquare(previousSquare);
+		previousSquare.setPiece(this);
 		candidate.setPiece(previous);
 	}
 	
