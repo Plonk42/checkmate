@@ -68,6 +68,7 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 			fragmentParams.putParcelable(Game.PARCELABLE_KEY, game);
 		}
 		game.addMovementListener(this);
+		game.addCheckListener(this);
 		
 		chessboardFragment = new ChessboardFragment();
 		chessboardFragment.setArguments(fragmentParams);
