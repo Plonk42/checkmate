@@ -24,8 +24,10 @@ public class Move {
 		// TODO manage castling, en passant and promotion
 		final String algebraic = a.replaceAll("x", "");
 		int index = 0;
-		final String algebraicPiece = algebraic.length() == 3 ? Character.toString(algebraic.charAt(index++)) : null;
+		final String algebraicPiece = algebraic.length() == 3 ? Character.toString(algebraic.charAt(index++)) : "";
 		final Coordinate coordinate = Coordinate.fromAlgebraic(algebraic.subSequence(index, index + 2));
+		// retrieve destination square
+		final Square to = game.getSquareAt(coordinate);
 		// retrieve piece
 		final PieceType type = PieceType.fromAlgebraic(algebraicPiece);
 		Piece piece = null;
@@ -35,13 +37,12 @@ public class Move {
 		}
 		else {
 			for (final Piece p : potentialPieces) {
-				if (p.getSquare().getCoordinate().x == coordinate.x) {
+				if (p.getAllowedPositions().contains(to)) {
 					piece = p;
 				}
 			}
 		}
-		// retrieve destination square
-		final Square to = game.getSquareAt(coordinate);
+		
 		return new Move(game, player, piece, to);
 	}
 	

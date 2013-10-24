@@ -2,6 +2,7 @@ package name.matco.checkmate.game.piece;
 
 import name.matco.checkmate.R;
 import name.matco.checkmate.game.Player;
+import name.matco.checkmate.game.exception.InvalidAlgebraic;
 
 public enum PieceType {
 	
@@ -170,12 +171,15 @@ public enum PieceType {
 	
 	abstract public int getNameResource();
 	
-	public static PieceType fromAlgebraic(final String algebraic) {
+	public static PieceType fromAlgebraic(final String algebraic) throws InvalidAlgebraic {
+		if (algebraic.trim().isEmpty()) {
+			return PieceType.PAWN;
+		}
 		for (final PieceType pt : PieceType.values()) {
-			if (pt.equals(algebraic)) {
+			if (pt.getAlgebraic().equals(algebraic)) {
 				return pt;
 			}
 		}
-		return PieceType.PAWN;
+		throw new InvalidAlgebraic(algebraic);
 	}
 }
