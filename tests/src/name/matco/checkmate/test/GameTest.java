@@ -17,6 +17,7 @@ import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
 import name.matco.checkmate.ui.PieceMovement;
 import android.test.InstrumentationTestCase;
+import android.util.Log;
 
 public class GameTest extends InstrumentationTestCase {
 	
@@ -40,8 +41,25 @@ public class GameTest extends InstrumentationTestCase {
 			assertEquals(5, Coordinate.fromAlgebraic("f6").x);
 			assertEquals(5, Coordinate.fromAlgebraic("f6").y);
 			
+			
 		} catch (final InvalidAlgebraic e) {
 			fail(e.getLocalizedMessage());
+		}
+		
+		try {
+			assertEquals(5, Coordinate.fromAlgebraic("e9").x);
+			fail("e9 should not be a valid algebraic notation");
+		}
+		catch (InvalidAlgebraic e) {
+			// it works!
+		}
+		
+		try {
+			assertEquals(5, Coordinate.fromAlgebraic("i1").y);
+			fail("i1 should not be a valid algebraic notation");
+		}
+		catch (InvalidAlgebraic e) {
+			// it works!
 		}
 	}
 	
@@ -188,15 +206,42 @@ public class GameTest extends InstrumentationTestCase {
 		try {
 			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "e4"));
 			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "e5"));
-			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Fc4"));
-			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Fc5"));
-			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Dh5"));
-			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Cc6"));
+			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Bc4"));
+			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Bc5"));
+			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Qh5"));
+			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Nc6"));
+			
+			try {
+				assertNotNull(game.getSquareAt(5, 6).getPiece());
+				assertTrue(game.getSquareAt(5, 6).getPiece().is(PieceType.PAWN, Player.BLACK));
+				
+				assertNotNull(game.getSquareAt(4, 7).getPiece());
+				assertTrue(game.getSquareAt(4, 7).getPiece().is(PieceType.KING, Player.BLACK));
+				
+				assertNotNull(game.getSquareAt(3, 7).getPiece());
+				assertTrue(game.getSquareAt(3, 7).getPiece().is(PieceType.QUEEN, Player.BLACK));
+				
+				assertNotNull(game.getSquareAt(2, 3).getPiece());
+				Log.i(getClass().getName(), game.getSquareAt(2, 3).getPiece().toString());
+				assertTrue(game.getSquareAt(2, 3).getPiece().is(PieceType.BISHOP, Player.WHITE));
+			}
+			catch (OutOfBoardCoordinateException e) {
+				fail(e.getLocalizedMessage());
+			}
 			
 			assertEquals(0, checks.size());
 			assertEquals(0, checkMates.size());
 			
-			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Dxf7"));
+			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Qxf7"));
+			
+			try {
+				assertNotNull(game.getSquareAt(5, 6).getPiece());
+				Log.i(getClass().getName(), game.getSquareAt(5, 6).getPiece().toString());
+				assertTrue(game.getSquareAt(5, 6).getPiece().is(PieceType.QUEEN, Player.WHITE));
+			}
+			catch (OutOfBoardCoordinateException e) {
+				fail(e.getLocalizedMessage());
+			}
 			
 			assertEquals(0, checks.size());
 			assertEquals(1, checkMates.size());
