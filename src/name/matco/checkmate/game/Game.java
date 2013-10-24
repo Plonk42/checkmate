@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import name.matco.checkmate.game.Movement.Direction;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import name.matco.checkmate.game.piece.Bishop;
 import name.matco.checkmate.game.piece.King;
@@ -326,6 +327,7 @@ public class Game implements Parcelable {
 	
 	// improve this by describing which piece can do a kind of movement
 	public boolean isCheck(final Player player) {
+		Log.i(getClass().getName(), String.format("Check if player %s is in check", player));
 		final Piece king = Player.WHITE.equals(player) ? whiteKing : blackKing;
 		// check lines
 		for (final List<Movement> directions : Movement.LINE_MOVEMENTS) {
@@ -333,8 +335,10 @@ public class Game implements Parcelable {
 				try {
 					final Square s = king.getSquare().apply(m);
 					if (s.getPiece() != null) {
-						if (s.getPiece().is(player.getOpponent()) && (s.getPiece().is(PieceType.ROOK) || s.getPiece().is(PieceType.QUEEN))) {
-							return true;
+						if (s.getPiece().is(player.getOpponent())) {
+							if (s.getPiece().is(PieceType.ROOK) || s.getPiece().is(PieceType.QUEEN)) {
+								return true;
+							}
 						}
 						break;
 					}
@@ -346,14 +350,12 @@ public class Game implements Parcelable {
 		}
 		// check diagonals
 		for (final List<Movement> directions : Movement.DIAGONAL_MOVEMENTS) {
-			boolean first = true;
 			for (final Movement m : directions) {
 				try {
 					final Square s = king.getSquare().apply(m);
 					if (s.getPiece() != null) {
 						if (s.getPiece().is(player.getOpponent())) {
-							// FIXME : wrong: a pawn only captures in front of itself (only 2 directions among 4)
-							if (first && s.getPiece().is(PieceType.PAWN) || s.getPiece().is(PieceType.BISHOP) || s.getPiece().is(PieceType.QUEEN)) {
+							if (s.getPiece().is(PieceType.BISHOP) || s.getPiece().is(PieceType.QUEEN)) {
 								return true;
 							}
 						}
@@ -363,9 +365,26 @@ public class Game implements Parcelable {
 					// outside the board; stop going in this direction
 					break;
 				}
-				first = false;
 			}
 		}
+		// check paws
+		try {
+			final Square backEastSquare = king.getSquare().apply(player.getOpponent().getForward().getMovement().withAdd(Direction.EAST.getMovement()));
+			if (backEastSquare.getPiece() != null && backEastSquare.getPiece().is(PieceType.PAWN, player.getOpponent())) {
+				return true;
+			}
+		} catch (final OutOfBoardCoordinateException e1) {
+			// outside the board
+		}
+		try {
+			final Square backWestSquare = king.getSquare().apply(player.getOpponent().getForward().getMovement().withAdd(Direction.WEST.getMovement()));
+			if (backWestSquare.getPiece() != null && backWestSquare.getPiece().is(PieceType.PAWN, player.getOpponent())) {
+				return true;
+			}
+		} catch (final OutOfBoardCoordinateException e1) {
+			// outside the board
+		}
+		
 		// check knights
 		for (final List<Movement> directions : Movement.KNIGHT_MOVEMENTS) {
 			for (final Movement m : directions) {
