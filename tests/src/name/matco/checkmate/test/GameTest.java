@@ -41,7 +41,6 @@ public class GameTest extends InstrumentationTestCase {
 			assertEquals(5, Coordinate.fromAlgebraic("f6").x);
 			assertEquals(5, Coordinate.fromAlgebraic("f6").y);
 			
-			
 		} catch (final InvalidAlgebraic e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -49,16 +48,14 @@ public class GameTest extends InstrumentationTestCase {
 		try {
 			assertEquals(5, Coordinate.fromAlgebraic("e9").x);
 			fail("e9 should not be a valid algebraic notation");
-		}
-		catch (InvalidAlgebraic e) {
+		} catch (final InvalidAlgebraic e) {
 			// it works!
 		}
 		
 		try {
 			assertEquals(5, Coordinate.fromAlgebraic("i1").y);
 			fail("i1 should not be a valid algebraic notation");
-		}
-		catch (InvalidAlgebraic e) {
+		} catch (final InvalidAlgebraic e) {
 			// it works!
 		}
 	}
@@ -66,18 +63,18 @@ public class GameTest extends InstrumentationTestCase {
 	public void testGame() {
 		final Game game = new Game();
 		
-		assertEquals(game.getBoard().length, 64);
+		assertEquals(game.getBoard().getSquares().length, 64);
 		
 		try {
 			// check some squares
-			assertNotNull(game.getBoard()[0]);
-			assertNotNull(game.getBoard()[3]);
-			assertNotNull(game.getBoard()[63]);
+			assertNotNull(game.getBoard().getSquares()[0]);
+			assertNotNull(game.getBoard().getSquares()[3]);
+			assertNotNull(game.getBoard().getSquares()[63]);
 			
 			// check square retrieving
-			assertEquals(game.getBoard()[0], game.getSquareAt(0, 0));
-			assertEquals(game.getBoard()[3], game.getSquareAt(3, 0));
-			assertEquals(game.getBoard()[63], game.getSquareAt(7, 7));
+			assertEquals(game.getBoard().getSquares()[0], game.getBoard().getSquareAt(0, 0));
+			assertEquals(game.getBoard().getSquares()[3], game.getBoard().getSquareAt(3, 0));
+			assertEquals(game.getBoard().getSquares()[63], game.getBoard().getSquareAt(7, 7));
 			
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
@@ -88,37 +85,37 @@ public class GameTest extends InstrumentationTestCase {
 		final Game game = new Game();
 		
 		// check piece positions
-		assertTrue(game.getBoard()[0].getPiece().is(PieceType.ROOK, Player.WHITE));
-		assertTrue(game.getBoard()[1].getPiece().is(PieceType.KNIGHT, Player.WHITE));
-		assertTrue(game.getBoard()[2].getPiece().is(PieceType.BISHOP, Player.WHITE));
-		assertTrue(game.getBoard()[3].getPiece().is(PieceType.QUEEN, Player.WHITE));
-		assertTrue(game.getBoard()[4].getPiece().is(PieceType.KING, Player.WHITE));
-		assertTrue(game.getBoard()[5].getPiece().is(PieceType.BISHOP, Player.WHITE));
-		assertTrue(game.getBoard()[6].getPiece().is(PieceType.KNIGHT, Player.WHITE));
-		assertTrue(game.getBoard()[7].getPiece().is(PieceType.ROOK, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[0].getPiece().is(PieceType.ROOK, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[1].getPiece().is(PieceType.KNIGHT, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[2].getPiece().is(PieceType.BISHOP, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[3].getPiece().is(PieceType.QUEEN, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[4].getPiece().is(PieceType.KING, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[5].getPiece().is(PieceType.BISHOP, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[6].getPiece().is(PieceType.KNIGHT, Player.WHITE));
+		assertTrue(game.getBoard().getSquares()[7].getPiece().is(PieceType.ROOK, Player.WHITE));
 		for (int i = 8; i < 8 + 8; i++) {
-			assertTrue(game.getBoard()[i].getPiece().is(PieceType.PAWN, Player.WHITE));
+			assertTrue(game.getBoard().getSquares()[i].getPiece().is(PieceType.PAWN, Player.WHITE));
 		}
 		for (int i = 48; i < 56; i++) {
-			assertTrue(game.getBoard()[i].getPiece().is(PieceType.PAWN, Player.BLACK));
+			assertTrue(game.getBoard().getSquares()[i].getPiece().is(PieceType.PAWN, Player.BLACK));
 		}
-		assertTrue(game.getBoard()[56].getPiece().is(PieceType.ROOK, Player.BLACK));
-		assertTrue(game.getBoard()[57].getPiece().is(PieceType.KNIGHT, Player.BLACK));
-		assertTrue(game.getBoard()[58].getPiece().is(PieceType.BISHOP, Player.BLACK));
-		assertTrue(game.getBoard()[59].getPiece().is(PieceType.QUEEN, Player.BLACK));
-		assertTrue(game.getBoard()[60].getPiece().is(PieceType.KING, Player.BLACK));
-		assertTrue(game.getBoard()[61].getPiece().is(PieceType.BISHOP, Player.BLACK));
-		assertTrue(game.getBoard()[62].getPiece().is(PieceType.KNIGHT, Player.BLACK));
-		assertTrue(game.getBoard()[63].getPiece().is(PieceType.ROOK, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[56].getPiece().is(PieceType.ROOK, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[57].getPiece().is(PieceType.KNIGHT, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[58].getPiece().is(PieceType.BISHOP, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[59].getPiece().is(PieceType.QUEEN, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[60].getPiece().is(PieceType.KING, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[61].getPiece().is(PieceType.BISHOP, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[62].getPiece().is(PieceType.KNIGHT, Player.BLACK));
+		assertTrue(game.getBoard().getSquares()[63].getPiece().is(PieceType.ROOK, Player.BLACK));
 		
 	}
 	
 	public void testInitialAllowedPositions() {
 		final Game game = new Game();
 		
-		final Piece whiteQueen = game.getBoard()[3].getPiece();
-		final Piece whiteKing = game.getBoard()[4].getPiece();
-		final Piece whiteQueenPawn = game.getBoard()[11].getPiece();
+		final Piece whiteQueen = game.getBoard().getSquares()[3].getPiece();
+		final Piece whiteKing = game.getBoard().getSquares()[4].getPiece();
+		final Piece whiteQueenPawn = game.getBoard().getSquares()[11].getPiece();
 		
 		// check some piece allowed positions
 		assertTrue(whiteQueen.getAllowedPositions().isEmpty());
@@ -128,15 +125,15 @@ public class GameTest extends InstrumentationTestCase {
 		
 		try {
 			assertEquals(2, whiteQueenPawnAllowedPosition.size());
-			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getSquareAt(3, 2)));
-			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getSquareAt(3, 3)));
+			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(3, 2)));
+			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(3, 3)));
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
 	}
 	
 	private void checkBoardConsistency(final Game game) {
-		for (final Square s : game.getBoard()) {
+		for (final Square s : game.getBoard().getSquares()) {
 			if (s.getPiece() != null && !s.getPiece().getSquare().equals(s)) {
 				fail(String.format("Square %s contains piece %s which is linked to square %s", s, s.getPiece(), s.getPiece().getSquare()));
 			}
@@ -147,14 +144,14 @@ public class GameTest extends InstrumentationTestCase {
 	
 	private void saveBoardState(final Game game) {
 		piecePositions.clear();
-		for (final Piece p : game.getPieces()) {
+		for (final Piece p : game.getBoard().getPieces()) {
 			piecePositions.put(p, p.getSquare());
 		}
 	}
 	
 	public List<PieceMovement> compareAgainsLastSave(final Game game) {
 		final List<PieceMovement> movements = new ArrayList<PieceMovement>();
-		for (final Piece p : game.getPieces()) {
+		for (final Piece p : game.getBoard().getPieces()) {
 			if (!p.getSquare().equals(piecePositions.get(p))) {
 				movements.add(new PieceMovement(p, piecePositions.get(p), p.getSquare()));
 			}
@@ -165,7 +162,7 @@ public class GameTest extends InstrumentationTestCase {
 	public void testMove() {
 		final Game game = new Game();
 		
-		final Piece whiteQueenPawn = game.getBoard()[11].getPiece();
+		final Piece whiteQueenPawn = game.getBoard().getSquares()[11].getPiece();
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
 		
 		saveBoardState(game);
@@ -177,8 +174,8 @@ public class GameTest extends InstrumentationTestCase {
 			checkBoardConsistency(game);
 			assertEquals(1, movements.size());
 			assertEquals(whiteQueenPawn, movements.get(0).getPiece());
-			assertEquals(movements.get(0).getFrom(), game.getSquareAt(3, 1));
-			assertEquals(movements.get(0).getTo(), game.getSquareAt(3, 2));
+			assertEquals(movements.get(0).getFrom(), game.getBoard().getSquareAt(3, 1));
+			assertEquals(movements.get(0).getTo(), game.getBoard().getSquareAt(3, 2));
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -193,12 +190,12 @@ public class GameTest extends InstrumentationTestCase {
 		game.addCheckListener(new CheckListener() {
 			
 			@Override
-			public void onCheckmate(Piece p, Square from, Square to) {
+			public void onCheckmate(final Piece p, final Square from, final Square to) {
 				checkMates.add(p);
 			}
 			
 			@Override
-			public void onCheck(Piece p, Square from, Square to) {
+			public void onCheck(final Piece p, final Square from, final Square to) {
 				checks.add(p);
 			}
 		});
@@ -212,20 +209,19 @@ public class GameTest extends InstrumentationTestCase {
 			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Nc6"));
 			
 			try {
-				assertNotNull(game.getSquareAt(5, 6).getPiece());
-				assertTrue(game.getSquareAt(5, 6).getPiece().is(PieceType.PAWN, Player.BLACK));
+				assertNotNull(game.getBoard().getSquareAt(5, 6).getPiece());
+				assertTrue(game.getBoard().getSquareAt(5, 6).getPiece().is(PieceType.PAWN, Player.BLACK));
 				
-				assertNotNull(game.getSquareAt(4, 7).getPiece());
-				assertTrue(game.getSquareAt(4, 7).getPiece().is(PieceType.KING, Player.BLACK));
+				assertNotNull(game.getBoard().getSquareAt(4, 7).getPiece());
+				assertTrue(game.getBoard().getSquareAt(4, 7).getPiece().is(PieceType.KING, Player.BLACK));
 				
-				assertNotNull(game.getSquareAt(3, 7).getPiece());
-				assertTrue(game.getSquareAt(3, 7).getPiece().is(PieceType.QUEEN, Player.BLACK));
+				assertNotNull(game.getBoard().getSquareAt(3, 7).getPiece());
+				assertTrue(game.getBoard().getSquareAt(3, 7).getPiece().is(PieceType.QUEEN, Player.BLACK));
 				
-				assertNotNull(game.getSquareAt(2, 3).getPiece());
-				Log.i(getClass().getName(), game.getSquareAt(2, 3).getPiece().toString());
-				assertTrue(game.getSquareAt(2, 3).getPiece().is(PieceType.BISHOP, Player.WHITE));
-			}
-			catch (OutOfBoardCoordinateException e) {
+				assertNotNull(game.getBoard().getSquareAt(2, 3).getPiece());
+				Log.i(getClass().getName(), game.getBoard().getSquareAt(2, 3).getPiece().toString());
+				assertTrue(game.getBoard().getSquareAt(2, 3).getPiece().is(PieceType.BISHOP, Player.WHITE));
+			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
 			
@@ -235,11 +231,10 @@ public class GameTest extends InstrumentationTestCase {
 			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Qxf7"));
 			
 			try {
-				assertNotNull(game.getSquareAt(5, 6).getPiece());
-				Log.i(getClass().getName(), game.getSquareAt(5, 6).getPiece().toString());
-				assertTrue(game.getSquareAt(5, 6).getPiece().is(PieceType.QUEEN, Player.WHITE));
-			}
-			catch (OutOfBoardCoordinateException e) {
+				assertNotNull(game.getBoard().getSquareAt(5, 6).getPiece());
+				Log.i(getClass().getName(), game.getBoard().getSquareAt(5, 6).getPiece().toString());
+				assertTrue(game.getBoard().getSquareAt(5, 6).getPiece().is(PieceType.QUEEN, Player.WHITE));
+			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
 			

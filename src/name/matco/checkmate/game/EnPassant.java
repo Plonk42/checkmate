@@ -7,7 +7,7 @@ public class EnPassant extends Move {
 	
 	public EnPassant(final Game game, final Player player, final Pawn pawn, final Square to) throws OutOfBoardCoordinateException {
 		super(game, player, pawn, to);
-		this.capturedPiece = game.getSquareAt(to.getCoordinate().x, pawn.getSquare().getCoordinate().y).getPiece();
+		this.capturedPiece = game.getBoard().getSquareAt(to.getCoordinate().x, pawn.getSquare().getCoordinate().y).getPiece();
 	}
 	
 	@Override

@@ -116,7 +116,7 @@ public abstract class Piece implements Parcelable {
 		// put piece on candidate
 		candidate.setPiece(this);
 		setSquare(candidate);
-		if (!getSquare().getGame().isCheck(getPlayer())) {
+		if (!getSquare().getBoard().isCheck(getPlayer())) {
 			to.add(candidate);
 		}
 		// restore state

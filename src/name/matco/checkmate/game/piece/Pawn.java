@@ -6,8 +6,8 @@ import java.util.List;
 
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Movement;
-import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Movement.Direction;
+import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 
 public class Pawn extends Piece {
@@ -42,7 +42,7 @@ public class Pawn extends Piece {
 			movements.add(forwardMovements);
 			
 			// pawn can move on diagonal if there is a piece to capture or "en passant"capture
-			final Move lastMove = getSquare().getGame().getLastMove();
+			final Move lastMove = getSquare().getBoard().getLastMove();
 			final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
 			if (getSquare().apply(withEast).getPiece() != null) {
 				movements.add(Collections.singletonList(withEast));

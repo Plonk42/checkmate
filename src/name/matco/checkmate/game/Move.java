@@ -27,11 +27,11 @@ public class Move {
 		final String algebraicPiece = algebraic.length() == 3 ? Character.toString(algebraic.charAt(index++)) : "";
 		final Coordinate coordinate = Coordinate.fromAlgebraic(algebraic.subSequence(index, index + 2));
 		// retrieve destination square
-		final Square to = game.getSquareAt(coordinate);
+		final Square to = game.getBoard().getSquareAt(coordinate);
 		// retrieve piece
 		final PieceType type = PieceType.fromAlgebraic(algebraicPiece);
 		Piece piece = null;
-		final List<Piece> potentialPieces = game.getPieces(player, type);
+		final List<Piece> potentialPieces = game.getBoard().getPieces(player, type);
 		if (potentialPieces.size() == 1) {
 			piece = potentialPieces.get(0);
 		}
@@ -91,18 +91,18 @@ public class Move {
 	
 	public void doMove(final Game game) {
 		if (capturedPiece != null) {
-			game.addCapturedPiece(capturedPiece);
+			game.getBoard().addCapturedPiece(capturedPiece);
 			capturedPiece.getSquare().setPiece(null);
 		}
-		game.movePiece(piece, to);
+		game.getBoard().movePiece(piece, to);
 		piece.setHasMoved(true);
 	}
 	
 	public void revertMove(final Game game) {
-		game.movePiece(piece, from);
+		game.getBoard().movePiece(piece, from);
 		if (capturedPiece != null) {
 			capturedPiece.getSquare().setPiece(capturedPiece);
-			game.removeCapturedPiece(capturedPiece);
+			game.getBoard().removeCapturedPiece(capturedPiece);
 		}
 		if (pieceFirstMove) {
 			piece.setHasMoved(false);

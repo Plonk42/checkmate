@@ -1,11 +1,11 @@
 package name.matco.checkmate.ui;
 
+import name.matco.checkmate.R;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.ui.listeners.CaptureListener;
 import name.matco.checkmate.ui.listeners.GameStateListener;
-import name.matco.checkmate.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -28,7 +28,7 @@ public class CapturedPieces extends SurfaceView implements SurfaceHolder.Callbac
 	public void setGame(final Game game) {
 		this.game = game;
 		game.addGameStateListeners(this);
-		game.addCaptureListener(this);
+		game.getBoard().addCaptureListener(this);
 	}
 	
 	public void setChessboard(final Chessboard chessboard) {
@@ -85,9 +85,9 @@ public class CapturedPieces extends SurfaceView implements SurfaceHolder.Callbac
 		final int pieceSize = chessboard.squareSize / 2;
 		int offset = 0;
 		
-		synchronized (game.getCapturedPieces()) {
+		synchronized (game.getBoard().getCapturedPieces()) {
 			canvas.drawColor(getResources().getColor(R.color.grey));
-			for (final Piece p : game.getCapturedPieces()) {
+			for (final Piece p : game.getBoard().getCapturedPieces()) {
 				if (p.is(player)) {
 					Log.i(getClass().getName(), String.format("Draw captured piece %s", p));
 					final Drawable drawable = chessboard.getPieceImage(p);

@@ -46,9 +46,9 @@ public class Promotion extends Move {
 			Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
 			
 			// remove pawn from pieces list
-			game.getPieces().remove(getPiece());
+			game.getBoard().getPieces().remove(getPiece());
 			// add promoted piece in pieces list
-			game.getPieces().add(promotedPiece);
+			game.getBoard().getPieces().add(promotedPiece);
 		} catch (final Exception e) {
 			// just no way to come here
 		}
@@ -57,9 +57,9 @@ public class Promotion extends Move {
 	@Override
 	public void revertMove(final Game game) {
 		// remove promoted piece from pieces list
-		game.getPieces().remove(promotedPiece);
+		game.getBoard().getPieces().remove(promotedPiece);
 		// re add pawn in pieces list
-		game.getPieces().add(piece);
+		game.getBoard().getPieces().add(piece);
 		
 		super.revertMove(game);
 	}

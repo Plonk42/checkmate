@@ -28,7 +28,7 @@ public class King extends Piece {
 			return Movement.KING_MOVEMENTS;
 		}
 		// king is in check
-		if (getSquare().getGame().isCheck(getPlayer())) {
+		if (getSquare().getBoard().isCheck(getPlayer())) {
 			return Movement.KING_MOVEMENTS;
 		}
 		// castling
@@ -37,11 +37,11 @@ public class King extends Piece {
 		
 		try {
 			// rook must be at its original square
-			final Square kingCorner = getSquare().getGame().getSquareAt(getPlayer().getKingCorner());
+			final Square kingCorner = getSquare().getBoard().getSquareAt(getPlayer().getKingCorner());
 			if (kingCorner.getPiece() == null || kingCorner.getPiece().hasMoved() || !kingCorner.getPiece().is(PieceType.ROOK, getPlayer())) {
 				isKingSideCastlingValid = false;
 			}
-			final Square queenCorner = getSquare().getGame().getSquareAt(getPlayer().getQueenCorner());
+			final Square queenCorner = getSquare().getBoard().getSquareAt(getPlayer().getQueenCorner());
 			if (queenCorner.getPiece() == null || queenCorner.getPiece().hasMoved() || !queenCorner.getPiece().is(PieceType.ROOK, getPlayer())) {
 				isQueenSideCastlingValid = false;
 			}
@@ -52,14 +52,14 @@ public class King extends Piece {
 			// all squares between king and rook must be empty and king must no be in check in all squares
 			if (isKingSideCastlingValid) {
 				for (int i = kingCorner.getCoordinate().x + 1; i <= getSquare().getCoordinate().x - 1; i++) {
-					final Square s = getSquare().getGame().getSquareAt(i, getPlayer().getBaseline());
+					final Square s = getSquare().getBoard().getSquareAt(i, getPlayer().getBaseline());
 					if (!s.isEmpty()) {
 						isKingSideCastlingValid = false;
 						break;
 					}
-					getSquare().getGame().movePiece(this, s);
+					getSquare().getBoard().movePiece(this, s);
 					// FIXME replace king at its previous location
-					if (getSquare().getGame().isCheck(getPlayer())) {
+					if (getSquare().getBoard().isCheck(getPlayer())) {
 						isKingSideCastlingValid = false;
 						break;
 					}
@@ -71,14 +71,14 @@ public class King extends Piece {
 			// all squares between king and rook must be empty and king must no be in check in all squares
 			if (isQueenSideCastlingValid) {
 				for (int i = getSquare().getCoordinate().x + 1; i <= queenCorner.getCoordinate().x - 1; i++) {
-					final Square s = getSquare().getGame().getSquareAt(i, getPlayer().getBaseline());
+					final Square s = getSquare().getBoard().getSquareAt(i, getPlayer().getBaseline());
 					if (!s.isEmpty()) {
 						isQueenSideCastlingValid = false;
 						break;
 					}
-					getSquare().getGame().movePiece(this, s);
+					getSquare().getBoard().movePiece(this, s);
 					// FIXME replace king at its previous location
-					if (getSquare().getGame().isCheck(getPlayer())) {
+					if (getSquare().getBoard().isCheck(getPlayer())) {
 						isQueenSideCastlingValid = false;
 						break;
 					}

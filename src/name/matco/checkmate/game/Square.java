@@ -5,21 +5,26 @@ import name.matco.checkmate.game.piece.Piece;
 
 public class Square implements Comparable<Square> {
 	
-	private final Game game;
+	private final Board board;
+	// TODO integrate coordinate to square
 	private final Coordinate coordinate;
 	private Piece piece;
 	
-	public Square(final Game game, final int x, final int y) throws OutOfBoardCoordinateException {
-		this(game, new Coordinate(x, y));
+	public Square(final Board board, final int x, final int y) throws OutOfBoardCoordinateException {
+		this(board, new Coordinate(x, y));
 	}
 	
-	public Square(final Game game, final Coordinate c) {
-		this.game = game;
+	public Square(final Board board, final Coordinate c) {
+		this.board = board;
 		this.coordinate = c;
 	}
 	
 	public final Coordinate getCoordinate() {
 		return coordinate;
+	}
+	
+	public Board getBoard() {
+		return board;
 	}
 	
 	public final void setPiece(final Piece piece) {
@@ -31,11 +36,7 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public Square apply(final Movement m) throws OutOfBoardCoordinateException {
-		return game.getSquareAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
-	}
-	
-	public Game getGame() {
-		return game;
+		return board.getSquareAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
 	}
 	
 	public Movement getMovementTo(final Square s) {

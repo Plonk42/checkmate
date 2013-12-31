@@ -51,20 +51,20 @@ public class Castling extends Move {
 		super.doMove(game);
 		
 		// move rook
-		rook = (Rook) game.getSquareAt(getCorner()).getPiece();
+		rook = (Rook) game.getBoard().getSquareAt(getCorner()).getPiece();
 		Log.d(getClass().getName(), String.format("Found %s at square %s, %d", rook, rook.getSquare(), to.getCoordinate().y));
-		game.movePiece(rook, game.getSquareAt(getRookDestination()));
+		game.getBoard().movePiece(rook, game.getBoard().getSquareAt(getRookDestination()));
 		rook.setHasMoved(true);
 	}
 	
 	@Override
 	public void revertMove(final Game game) {
 		// revert king move
-		game.movePiece(piece, from);
+		game.getBoard().movePiece(piece, from);
 		piece.setHasMoved(false);
 		
 		// revert rook move
-		game.movePiece(rook, game.getSquareAt(to.isKingSide() ? player.getKingCorner() : player.getQueenCorner()));
+		game.getBoard().movePiece(rook, game.getBoard().getSquareAt(to.isKingSide() ? player.getKingCorner() : player.getQueenCorner()));
 		rook.setHasMoved(false);
 	}
 	
