@@ -71,33 +71,33 @@ public class Board implements Parcelable {
 		}
 		
 		// white player
-		whiteKing = new King(Player.WHITE);
-		addPiece(0, new Rook(Player.WHITE));
-		addPiece(1, new Knight(Player.WHITE));
-		addPiece(2, new Bishop(Player.WHITE));
-		addPiece(3, new Queen(Player.WHITE));
+		whiteKing = new King(4, Player.WHITE);
+		addPiece(0, new Rook(0, Player.WHITE));
+		addPiece(1, new Knight(1, Player.WHITE));
+		addPiece(2, new Bishop(2, Player.WHITE));
+		addPiece(3, new Queen(3, Player.WHITE));
 		addPiece(4, whiteKing);
-		addPiece(5, new Bishop(Player.WHITE));
-		addPiece(6, new Knight(Player.WHITE));
-		addPiece(7, new Rook(Player.WHITE));
+		addPiece(5, new Bishop(5, Player.WHITE));
+		addPiece(6, new Knight(6, Player.WHITE));
+		addPiece(7, new Rook(7, Player.WHITE));
 		
 		for (int i = 8; i < 16; i++) {
-			addPiece(i, new Pawn(Player.WHITE));
+			addPiece(i, new Pawn(i, Player.WHITE));
 		}
 		
 		// black player
-		blackKing = new King(Player.BLACK);
-		addPiece(63 - 0, new Rook(Player.BLACK));
-		addPiece(63 - 1, new Knight(Player.BLACK));
-		addPiece(63 - 2, new Bishop(Player.BLACK));
+		blackKing = new King(63 - 3, Player.BLACK);
+		addPiece(63 - 0, new Rook(63 - 0, Player.BLACK));
+		addPiece(63 - 1, new Knight(63 - 1, Player.BLACK));
+		addPiece(63 - 2, new Bishop(63 - 2, Player.BLACK));
 		addPiece(63 - 3, blackKing);
-		addPiece(63 - 4, new Queen(Player.BLACK));
-		addPiece(63 - 5, new Bishop(Player.BLACK));
-		addPiece(63 - 6, new Knight(Player.BLACK));
-		addPiece(63 - 7, new Rook(Player.BLACK));
+		addPiece(63 - 4, new Queen(63 - 4, Player.BLACK));
+		addPiece(63 - 5, new Bishop(63 - 5, Player.BLACK));
+		addPiece(63 - 6, new Knight(63 - 6, Player.BLACK));
+		addPiece(63 - 7, new Rook(63 - 7, Player.BLACK));
 		
 		for (int i = 8; i < 16; i++) {
-			addPiece(63 - i, new Pawn(Player.BLACK));
+			addPiece(63 - i, new Pawn(63 - i, Player.BLACK));
 		}
 	}
 	

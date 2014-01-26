@@ -7,8 +7,8 @@ import name.matco.checkmate.game.Player;
 
 public class Rook extends Piece {
 	
-	public Rook(final Player player) {
-		super(player);
+	public Rook(final int id, final Player player) {
+		super(id, player);
 	}
 	
 	@Override

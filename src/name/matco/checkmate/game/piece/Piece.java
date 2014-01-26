@@ -44,19 +44,20 @@ public abstract class Piece implements Parcelable {
 		}
 	};
 	
+	protected final int id;
 	protected final Player player;
-	
 	protected Square square;
-	
 	protected boolean hasMoved;
 	
-	public Piece(final Player player) {
+	public Piece(final int id, final Player player) {
+		this.id = id;
 		this.player = player;
 	}
 	
 	public Piece(final Parcel parcel) {
-		this.player = (Player) parcel.readSerializable();
-		this.hasMoved = (parcel.readByte() == 1);
+		id = parcel.readInt();
+		player = (Player) parcel.readSerializable();
+		hasMoved = (parcel.readByte() == 1);
 	}
 	
 	public abstract PieceType getType();
@@ -163,6 +164,7 @@ public abstract class Piece implements Parcelable {
 	
 	@Override
 	public void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeInt(id);
 		dest.writeSerializable(player);
 		dest.writeByte((byte) (hasMoved ? 1 : 0));
 	}

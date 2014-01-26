@@ -12,8 +12,8 @@ import android.util.Log;
 
 public class King extends Piece {
 	
-	public King(final Player player) {
-		super(player);
+	public King(final int id, final Player player) {
+		super(id, player);
 	}
 	
 	@Override

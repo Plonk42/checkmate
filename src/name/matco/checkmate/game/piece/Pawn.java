@@ -12,8 +12,8 @@ import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 
 public class Pawn extends Piece {
 	
-	public Pawn(final Player player) {
-		super(player);
+	public Pawn(final int id, final Player player) {
+		super(id, player);
 	}
 	
 	@Override
