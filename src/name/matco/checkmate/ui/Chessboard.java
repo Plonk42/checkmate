@@ -150,7 +150,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				if (!allowedPositions.isEmpty()) {
 					selectedPiece = p;
 					selectionMillis = System.currentTimeMillis();
-					highlightedSquares.addAll(selectedPiece.getAllowedPositions());
+					highlightedSquares.addAll(allowedPositions);
 					drawer.drawStart();
 				}
 				
