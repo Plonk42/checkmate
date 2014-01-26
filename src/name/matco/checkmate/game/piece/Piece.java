@@ -148,6 +148,10 @@ public abstract class Piece implements Parcelable {
 		this.square = place;
 	}
 	
+	public final int getId() {
+		return id;
+	}
+	
 	public final Player getPlayer() {
 		return player;
 	}

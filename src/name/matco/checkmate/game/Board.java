@@ -111,19 +111,12 @@ public class Board implements Parcelable {
 			capturedPieces.add(piece);
 		}
 		
-		// improve this (give ids to pieces)
-		final List<Piece> managedPieces = new ArrayList<Piece>();
-		
 		for (final Piece piece : board.getPieces()) {
-			for (final Piece p : getPieces(piece.getPlayer(), piece.getType())) {
-				if (!managedPieces.contains(p)) {
-					p.getSquare().setPiece(null);
-					final Square square = getSquareAt(piece.getSquare().getCoordinate());
-					square.setPiece(p);
-					p.setSquare(square);
-					managedPieces.add(p);
-				}
-			}
+			final Piece p = getPiece(piece.getId());
+			p.getSquare().setPiece(null);
+			final Square square = getSquareAt(piece.getSquare().getCoordinate());
+			square.setPiece(p);
+			p.setSquare(square);
 		}
 	}
 	
@@ -177,6 +170,15 @@ public class Board implements Parcelable {
 			}
 		}
 		return pieces;
+	}
+	
+	public Piece getPiece(final int id) {
+		for (final Piece piece : this.pieces) {
+			if (piece.getId() == id) {
+				return piece;
+			}
+		}
+		throw new UnsupportedOperationException();
 	}
 	
 	private void addPiece(final int index, final Piece piece) {
