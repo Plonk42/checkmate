@@ -57,8 +57,9 @@ public class Game implements Parcelable {
 	
 	public Game(final Parcel in) {
 		Log.i(getClass().getName(), "Restoring Game() from Parcel");
-		this.activePlayer = (Player) in.readSerializable();
-		this.progression = in.readInt();
+		board = new Board(in);
+		activePlayer = (Player) in.readSerializable();
+		progression = in.readInt();
 		// TODO : parcel moves;
 		// in.readList(this.moves, null);
 		for (int i = 0; i < progression; i++) {
@@ -74,6 +75,7 @@ public class Game implements Parcelable {
 	}
 	
 	private void init() {
+		board = new Board();
 		moves.clear();
 		progression = 0;
 		
