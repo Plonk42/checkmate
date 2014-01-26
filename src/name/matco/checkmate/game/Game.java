@@ -63,7 +63,7 @@ public class Game implements Parcelable {
 		// TODO : parcel moves;
 		// in.readList(this.moves, null);
 		for (int i = 0; i < progression; i++) {
-			moves.add(new Move(this, null, null, null));
+			moves.add(new Move(null, null, null));
 		}
 		
 		// for (final Piece p :this.pieces) {
@@ -126,19 +126,19 @@ public class Game implements Parcelable {
 		Log.d(getClass().getName(), String.format("Retrieve move for %s - has moved: %s, to is castling destination: %s, to is empty: %s", p, p.hasMoved(), to.isCastlingDestination(getActivePlayer()), to.isEmpty()));
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
-			m = new Castling(this, getActivePlayer(), (King) p, to);
+			m = new Castling(getActivePlayer(), (King) p, to);
 		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getCoordinate().x != to.getCoordinate().x)) {
 			try {
-				m = new EnPassant(this, getActivePlayer(), (Pawn) p, to);
+				m = new EnPassant(getBoard(), getActivePlayer(), (Pawn) p, to);
 			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 				Log.e(getClass().getName(), "Move is outside board", e);
 				return null;
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
-			m = new Promotion(this, getActivePlayer(), (Pawn) p, to);
+			m = new Promotion(getActivePlayer(), (Pawn) p, to);
 		} else {
-			m = new Move(this, getActivePlayer(), p, to);
+			m = new Move(getActivePlayer(), p, to);
 		}
 		return m;
 	}

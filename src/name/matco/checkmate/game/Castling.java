@@ -14,8 +14,8 @@ public class Castling extends Move {
 	private final int rookFile;
 	private Rook rook;
 	
-	public Castling(final Game game, final Player player, final King king, final Square to) {
-		super(game, player, king, to);
+	public Castling(final Player player, final King king, final Square to) {
+		super(player, king, to);
 		rookFile = to.getCoordinate().x + (to.isKingSide() ? -1 : 1);
 	}
 	

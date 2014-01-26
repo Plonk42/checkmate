@@ -201,12 +201,12 @@ public class GameTest extends InstrumentationTestCase {
 		});
 		
 		try {
-			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "e4"));
-			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "e5"));
-			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Bc4"));
-			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Bc5"));
-			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Qh5"));
-			game.playMove(Move.fromAlgebraic(game, Player.BLACK, "Nc6"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "e4"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "e5"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Bc4"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Bc5"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Qh5"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Nc6"));
 			
 			try {
 				assertNotNull(game.getBoard().getSquareAt(5, 6).getPiece());
@@ -228,7 +228,7 @@ public class GameTest extends InstrumentationTestCase {
 			assertEquals(0, checks.size());
 			assertEquals(0, checkMates.size());
 			
-			game.playMove(Move.fromAlgebraic(game, Player.WHITE, "Qxf7"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Qxf7"));
 			
 			try {
 				assertNotNull(game.getBoard().getSquareAt(5, 6).getPiece());

@@ -10,7 +10,6 @@ import name.matco.checkmate.game.piece.PieceType;
 
 public class Move {
 	
-	protected final Game game;
 	protected final Player player;
 	protected final Piece piece;
 	protected Piece capturedPiece;
@@ -20,18 +19,18 @@ public class Move {
 	protected final Square to;
 	protected final Movement movement;
 	
-	public static Move fromAlgebraic(final Game game, final Player player, final String a) throws InvalidAlgebraic {
+	public static Move fromAlgebraic(final Board board, final Player player, final String a) throws InvalidAlgebraic {
 		// TODO manage castling, en passant and promotion
 		final String algebraic = a.replaceAll("x", "");
 		int index = 0;
 		final String algebraicPiece = algebraic.length() == 3 ? Character.toString(algebraic.charAt(index++)) : "";
 		final Coordinate coordinate = Coordinate.fromAlgebraic(algebraic.subSequence(index, index + 2));
 		// retrieve destination square
-		final Square to = game.getBoard().getSquareAt(coordinate);
+		final Square to = board.getSquareAt(coordinate);
 		// retrieve piece
 		final PieceType type = PieceType.fromAlgebraic(algebraicPiece);
 		Piece piece = null;
-		final List<Piece> potentialPieces = game.getBoard().getPieces(player, type);
+		final List<Piece> potentialPieces = board.getPieces(player, type);
 		if (potentialPieces.size() == 1) {
 			piece = potentialPieces.get(0);
 		}
@@ -43,11 +42,10 @@ public class Move {
 			}
 		}
 		
-		return new Move(game, player, piece, to);
+		return new Move(player, piece, to);
 	}
 	
-	public Move(final Game game, final Player player, final Piece piece, final Square to) {
-		this.game = game;
+	public Move(final Player player, final Piece piece, final Square to) {
 		this.player = player;
 		this.piece = piece;
 		this.pieceFirstMove = !piece.hasMoved();
