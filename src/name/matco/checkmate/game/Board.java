@@ -61,7 +61,7 @@ public class Board implements Parcelable {
 	public Board() {
 		capturedPieces.clear();
 		
-		// init square
+		// init squares
 		for (int i = 0; i < 64; i++) {
 			try {
 				squares[i] = new Square(this, i % 8, i / 8);
@@ -98,6 +98,32 @@ public class Board implements Parcelable {
 		
 		for (int i = 8; i < 16; i++) {
 			addPiece(63 - i, new Pawn(Player.BLACK));
+		}
+	}
+	
+	public Board(final Board board) {
+		this();
+		
+		for (final Piece piece : board.getCapturedPieces()) {
+			piece.getSquare().setPiece(null);
+			piece.setSquare(null);
+			pieces.remove(piece);
+			capturedPieces.add(piece);
+		}
+		
+		// improve this (give ids to pieces)
+		final List<Piece> managedPieces = new ArrayList<Piece>();
+		
+		for (final Piece piece : board.getPieces()) {
+			for (final Piece p : getPieces(piece.getPlayer(), piece.getType())) {
+				if (!managedPieces.contains(p)) {
+					p.getSquare().setPiece(null);
+					final Square square = getSquareAt(piece.getSquare().getCoordinate());
+					square.setPiece(p);
+					p.setSquare(square);
+					managedPieces.add(p);
+				}
+			}
 		}
 	}
 	

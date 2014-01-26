@@ -93,6 +93,7 @@ public class Move {
 		if (capturedPiece != null) {
 			game.getBoard().addCapturedPiece(capturedPiece);
 			capturedPiece.getSquare().setPiece(null);
+			capturedPiece.setSquare(null);
 		}
 		game.getBoard().movePiece(piece, to);
 		piece.setHasMoved(true);
