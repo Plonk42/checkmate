@@ -23,6 +23,20 @@ import android.util.Log;
 
 public class Board implements Parcelable {
 	
+	public static final String PARCELABLE_KEY = Board.class.getName();
+	
+	public static final Parcelable.Creator<Board> CREATOR = new Parcelable.Creator<Board>() {
+		@Override
+		public Board createFromParcel(final Parcel in) {
+			return new Board(in);
+		}
+		
+		@Override
+		public Board[] newArray(final int size) {
+			return new Board[size];
+		}
+	};
+	
 	private final Square[] squares = new Square[64];
 	
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
