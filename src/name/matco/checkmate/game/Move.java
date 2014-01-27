@@ -89,6 +89,7 @@ public class Move {
 	
 	public void doMove(final Game game) {
 		if (capturedPiece != null) {
+			game.getBoard().getPieces().remove(capturedPiece);
 			game.getBoard().addCapturedPiece(capturedPiece);
 			capturedPiece.getSquare().setPiece(null);
 			capturedPiece.setSquare(null);
@@ -100,8 +101,10 @@ public class Move {
 	public void revertMove(final Game game) {
 		game.getBoard().movePiece(piece, from);
 		if (capturedPiece != null) {
-			capturedPiece.getSquare().setPiece(capturedPiece);
 			game.getBoard().removeCapturedPiece(capturedPiece);
+			game.getBoard().getPieces().add(capturedPiece);
+			to.setPiece(capturedPiece);
+			capturedPiece.setSquare(to);
 		}
 		if (pieceFirstMove) {
 			piece.setHasMoved(false);
