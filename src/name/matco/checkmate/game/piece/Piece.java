@@ -3,6 +3,7 @@ package name.matco.checkmate.game.piece;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.matco.checkmate.game.Board;
 import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
@@ -80,21 +81,26 @@ public abstract class Piece implements Parcelable {
 	
 	public List<Square> getAllowedPositions() {
 		Log.i(getClass().getName(), String.format("Check allowed positions for piece %s", this));
+		
+		final Board clonedBoard = new Board(getSquare().getBoard());
+		final Piece clonedPiece = clonedBoard.getPiece(id);
+		final Square clonedSquare = clonedPiece.getSquare();
+		
 		final ArrayList<Square> allowed = new ArrayList<Square>();
-		for (final List<Movement> directions : getAllowedMovements()) {
+		for (final List<Movement> directions : clonedPiece.getAllowedMovements()) {
 			for (final Movement m : directions) {
 				try {
-					final Square candidate = square.apply(m);
+					final Square candidate = clonedSquare.apply(m);
 					final Piece p = candidate.getPiece();
 					// square is empty
 					if (p == null) {
-						checkCheckAndAdd(candidate, allowed);
+						clonedPiece.checkCheckAndAdd(candidate, allowed);
 					}
 					// there is a piece on square
 					else {
 						// if piece is capturable, movement is possible only if it does not set player in check
 						if (!p.is(getPlayer()) && !p.is(PieceType.KING)) {
-							checkCheckAndAdd(candidate, allowed);
+							clonedPiece.checkCheckAndAdd(candidate, allowed);
 						}
 						// once a piece has been encountered, direction is blocked
 						break;
@@ -106,7 +112,12 @@ public abstract class Piece implements Parcelable {
 			}
 		}
 		
-		return allowed;
+		// retrieve squares in good board
+		final ArrayList<Square> realAllowed = new ArrayList<Square>();
+		for (final Square s : allowed) {
+			realAllowed.add(getSquare().getBoard().getSquareAt(s.getCoordinate()));
+		}
+		return realAllowed;
 	}
 	
 	private void checkCheckAndAdd(final Square candidate, final List<Square> to) {
