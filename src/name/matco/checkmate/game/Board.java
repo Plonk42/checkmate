@@ -246,7 +246,7 @@ public class Board implements Parcelable {
 		}
 		// check paws
 		try {
-			final Square backEastSquare = king.getSquare().apply(player.getOpponent().getForward().getMovement().withAdd(Direction.EAST.getMovement()));
+			final Square backEastSquare = king.getSquare().apply(player.getForward().getMovement().withAdd(Direction.EAST.getMovement()));
 			if (backEastSquare.getPiece() != null && backEastSquare.getPiece().is(PieceType.PAWN, player.getOpponent())) {
 				return true;
 			}
@@ -254,7 +254,7 @@ public class Board implements Parcelable {
 			// outside the squares
 		}
 		try {
-			final Square backWestSquare = king.getSquare().apply(player.getOpponent().getForward().getMovement().withAdd(Direction.WEST.getMovement()));
+			final Square backWestSquare = king.getSquare().apply(player.getForward().getMovement().withAdd(Direction.WEST.getMovement()));
 			if (backWestSquare.getPiece() != null && backWestSquare.getPiece().is(PieceType.PAWN, player.getOpponent())) {
 				return true;
 			}
@@ -267,7 +267,21 @@ public class Board implements Parcelable {
 			for (final Movement m : directions) {
 				try {
 					final Square s = king.getSquare().apply(m);
-					if (s.getPiece() != null && s.getPiece().is(player.getOpponent()) && s.getPiece().is(PieceType.KNIGHT)) {
+					if (s.getPiece() != null && s.getPiece().is(PieceType.KNIGHT, player.getOpponent())) {
+						return true;
+					}
+				} catch (final OutOfBoardCoordinateException e) {
+					// outside the squares; stop going in this direction
+				}
+			}
+		}
+		
+		// check kings
+		for (final List<Movement> directions : Movement.KING_MOVEMENTS) {
+			for (final Movement m : directions) {
+				try {
+					final Square s = king.getSquare().apply(m);
+					if (s.getPiece() != null && s.getPiece().is(PieceType.KING, player.getOpponent())) {
 						return true;
 					}
 				} catch (final OutOfBoardCoordinateException e) {
