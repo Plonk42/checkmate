@@ -136,6 +136,14 @@ public class Board implements Parcelable {
 		this.lastMove = lastMove;
 	}
 	
+	public final Piece getWhiteKing() {
+		return whiteKing;
+	}
+	
+	public final Piece getBlackKing() {
+		return blackKing;
+	}
+	
 	public List<Piece> getCapturedPieces() {
 		return Collections.unmodifiableList(capturedPieces);
 	}

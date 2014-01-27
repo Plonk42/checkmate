@@ -245,6 +245,58 @@ public class GameTest extends InstrumentationTestCase {
 			e.printStackTrace();
 			fail(e.getLocalizedMessage());
 		}
+	}
+	
+	public void testKings() {
+		final Game game = new Game();
 		
+		final List<Piece> checks = new ArrayList<Piece>();
+		final List<Piece> checkMates = new ArrayList<Piece>();
+		
+		game.addCheckListener(new CheckListener() {
+			
+			@Override
+			public void onCheckmate(final Piece p, final Square from, final Square to) {
+				checkMates.add(p);
+			}
+			
+			@Override
+			public void onCheck(final Piece p, final Square from, final Square to) {
+				checks.add(p);
+			}
+		});
+		
+		try {
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "e4"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "e5"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Ke2"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Ke7"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Kf3"));
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Kf6"));
+			
+			assertEquals(0, checks.size());
+			assertEquals(0, checkMates.size());
+			
+			try {
+				assertEquals(game.getBoard().getWhiteKing(), game.getBoard().getSquareAt(5, 2).getPiece());
+				assertEquals(game.getBoard().getBlackKing(), game.getBoard().getSquareAt(5, 5).getPiece());
+				
+				assertEquals(game.getBoard().getWhiteKing().getAllowedPositions().size(), 4);
+				assertEquals(game.getBoard().getBlackKing().getAllowedPositions().size(), 4);
+			} catch (final OutOfBoardCoordinateException e) {
+				fail(e.getLocalizedMessage());
+			}
+			
+			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Kg4"));
+			
+			assertEquals(game.getBoard().getBlackKing().getAllowedPositions().size(), 3);
+			
+			assertEquals(0, checks.size());
+			assertEquals(0, checkMates.size());
+			
+		} catch (final InvalidAlgebraic e) {
+			e.printStackTrace();
+			fail(e.getLocalizedMessage());
+		}
 	}
 }
