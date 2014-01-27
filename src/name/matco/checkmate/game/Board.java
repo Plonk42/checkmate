@@ -105,15 +105,19 @@ public class Board implements Parcelable {
 		this();
 		
 		for (final Piece piece : board.getCapturedPieces()) {
-			piece.getSquare().setPiece(null);
-			piece.setSquare(null);
+			final Piece p = getPiece(piece.getId());
+			p.getSquare().setPiece(null);
+			p.setSquare(null);
 			pieces.remove(piece);
 			capturedPieces.add(piece);
 		}
 		
 		for (final Piece piece : board.getPieces()) {
 			final Piece p = getPiece(piece.getId());
+			p.setHasMoved(piece.hasMoved());
+			// remove piece from initial square
 			p.getSquare().setPiece(null);
+			// put piece on the right square
 			final Square square = getSquareAt(piece.getSquare().getCoordinate());
 			square.setPiece(p);
 			p.setSquare(square);
