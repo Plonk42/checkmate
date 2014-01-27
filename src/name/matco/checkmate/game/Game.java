@@ -184,7 +184,12 @@ public class Game implements Parcelable {
 		else {
 			m.revertMove(this);
 		}
-		board.setLastMove(moves.get(progression - 1));
+		if (progression > 0) {
+			board.setLastMove(moves.get(progression - 1));
+		}
+		else {
+			board.setLastMove(null);
+		}
 		
 		// manage listeners
 		for (final MovementListener mv : movementListeners) {
