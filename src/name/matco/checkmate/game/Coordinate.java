@@ -15,7 +15,7 @@ public class Coordinate implements Parcelable {
 		final char x = algebraic.charAt(0);
 		final char y = algebraic.charAt(1);
 		try {
-			return new Coordinate(x - 97, y - 49);
+			return new Coordinate(x - 'a', y - '1');
 		} catch (final OutOfBoardCoordinateException e) {
 			throw new InvalidAlgebraic(algebraic, e);
 		}
