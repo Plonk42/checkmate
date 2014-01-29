@@ -115,7 +115,7 @@ public abstract class Piece implements Parcelable {
 		// retrieve squares in good board
 		final ArrayList<Square> realAllowed = new ArrayList<Square>();
 		for (final Square s : allowed) {
-			realAllowed.add(getSquare().getBoard().getSquareAt(s.getCoordinate()));
+			realAllowed.add(getSquare().getBoard().getSquareAt(s.getIndex()));
 		}
 		return realAllowed;
 	}

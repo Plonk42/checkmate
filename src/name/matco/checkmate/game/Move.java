@@ -24,9 +24,9 @@ public class Move {
 		final String algebraic = a.replaceAll("x", "");
 		int index = 0;
 		final String algebraicPiece = algebraic.length() == 3 ? Character.toString(algebraic.charAt(index++)) : "";
-		final Coordinate coordinate = Coordinate.fromAlgebraic(algebraic.subSequence(index, index + 2));
 		// retrieve destination square
-		final Square to = board.getSquareAt(coordinate);
+		final int i = GameUtils.indexFromAlgebraic(algebraic.subSequence(index, index + 2));
+		final Square to = board.getSquareAt(i);
 		// retrieve piece
 		final PieceType type = PieceType.fromAlgebraic(algebraicPiece);
 		Piece piece = null;

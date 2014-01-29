@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import name.matco.checkmate.game.CheckListener;
-import name.matco.checkmate.game.Coordinate;
 import name.matco.checkmate.game.Game;
+import name.matco.checkmate.game.GameUtils;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
@@ -23,37 +23,37 @@ public class GameTest extends InstrumentationTestCase {
 	
 	public void testCoordinate() {
 		try {
-			assertEquals(0, Coordinate.fromAlgebraic("a1").x);
-			assertEquals(0, Coordinate.fromAlgebraic("a1").y);
+			assertEquals(0, GameUtils.indexFromAlgebraic("a1") % GameUtils.CHESSBOARD_SIZE);
+			assertEquals(0, GameUtils.indexFromAlgebraic("a1") / GameUtils.CHESSBOARD_SIZE);
 			
-			assertEquals(7, Coordinate.fromAlgebraic("h1").x);
-			assertEquals(0, Coordinate.fromAlgebraic("h1").y);
+			assertEquals(7, GameUtils.indexFromAlgebraic("h1") % GameUtils.CHESSBOARD_SIZE);
+			assertEquals(0, GameUtils.indexFromAlgebraic("h1") / GameUtils.CHESSBOARD_SIZE);
 			
-			assertEquals(0, Coordinate.fromAlgebraic("a8").x);
-			assertEquals(7, Coordinate.fromAlgebraic("a8").y);
+			assertEquals(0, GameUtils.indexFromAlgebraic("a8") % GameUtils.CHESSBOARD_SIZE);
+			assertEquals(7, GameUtils.indexFromAlgebraic("a8") / GameUtils.CHESSBOARD_SIZE);
 			
-			assertEquals(7, Coordinate.fromAlgebraic("h8").x);
-			assertEquals(7, Coordinate.fromAlgebraic("h8").y);
+			assertEquals(7, GameUtils.indexFromAlgebraic("h8") % GameUtils.CHESSBOARD_SIZE);
+			assertEquals(7, GameUtils.indexFromAlgebraic("h8") / GameUtils.CHESSBOARD_SIZE);
 			
-			assertEquals(3, Coordinate.fromAlgebraic("d1").x);
-			assertEquals(0, Coordinate.fromAlgebraic("d1").y);
+			assertEquals(3, GameUtils.indexFromAlgebraic("d1") % GameUtils.CHESSBOARD_SIZE);
+			assertEquals(0, GameUtils.indexFromAlgebraic("d1") / GameUtils.CHESSBOARD_SIZE);
 			
-			assertEquals(5, Coordinate.fromAlgebraic("f6").x);
-			assertEquals(5, Coordinate.fromAlgebraic("f6").y);
+			assertEquals(5, GameUtils.indexFromAlgebraic("f6") % GameUtils.CHESSBOARD_SIZE);
+			assertEquals(5, GameUtils.indexFromAlgebraic("f6") / GameUtils.CHESSBOARD_SIZE);
 			
 		} catch (final InvalidAlgebraic e) {
 			fail(e.getLocalizedMessage());
 		}
 		
 		try {
-			assertEquals(5, Coordinate.fromAlgebraic("e9").x);
+			assertEquals(5, GameUtils.indexFromAlgebraic("e9"));
 			fail("e9 should not be a valid algebraic notation");
 		} catch (final InvalidAlgebraic e) {
 			// it works!
 		}
 		
 		try {
-			assertEquals(5, Coordinate.fromAlgebraic("i1").y);
+			assertEquals(5, GameUtils.indexFromAlgebraic("i1"));
 			fail("i1 should not be a valid algebraic notation");
 		} catch (final InvalidAlgebraic e) {
 			// it works!
@@ -65,20 +65,10 @@ public class GameTest extends InstrumentationTestCase {
 		
 		assertEquals(game.getBoard().getSquares().length, 64);
 		
-		try {
-			// check some squares
-			assertNotNull(game.getBoard().getSquares()[0]);
-			assertNotNull(game.getBoard().getSquares()[3]);
-			assertNotNull(game.getBoard().getSquares()[63]);
-			
-			// check square retrieving
-			assertEquals(game.getBoard().getSquares()[0], game.getBoard().getSquareAt(0, 0));
-			assertEquals(game.getBoard().getSquares()[3], game.getBoard().getSquareAt(3, 0));
-			assertEquals(game.getBoard().getSquares()[63], game.getBoard().getSquareAt(7, 7));
-			
-		} catch (final OutOfBoardCoordinateException e) {
-			fail(e.getLocalizedMessage());
-		}
+		// check some squares
+		assertNotNull(game.getBoard().getSquares()[0]);
+		assertNotNull(game.getBoard().getSquares()[3]);
+		assertNotNull(game.getBoard().getSquares()[63]);
 	}
 	
 	public void testInitialGame() {
@@ -125,8 +115,8 @@ public class GameTest extends InstrumentationTestCase {
 		
 		try {
 			assertEquals(2, whiteQueenPawnAllowedPosition.size());
-			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(3, 2)));
-			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(3, 3)));
+			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 2))));
+			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 3))));
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -174,8 +164,8 @@ public class GameTest extends InstrumentationTestCase {
 			checkBoardConsistency(game);
 			assertEquals(1, movements.size());
 			assertEquals(whiteQueenPawn, movements.get(0).getPiece());
-			assertEquals(movements.get(0).getFrom(), game.getBoard().getSquareAt(3, 1));
-			assertEquals(movements.get(0).getTo(), game.getBoard().getSquareAt(3, 2));
+			assertEquals(movements.get(0).getFrom(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 1)));
+			assertEquals(movements.get(0).getTo(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 2)));
 		} catch (final OutOfBoardCoordinateException e) {
 			fail(e.getLocalizedMessage());
 		}
@@ -209,18 +199,18 @@ public class GameTest extends InstrumentationTestCase {
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Nc6"));
 			
 			try {
-				assertNotNull(game.getBoard().getSquareAt(5, 6).getPiece());
-				assertTrue(game.getBoard().getSquareAt(5, 6).getPiece().is(PieceType.PAWN, Player.BLACK));
+				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece());
+				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece().is(PieceType.PAWN, Player.BLACK));
 				
-				assertNotNull(game.getBoard().getSquareAt(4, 7).getPiece());
-				assertTrue(game.getBoard().getSquareAt(4, 7).getPiece().is(PieceType.KING, Player.BLACK));
+				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(4, 7)).getPiece());
+				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(4, 7)).getPiece().is(PieceType.KING, Player.BLACK));
 				
-				assertNotNull(game.getBoard().getSquareAt(3, 7).getPiece());
-				assertTrue(game.getBoard().getSquareAt(3, 7).getPiece().is(PieceType.QUEEN, Player.BLACK));
+				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 7)).getPiece());
+				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 7)).getPiece().is(PieceType.QUEEN, Player.BLACK));
 				
-				assertNotNull(game.getBoard().getSquareAt(2, 3).getPiece());
-				Log.i(getClass().getName(), game.getBoard().getSquareAt(2, 3).getPiece().toString());
-				assertTrue(game.getBoard().getSquareAt(2, 3).getPiece().is(PieceType.BISHOP, Player.WHITE));
+				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(2, 3)).getPiece());
+				Log.i(getClass().getName(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(2, 3)).getPiece().toString());
+				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(2, 3)).getPiece().is(PieceType.BISHOP, Player.WHITE));
 			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
@@ -231,9 +221,9 @@ public class GameTest extends InstrumentationTestCase {
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Qxf7"));
 			
 			try {
-				assertNotNull(game.getBoard().getSquareAt(5, 6).getPiece());
-				Log.i(getClass().getName(), game.getBoard().getSquareAt(5, 6).getPiece().toString());
-				assertTrue(game.getBoard().getSquareAt(5, 6).getPiece().is(PieceType.QUEEN, Player.WHITE));
+				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece());
+				Log.i(getClass().getName(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece().toString());
+				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece().is(PieceType.QUEEN, Player.WHITE));
 			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
@@ -278,8 +268,8 @@ public class GameTest extends InstrumentationTestCase {
 			assertEquals(0, checkMates.size());
 			
 			try {
-				assertEquals(game.getBoard().getWhiteKing(), game.getBoard().getSquareAt(5, 2).getPiece());
-				assertEquals(game.getBoard().getBlackKing(), game.getBoard().getSquareAt(5, 5).getPiece());
+				assertEquals(game.getBoard().getWhiteKing(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 2)).getPiece());
+				assertEquals(game.getBoard().getBlackKing(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 5)).getPiece());
 				
 				assertEquals(game.getBoard().getWhiteKing().getAllowedPositions().size(), 4);
 				assertEquals(game.getBoard().getBlackKing().getAllowedPositions().size(), 4);

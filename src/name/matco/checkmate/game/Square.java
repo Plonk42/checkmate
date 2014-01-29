@@ -6,21 +6,20 @@ import name.matco.checkmate.game.piece.Piece;
 public class Square implements Comparable<Square> {
 	
 	private final Board board;
-	// TODO integrate coordinate to square
-	private final Coordinate coordinate;
+	private final int index;
+	private final int x;
+	private final int y;
 	private Piece piece;
 	
 	public Square(final Board board, final int x, final int y) throws OutOfBoardCoordinateException {
-		this(board, new Coordinate(x, y));
-	}
-	
-	public Square(final Board board, final Coordinate c) {
 		this.board = board;
-		this.coordinate = c;
+		this.index = GameUtils.coordinateToIndex(x, y);
+		this.x = x;
+		this.y = y;
 	}
 	
-	public final Coordinate getCoordinate() {
-		return coordinate;
+	public final int getIndex() {
+		return index;
 	}
 	
 	public Board getBoard() {
@@ -36,16 +35,16 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public Square apply(final Movement m) throws OutOfBoardCoordinateException {
-		return board.getSquareAt(new Coordinate(coordinate.x + m.dx, coordinate.y + m.dy));
+		return board.getSquareAt(GameUtils.apply(index, m));
 	}
 	
-	public Movement getMovementTo(final Square s) {
-		return new Movement(s.getCoordinate().x - getCoordinate().x, s.getCoordinate().y - getCoordinate().y);
+	public Movement getMovementTo(final Square to) {
+		return new Movement(to.x - x, to.y - y);
 	}
 	
 	@Override
 	public String toString() {
-		return getCoordinate().toString() + " = " + getAlgebraic();
+		return x + "," + y + " = " + getAlgebraic();
 	}
 	
 	public String getAlgebraic() {
@@ -53,11 +52,11 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public char getFile() {
-		return (char) ('a' + coordinate.x);
+		return (char) ('a' + x);
 	}
 	
 	public char getRank() {
-		return (char) ('1' + coordinate.y);
+		return (char) ('1' + y);
 	}
 	
 	public boolean isEmpty() {
@@ -65,24 +64,23 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public boolean isQueenSide() {
-		return getCoordinate().x <= 3;
+		return x <= 3;
 	}
 	
 	public boolean isKingSide() {
-		return getCoordinate().x >= 4;
+		return x >= 4;
 	}
 	
 	public boolean isPromotionDestination(final Player player) {
-		return getCoordinate().y == player.getOpponent().getBaseline();
+		return y == player.getOpponent().getBaseline();
 	}
 	
 	public boolean isCastlingDestination(final Player player) {
-		final int side = player.getBaseline();
-		return getCoordinate().y == side && (getCoordinate().x == 2 || getCoordinate().x == 6);
+		return y == player.getBaseline() && (x == 2 || x == 6);
 	}
 	
 	@Override
 	public int compareTo(final Square otherSquare) {
-		return GameUtils.coordinateToIndex(getCoordinate()) - GameUtils.coordinateToIndex(otherSquare.getCoordinate());
+		return getIndex() - otherSquare.getIndex();
 	}
 }

@@ -11,30 +11,30 @@ import android.util.Log;
 
 public class Castling extends Move {
 	
-	private final int rookFile;
+	private int rookDestinationIndex;
 	private Rook rook;
 	
 	public Castling(final Player player, final King king, final Square to) {
 		super(player, king, to);
-		rookFile = to.getCoordinate().x + (to.isKingSide() ? -1 : 1);
+		try {
+			this.rookDestinationIndex = to.apply(new Movement(to.isKingSide() ? -1 : 1, 0)).getIndex();
+		} catch (final OutOfBoardCoordinateException e) {
+			// no move could have been done outside board
+			Log.e(getClass().getName(), "Move is outside board", e);
+			this.rookDestinationIndex = -1;
+		}
 	}
 	
 	public Rook getRook() {
 		return rook;
 	}
 	
-	public Coordinate getCorner() {
+	public int getCorner() {
 		return to.isKingSide() ? player.getKingCorner() : player.getQueenCorner();
 	}
 	
-	public Coordinate getRookDestination() {
-		try {
-			return new Coordinate(rookFile, to.getCoordinate().y);
-		} catch (final OutOfBoardCoordinateException e) {
-			// no move could have been done outside board
-			Log.e(getClass().getName(), "Move is outside board", e);
-			return null;
-		}
+	public int getRookDestination() {
+		return rookDestinationIndex;
 	}
 	
 	@Override
@@ -52,7 +52,7 @@ public class Castling extends Move {
 		
 		// move rook
 		rook = (Rook) game.getBoard().getSquareAt(getCorner()).getPiece();
-		Log.d(getClass().getName(), String.format("Found %s at square %s, %d", rook, rook.getSquare(), to.getCoordinate().y));
+		Log.d(getClass().getName(), String.format("Found %s at square %s", rook, rook.getSquare()));
 		game.getBoard().movePiece(rook, game.getBoard().getSquareAt(getRookDestination()));
 		rook.setHasMoved(true);
 	}

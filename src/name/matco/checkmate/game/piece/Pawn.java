@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import name.matco.checkmate.game.GameUtils;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.Movement.Direction;
@@ -48,7 +49,7 @@ public class Pawn extends Piece {
 				movements.add(Collections.singletonList(withEast));
 			} else {
 				// "en passant"
-				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getCoordinate().y - lastMove.getTo().getCoordinate().y) == 2) {
+				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getIndex() - lastMove.getTo().getIndex()) == 2 * GameUtils.CHESSBOARD_SIZE) {
 					if (lastMove.getPiece().equals(getSquare().apply(Direction.EAST.getMovement()).getPiece())) {
 						movements.add(Collections.singletonList(withEast));
 					}
@@ -60,7 +61,7 @@ public class Pawn extends Piece {
 				movements.add(Collections.singletonList(withWest));
 			} else {
 				// "en passant"
-				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getCoordinate().y - lastMove.getTo().getCoordinate().y) == 2) {
+				if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getIndex() - lastMove.getTo().getIndex()) == 2 * GameUtils.CHESSBOARD_SIZE) {
 					if (lastMove.getPiece().equals(getSquare().apply(Direction.WEST.getMovement()).getPiece())) {
 						movements.add(Collections.singletonList(withWest));
 					}

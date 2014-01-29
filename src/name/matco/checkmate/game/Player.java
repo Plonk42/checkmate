@@ -57,18 +57,18 @@ public enum Player {
 	
 	abstract public int getBaseline();
 	
-	public Coordinate getKingCorner() {
+	public int getKingCorner() {
 		try {
-			return new Coordinate(7, getBaseline());
+			return GameUtils.coordinateToIndex(7, getBaseline());
 		} catch (final OutOfBoardCoordinateException e) {
 			// hard-coded coordinate
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public Coordinate getQueenCorner() {
+	public int getQueenCorner() {
 		try {
-			return new Coordinate(0, getBaseline());
+			return GameUtils.coordinateToIndex(0, getBaseline());
 		} catch (final OutOfBoardCoordinateException e) {
 			// hard-coded coordinate
 			throw new RuntimeException(e);

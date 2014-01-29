@@ -127,9 +127,9 @@ public class Game implements Parcelable {
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
 			m = new Castling(getActivePlayer(), (King) p, to);
-		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getCoordinate().x != to.getCoordinate().x)) {
+		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getIndex() % 8 != to.getIndex() % 8)) {
 			try {
-				m = new EnPassant(getBoard(), getActivePlayer(), (Pawn) p, to);
+				m = new EnPassant(getActivePlayer(), (Pawn) p, to);
 			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 				Log.e(getClass().getName(), "Move is outside board", e);

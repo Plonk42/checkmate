@@ -118,7 +118,7 @@ public class Board implements Parcelable {
 			// remove piece from initial square
 			p.getSquare().setPiece(null);
 			// put piece on the right square
-			final Square square = getSquareAt(piece.getSquare().getCoordinate());
+			final Square square = getSquareAt(piece.getSquare().getIndex());
 			square.setPiece(p);
 			p.setSquare(square);
 		}
@@ -166,12 +166,12 @@ public class Board implements Parcelable {
 		}
 	}
 	
-	public Square getSquareAt(final Coordinate coordinate) {
-		return squares[GameUtils.coordinateToIndex(coordinate)];
-	}
-	
-	public Square getSquareAt(final int x, final int y) throws OutOfBoardCoordinateException {
-		return getSquareAt(new Coordinate(x, y));
+	// TODO : check index bounds?
+	// public Square getSquareAt(final int index) throws OutOfBoardCoordinateException {
+	// return squares[GameUtils.checkIndex(index)];
+	// }
+	public Square getSquareAt(final int index) {
+		return squares[index];
 	}
 	
 	public List<Piece> getPieces(final Player player, final PieceType type) {

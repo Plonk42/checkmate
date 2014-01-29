@@ -190,9 +190,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		
 		// draw squares
 		for (final Square s : game.getBoard().getSquares()) {
-			
-			final int x = s.getCoordinate().x;
-			final int y = s.getCoordinate().y;
+			final int index = s.getIndex();
+			final int x = index % GameUtils.CHESSBOARD_SIZE;
+			final int y = index / GameUtils.CHESSBOARD_SIZE;
 			final int left = x * squareSize;
 			final int right = left + squareSize;
 			final int top = boardSize - (y + 1) * squareSize;
@@ -210,9 +210,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 			final Piece p = s.getPiece();
 			// draw piece if it's not moving piece(s)
 			if (p != null && (animatedMove == null || !animatedMove.getRelatedPieces().contains(p))) {
-				
-				final int x = s.getCoordinate().x;
-				final int y = s.getCoordinate().y;
+				final int index = s.getIndex();
+				final int x = index % GameUtils.CHESSBOARD_SIZE;
+				final int y = index / GameUtils.CHESSBOARD_SIZE;
 				final int left = x * squareSize + PIECE_MARGIN;
 				final int right = left + squareSize - 2 * PIECE_MARGIN;
 				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
@@ -275,7 +275,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				final Drawable drawable = getPieceImage(pa.getPiece());
 				
 				final Square s = animatedMoveWay ? pa.getTo() : pa.getFrom();
-				final Movement pam = new Movement(pa.getFrom(), pa.getTo());
+				final Movement pam = pa.getFrom().getMovementTo(pa.getTo());
 				final Movement m = animatedMoveWay ? pam : pam.withInversion();
 				
 				// calculate current position offset
@@ -291,8 +291,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
 				final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
 				
-				final int x = s.getCoordinate().x;
-				final int y = s.getCoordinate().y;
+				final int index = s.getIndex();
+				final int x = index % GameUtils.CHESSBOARD_SIZE;
+				final int y = index / GameUtils.CHESSBOARD_SIZE;
 				final int left = x * squareSize + PIECE_MARGIN;
 				final int right = left + squareSize - 2 * PIECE_MARGIN;
 				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
