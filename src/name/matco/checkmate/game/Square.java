@@ -11,11 +11,11 @@ public class Square implements Comparable<Square> {
 	private final int y;
 	private Piece piece;
 	
-	public Square(final Board board, final int x, final int y) throws OutOfBoardCoordinateException {
+	public Square(final Board board, final int index) throws OutOfBoardCoordinateException {
 		this.board = board;
-		this.index = GameUtils.coordinateToIndex(x, y);
-		this.x = x;
-		this.y = y;
+		this.index = GameUtils.checkIndex(index);
+		this.x = GameUtils.indexToX(index);
+		this.y = GameUtils.indexToY(index);
 	}
 	
 	public final int getIndex() {

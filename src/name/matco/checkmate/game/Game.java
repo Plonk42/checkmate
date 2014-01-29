@@ -127,7 +127,7 @@ public class Game implements Parcelable {
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
 			m = new Castling(getActivePlayer(), (King) p, to);
-		} else if (p.is(PieceType.PAWN) && to.isEmpty() && (p.getSquare().getIndex() % 8 != to.getIndex() % 8)) {
+		} else if (p.is(PieceType.PAWN) && to.isEmpty() && !GameUtils.onSameFile(p.getSquare(), to)) {
 			try {
 				m = new EnPassant(getActivePlayer(), (Pawn) p, to);
 			} catch (final OutOfBoardCoordinateException e) {

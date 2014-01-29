@@ -64,7 +64,7 @@ public class Board implements Parcelable {
 		// init squares
 		for (int i = 0; i < 64; i++) {
 			try {
-				squares[i] = new Square(this, i % 8, i / 8);
+				squares[i] = new Square(this, i);
 			} catch (final OutOfBoardCoordinateException e) {
 				// cannot be raised here
 			}

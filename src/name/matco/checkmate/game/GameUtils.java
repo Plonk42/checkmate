@@ -35,4 +35,20 @@ public class GameUtils {
 		}
 	}
 	
+	public final static int indexToX(final int index) {
+		return index % 8;
+	}
+	
+	public final static int indexToY(final int index) {
+		return index / 8;
+	}
+	
+	public static boolean onSameFile(final Square s1, final Square s2) {
+		return indexToX(s1.getIndex()) == indexToX(s2.getIndex());
+	}
+	
+	public static boolean onSameRank(final Square s1, final Square s2) {
+		return indexToY(s1.getIndex()) == indexToY(s2.getIndex());
+	}
+	
 }
