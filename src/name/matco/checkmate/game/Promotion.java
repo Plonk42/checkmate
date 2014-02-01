@@ -3,7 +3,6 @@ package name.matco.checkmate.game;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.matco.checkmate.game.piece.Pawn;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
 import android.util.Log;
@@ -13,7 +12,7 @@ public class Promotion extends Move {
 	private PieceType chosenType;
 	private Piece promotedPiece;
 	
-	public Promotion(final Player player, final Pawn pawn, final Square to) {
+	public Promotion(final Player player, final Piece pawn, final Square to) {
 		super(player, pawn, to);
 	}
 	
@@ -37,30 +36,17 @@ public class Promotion extends Move {
 	public void doMove(final Game game) {
 		// move the pawn
 		super.doMove(game);
+		// transform pawn
+		getPiece().setType(this.chosenType);
 		
-		// create new piece
-		try {
-			promotedPiece = this.chosenType.getPieceClass().getConstructor(Player.class).newInstance(getPiece().getPlayer());
-			to.setPiece(promotedPiece);
-			promotedPiece.setSquare(to);
-			Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
-			
-			// remove pawn from pieces list
-			game.getBoard().getPieces().remove(getPiece());
-			// add promoted piece in pieces list
-			game.getBoard().getPieces().add(promotedPiece);
-		} catch (final Exception e) {
-			// just no way to come here
-		}
+		Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
 	}
 	
 	@Override
 	public void revertMove(final Game game) {
-		// remove promoted piece from pieces list
-		game.getBoard().getPieces().remove(promotedPiece);
-		// re add pawn in pieces list
-		game.getBoard().getPieces().add(piece);
-		
+		// untransform piece
+		getPiece().setType(PieceType.PAWN);
+		// undo move
 		super.revertMove(game);
 	}
 	

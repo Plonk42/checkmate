@@ -8,14 +8,8 @@ import java.util.Set;
 
 import name.matco.checkmate.game.Movement.Direction;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
-import name.matco.checkmate.game.piece.Bishop;
-import name.matco.checkmate.game.piece.King;
-import name.matco.checkmate.game.piece.Knight;
-import name.matco.checkmate.game.piece.Pawn;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
-import name.matco.checkmate.game.piece.Queen;
-import name.matco.checkmate.game.piece.Rook;
 import name.matco.checkmate.ui.listeners.CaptureListener;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -71,33 +65,33 @@ public class Board implements Parcelable {
 		}
 		
 		// white player
-		whiteKing = new King(4, Player.WHITE);
-		addPiece(0, new Rook(0, Player.WHITE));
-		addPiece(1, new Knight(1, Player.WHITE));
-		addPiece(2, new Bishop(2, Player.WHITE));
-		addPiece(3, new Queen(3, Player.WHITE));
+		whiteKing = new Piece(4, PieceType.KING, Player.WHITE);
+		addPiece(0, new Piece(0, PieceType.ROOK, Player.WHITE));
+		addPiece(1, new Piece(1, PieceType.KNIGHT, Player.WHITE));
+		addPiece(2, new Piece(2, PieceType.BISHOP, Player.WHITE));
+		addPiece(3, new Piece(3, PieceType.QUEEN, Player.WHITE));
 		addPiece(4, whiteKing);
-		addPiece(5, new Bishop(5, Player.WHITE));
-		addPiece(6, new Knight(6, Player.WHITE));
-		addPiece(7, new Rook(7, Player.WHITE));
+		addPiece(5, new Piece(5, PieceType.BISHOP, Player.WHITE));
+		addPiece(6, new Piece(6, PieceType.KNIGHT, Player.WHITE));
+		addPiece(7, new Piece(7, PieceType.ROOK, Player.WHITE));
 		
 		for (int i = 8; i < 16; i++) {
-			addPiece(i, new Pawn(i, Player.WHITE));
+			addPiece(i, new Piece(i, PieceType.PAWN, Player.WHITE));
 		}
 		
 		// black player
-		blackKing = new King(63 - 3, Player.BLACK);
-		addPiece(63 - 0, new Rook(63 - 0, Player.BLACK));
-		addPiece(63 - 1, new Knight(63 - 1, Player.BLACK));
-		addPiece(63 - 2, new Bishop(63 - 2, Player.BLACK));
+		blackKing = new Piece(63 - 3, PieceType.KING, Player.BLACK);
+		addPiece(63 - 0, new Piece(63 - 0, PieceType.ROOK, Player.BLACK));
+		addPiece(63 - 1, new Piece(63 - 1, PieceType.KNIGHT, Player.BLACK));
+		addPiece(63 - 2, new Piece(63 - 2, PieceType.BISHOP, Player.BLACK));
 		addPiece(63 - 3, blackKing);
-		addPiece(63 - 4, new Queen(63 - 4, Player.BLACK));
-		addPiece(63 - 5, new Bishop(63 - 5, Player.BLACK));
-		addPiece(63 - 6, new Knight(63 - 6, Player.BLACK));
-		addPiece(63 - 7, new Rook(63 - 7, Player.BLACK));
+		addPiece(63 - 4, new Piece(63 - 4, PieceType.QUEEN, Player.BLACK));
+		addPiece(63 - 5, new Piece(63 - 5, PieceType.BISHOP, Player.BLACK));
+		addPiece(63 - 6, new Piece(63 - 6, PieceType.KNIGHT, Player.BLACK));
+		addPiece(63 - 7, new Piece(63 - 7, PieceType.ROOK, Player.BLACK));
 		
 		for (int i = 8; i < 16; i++) {
-			addPiece(63 - i, new Pawn(63 - i, Player.BLACK));
+			addPiece(63 - i, new Piece(63 - i, PieceType.PAWN, Player.BLACK));
 		}
 	}
 	

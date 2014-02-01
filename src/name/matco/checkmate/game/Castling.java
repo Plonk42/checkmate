@@ -4,17 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
-import name.matco.checkmate.game.piece.King;
 import name.matco.checkmate.game.piece.Piece;
-import name.matco.checkmate.game.piece.Rook;
 import android.util.Log;
 
 public class Castling extends Move {
 	
 	private int rookDestinationIndex;
-	private Rook rook;
+	private Piece rook;
 	
-	public Castling(final Player player, final King king, final Square to) {
+	public Castling(final Player player, final Piece king, final Square to) {
 		super(player, king, to);
 		try {
 			this.rookDestinationIndex = to.apply(new Movement(to.isKingSide() ? -1 : 1, 0)).getIndex();
@@ -25,7 +23,7 @@ public class Castling extends Move {
 		}
 	}
 	
-	public Rook getRook() {
+	public Piece getRook() {
 		return rook;
 	}
 	
@@ -51,7 +49,7 @@ public class Castling extends Move {
 		super.doMove(game);
 		
 		// move rook
-		rook = (Rook) game.getBoard().getSquareAt(getCorner()).getPiece();
+		rook = game.getBoard().getSquareAt(getCorner()).getPiece();
 		Log.d(getClass().getName(), String.format("Found %s at square %s", rook, rook.getSquare()));
 		game.getBoard().movePiece(rook, game.getBoard().getSquareAt(getRookDestination()));
 		rook.setHasMoved(true);

@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
-import name.matco.checkmate.game.piece.King;
-import name.matco.checkmate.game.piece.Pawn;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
 import name.matco.checkmate.ui.listeners.GameListener;
@@ -126,17 +124,17 @@ public class Game implements Parcelable {
 		Log.d(getClass().getName(), String.format("Retrieve move for %s - has moved: %s, to is castling destination: %s, to is empty: %s", p, p.hasMoved(), to.isCastlingDestination(getActivePlayer()), to.isEmpty()));
 		final Move m;
 		if (p.is(PieceType.KING) && !p.hasMoved() && to.isCastlingDestination(getActivePlayer())) {
-			m = new Castling(getActivePlayer(), (King) p, to);
+			m = new Castling(getActivePlayer(), p, to);
 		} else if (p.is(PieceType.PAWN) && to.isEmpty() && !GameUtils.onSameFile(p.getSquare(), to)) {
 			try {
-				m = new EnPassant(getActivePlayer(), (Pawn) p, to);
+				m = new EnPassant(getActivePlayer(), p, to);
 			} catch (final OutOfBoardCoordinateException e) {
 				// no move could have been done outside board
 				Log.e(getClass().getName(), "Move is outside board", e);
 				return null;
 			}
 		} else if (p.is(PieceType.PAWN) && to.isPromotionDestination(getActivePlayer())) {
-			m = new Promotion(getActivePlayer(), (Pawn) p, to);
+			m = new Promotion(getActivePlayer(), p, to);
 		} else {
 			m = new Move(getActivePlayer(), p, to);
 		}

@@ -12,7 +12,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-public abstract class Piece implements Parcelable {
+public class Piece implements Parcelable {
 	
 	public static boolean is(final Piece piece, final Player player) {
 		return piece.getPlayer().equals(player);
@@ -46,22 +46,31 @@ public abstract class Piece implements Parcelable {
 	};
 	
 	protected final int id;
+	protected PieceType type;
 	protected final Player player;
 	protected Square square;
 	protected boolean hasMoved;
 	
-	public Piece(final int id, final Player player) {
+	public Piece(final int id, final PieceType type, final Player player) {
 		this.id = id;
+		this.type = type;
 		this.player = player;
 	}
 	
 	public Piece(final Parcel parcel) {
 		id = parcel.readInt();
 		player = (Player) parcel.readSerializable();
+		type = (PieceType) parcel.readSerializable();
 		hasMoved = (parcel.readByte() == 1);
 	}
 	
-	public abstract PieceType getType();
+	public void setType(final PieceType type) {
+		this.type = type;
+	}
+	
+	public PieceType getType() {
+		return type;
+	}
 	
 	public final int getImageResource() {
 		return getType().getImageResource(getPlayer());

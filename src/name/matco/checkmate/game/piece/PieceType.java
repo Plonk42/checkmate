@@ -29,11 +29,6 @@ public enum PieceType {
 		}
 		
 		@Override
-		public Class<? extends Piece> getPieceClass() {
-			return Pawn.class;
-		}
-		
-		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_pawn : R.drawable.white_pawn;
 		}
@@ -107,11 +102,6 @@ public enum PieceType {
 		}
 		
 		@Override
-		public Class<? extends Piece> getPieceClass() {
-			return Rook.class;
-		}
-		
-		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_rook : R.drawable.white_rook;
 		}
@@ -135,11 +125,6 @@ public enum PieceType {
 		@Override
 		public String getAlgebraic() {
 			return "N";
-		}
-		
-		@Override
-		public Class<? extends Piece> getPieceClass() {
-			return Knight.class;
 		}
 		
 		@Override
@@ -169,11 +154,6 @@ public enum PieceType {
 		}
 		
 		@Override
-		public Class<? extends Piece> getPieceClass() {
-			return Bishop.class;
-		}
-		
-		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_bishop : R.drawable.white_bishop;
 		}
@@ -197,11 +177,6 @@ public enum PieceType {
 		@Override
 		public String getAlgebraic() {
 			return "Q";
-		}
-		
-		@Override
-		public Class<? extends Piece> getPieceClass() {
-			return Queen.class;
 		}
 		
 		@Override
@@ -230,11 +205,6 @@ public enum PieceType {
 		@Override
 		public String getAlgebraic() {
 			return "K";
-		}
-		
-		@Override
-		public Class<? extends Piece> getPieceClass() {
-			return King.class;
 		}
 		
 		@Override
@@ -324,8 +294,6 @@ public enum PieceType {
 	};
 	
 	abstract public String getAlgebraic();
-	
-	abstract public Class<? extends Piece> getPieceClass();
 	
 	abstract public List<List<Movement>> getAllowedMovements(Piece piece);
 	
