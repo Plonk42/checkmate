@@ -87,7 +87,7 @@ public abstract class Piece implements Parcelable {
 		final Square clonedSquare = clonedPiece.getSquare();
 		
 		final ArrayList<Square> allowed = new ArrayList<Square>();
-		for (final List<Movement> directions : clonedPiece.getAllowedMovements()) {
+		for (final List<Movement> directions : getType().getAllowedMovements(this)) {
 			for (final Movement m : directions) {
 				try {
 					final Square candidate = clonedSquare.apply(m);
@@ -136,8 +136,6 @@ public abstract class Piece implements Parcelable {
 		previousSquare.setPiece(this);
 		candidate.setPiece(previous);
 	}
-	
-	public abstract List<List<Movement>> getAllowedMovements();
 	
 	public String getDescription() {
 		return player + " " + getType();
