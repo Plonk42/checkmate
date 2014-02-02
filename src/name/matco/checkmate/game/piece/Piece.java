@@ -45,13 +45,15 @@ public class Piece implements Parcelable {
 		}
 	};
 	
+	private Board board;
 	protected final int id;
 	protected PieceType type;
 	protected final Player player;
 	protected Square square;
 	protected boolean hasMoved;
 	
-	public Piece(final int id, final PieceType type, final Player player) {
+	public Piece(final Board board, final int id, final PieceType type, final Player player) {
+		this.board = board;
 		this.id = id;
 		this.type = type;
 		this.player = player;
@@ -62,6 +64,14 @@ public class Piece implements Parcelable {
 		player = (Player) parcel.readSerializable();
 		type = (PieceType) parcel.readSerializable();
 		hasMoved = (parcel.readByte() == 1);
+	}
+	
+	public Board getBoard() {
+		return board;
+	}
+	
+	public void setBoard(final Board board) {
+		this.board = board;
 	}
 	
 	public void setType(final PieceType type) {
