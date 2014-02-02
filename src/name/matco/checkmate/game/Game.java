@@ -45,8 +45,6 @@ public class Game implements Parcelable {
 	private List<Move> moves = new ArrayList<Move>();
 	private int progression = 0;
 	
-	private Player activePlayer;
-	
 	// no-arg constructor
 	public Game() {
 		Log.i(getClass().getName(), "Instantiating new Game()");
@@ -56,7 +54,6 @@ public class Game implements Parcelable {
 	public Game(final Parcel in) {
 		Log.i(getClass().getName(), "Restoring Game() from Parcel");
 		board = new Board(in);
-		activePlayer = (Player) in.readSerializable();
 		progression = in.readInt();
 		// TODO : parcel moves;
 		// in.readList(this.moves, null);
@@ -75,9 +72,7 @@ public class Game implements Parcelable {
 	private void init() {
 		board = new Board();
 		moves.clear();
-		progression = 0;
-		
-		setPlayer(Player.WHITE);
+		setProgression(0);
 		
 		for (final GameStateListener gl : gameStateListeners) {
 			gl.onGameInit();
@@ -94,6 +89,17 @@ public class Game implements Parcelable {
 	
 	public int getProgression() {
 		return progression;
+	}
+	
+	public void setProgression(final int progression) {
+		this.progression = progression;
+		for (final GameStateListener gl : gameStateListeners) {
+			gl.onPlayerChange(getActivePlayer());
+		}
+	}
+	
+	public Player getActivePlayer() {
+		return progression % 2 == 0 ? Player.WHITE : Player.BLACK;
 	}
 	
 	public boolean isFirstMove() {
@@ -149,9 +155,8 @@ public class Game implements Parcelable {
 			moves = moves.subList(0, progression);
 		}
 		moves.add(m);
-		progression = moves.size();
 		
-		playMoveWithoutLog(m);
+		playMoveWithoutLog(m, true);
 		
 		Log.i(getClass().getName(), String.format("Check check for player %s", getActivePlayer()));
 		if (board.isCheck(getActivePlayer())) {
@@ -194,32 +199,13 @@ public class Game implements Parcelable {
 			mv.onMovement(m, way);
 		}
 		
-		// change active player
-		nextPlayer();
-	}
-	
-	private void playMoveWithoutLog(final Move m) {
-		playMoveWithoutLog(m, true);
-	}
-	
-	public Player getActivePlayer() {
-		return activePlayer;
-	}
-	
-	private void nextPlayer() {
-		setPlayer(activePlayer.getOpponent());
-	}
-	
-	private void setPlayer(final Player player) {
-		activePlayer = player;
-		for (final GameStateListener gl : gameStateListeners) {
-			gl.onPlayerChange(activePlayer);
-		}
+		// manage progression
+		setProgression(progression + (way ? 1 : -1));
 	}
 	
 	public boolean goPrevious() {
 		if (progression > 0) {
-			playMoveWithoutLog(moves.get(--progression), false);
+			playMoveWithoutLog(moves.get(progression - 1), false);
 			return true;
 		}
 		return false;
@@ -227,7 +213,7 @@ public class Game implements Parcelable {
 	
 	public boolean goNext() {
 		if (progression < moves.size()) {
-			playMoveWithoutLog(moves.get(progression++));
+			playMoveWithoutLog(moves.get(progression + 1), true);
 			return true;
 		}
 		return false;
@@ -236,7 +222,6 @@ public class Game implements Parcelable {
 	/*
 	 * Listeners
 	 */
-	
 	public void addGameListener(final GameListener gui) {
 		addGameStateListeners(gui);
 		addMovementListener(gui);
@@ -281,7 +266,6 @@ public class Game implements Parcelable {
 	
 	@Override
 	public void writeToParcel(final Parcel dest, final int flags) {
-		dest.writeSerializable(activePlayer);
 		dest.writeInt(progression);
 		// TODO : parcel moves
 		// dest.writeList(moves);
