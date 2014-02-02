@@ -35,6 +35,10 @@ public class GameUtils {
 		}
 	}
 	
+	public final static String algebraicFromIndex(final int index) {
+		return String.format("%s%s", 'a' + indexToX(index), '1' + indexToY(index));
+	}
+	
 	public final static int indexToX(final int index) {
 		return index % 8;
 	}
