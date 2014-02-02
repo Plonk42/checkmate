@@ -122,12 +122,12 @@ public class Move implements Parcelable {
 			capturedPiece.getSquare().setPiece(null);
 			capturedPiece.setSquare(null);
 		}
-		game.getBoard().movePiece(piece, to);
+		game.getBoard().movePiece(piece, to.getIndex());
 		piece.setHasMoved(true);
 	}
 	
 	public void revertMove(final Game game) {
-		game.getBoard().movePiece(piece, from);
+		game.getBoard().movePiece(piece, from.getIndex());
 		if (capturedPiece != null) {
 			game.getBoard().removeCapturedPiece(capturedPiece);
 			game.getBoard().getPieces().add(capturedPiece);

@@ -252,7 +252,7 @@ public enum PieceType {
 						isKingSideCastlingValid = false;
 						break;
 					}
-					piece.getBoard().movePiece(piece, s);
+					piece.getBoard().movePiece(piece, s.getIndex());
 					// FIXME replace king at its previous location
 					if (piece.getBoard().isCheck(piece.getPlayer())) {
 						isKingSideCastlingValid = false;
@@ -271,7 +271,7 @@ public enum PieceType {
 						isQueenSideCastlingValid = false;
 						break;
 					}
-					piece.getBoard().movePiece(piece, s);
+					piece.getBoard().movePiece(piece, s.getIndex());
 					// FIXME replace king at its previous location
 					if (piece.getBoard().isCheck(piece.getPlayer())) {
 						isQueenSideCastlingValid = false;

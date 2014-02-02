@@ -194,10 +194,10 @@ public class Board implements Parcelable {
 		pieces.add(piece);
 	}
 	
-	public void movePiece(final Piece p, final Square to) {
+	public void movePiece(final Piece p, final int index) {
 		p.getSquare().setPiece(null);
-		to.setPiece(p);
-		p.setSquare(to);
+		getSquareAt(index).setPiece(p);
+		p.setSquare(getSquareAt(index));
 	}
 	
 	// improve this by describing which piece can do what kind of movement
@@ -302,14 +302,14 @@ public class Board implements Parcelable {
 					// apply movement
 					// FIXME : that's dangerous and that's ugly
 					final Piece capturedPiece = square.getPiece();
-					movePiece(piece, square);
+					movePiece(piece, square.getIndex());
 					
 					final boolean isCheck = isCheck(player);
 					
 					// revert back to original position
-					movePiece(piece, originalPieceSquare);
+					movePiece(piece, originalPieceSquare.getIndex());
 					if (capturedPiece != null) {
-						movePiece(capturedPiece, square);
+						movePiece(capturedPiece, square.getIndex());
 					}
 					
 					if (!isCheck) {
