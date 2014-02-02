@@ -5,8 +5,8 @@ import name.matco.checkmate.game.piece.Piece;
 
 public class EnPassant extends Move {
 	
-	public EnPassant(final Player player, final Piece pawn, final Square to) throws OutOfBoardCoordinateException {
-		super(player, pawn, to);
+	public EnPassant(final Board board, final Player player, final Piece pawn, final Square to) throws OutOfBoardCoordinateException {
+		super(board, player, pawn, to);
 		this.capturedPiece = to.apply(player.getForward().getMovement().withInversion()).getPiece();
 	}
 	

@@ -12,8 +12,8 @@ public class Castling extends Move {
 	private int rookDestinationIndex;
 	private Piece rook;
 	
-	public Castling(final Player player, final Piece king, final Square to) {
-		super(player, king, to);
+	public Castling(final Board board, final Player player, final Piece king, final Square to) {
+		super(board, player, king, to);
 		try {
 			this.rookDestinationIndex = to.apply(new Movement(to.isKingSide() ? -1 : 1, 0)).getIndex();
 		} catch (final OutOfBoardCoordinateException e) {

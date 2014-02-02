@@ -12,8 +12,8 @@ public class Promotion extends Move {
 	private PieceType chosenType;
 	private Piece promotedPiece;
 	
-	public Promotion(final Player player, final Piece pawn, final Square to) {
-		super(player, pawn, to);
+	public Promotion(final Board board, final Player player, final Piece pawn, final Square to) {
+		super(board, player, pawn, to);
 	}
 	
 	public void setChosenType(final PieceType chosenType) {

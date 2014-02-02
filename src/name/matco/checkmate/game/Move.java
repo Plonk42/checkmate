@@ -27,6 +27,7 @@ public class Move implements Parcelable {
 		}
 	};
 	
+	protected Board board;
 	protected final Player player;
 	protected final Piece piece;
 	protected Piece capturedPiece;
@@ -59,10 +60,11 @@ public class Move implements Parcelable {
 			}
 		}
 		
-		return new Move(player, piece, to);
+		return new Move(board, player, piece, to);
 	}
 	
-	public Move(final Player player, final Piece piece, final Square to) {
+	public Move(final Board board, final Player player, final Piece piece, final Square to) {
+		this.board = board;
 		this.player = player;
 		this.piece = piece;
 		this.pieceFirstMove = !piece.hasMoved();
