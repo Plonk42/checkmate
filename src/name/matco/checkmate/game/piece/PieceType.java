@@ -59,7 +59,7 @@ public enum PieceType {
 				movements.add(forwardMovements);
 				
 				// pawn can move on diagonal if there is a piece to capture or "en passant"capture
-				final Move lastMove = piece.getSquare().getBoard().getLastMove();
+				final Move lastMove = piece.getBoard().getLastMove();
 				final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
 				if (piece.getSquare().apply(withEast).getPiece() != null) {
 					movements.add(Collections.singletonList(withEast));
@@ -224,7 +224,7 @@ public enum PieceType {
 				return Movement.KING_MOVEMENTS;
 			}
 			// king is in check
-			if (piece.getSquare().getBoard().isCheck(piece.getPlayer())) {
+			if (piece.getBoard().isCheck(piece.getPlayer())) {
 				return Movement.KING_MOVEMENTS;
 			}
 			// castling
@@ -232,11 +232,11 @@ public enum PieceType {
 			boolean isQueenSideCastlingValid = true;
 			
 			// rook must be at its original square
-			final Square kingCorner = piece.getSquare().getBoard().getSquareAt(piece.getPlayer().getKingCorner());
+			final Square kingCorner = piece.getBoard().getSquareAt(piece.getPlayer().getKingCorner());
 			if (kingCorner.getPiece() == null || kingCorner.getPiece().hasMoved() || !kingCorner.getPiece().is(PieceType.ROOK, piece.getPlayer())) {
 				isKingSideCastlingValid = false;
 			}
-			final Square queenCorner = piece.getSquare().getBoard().getSquareAt(piece.getPlayer().getQueenCorner());
+			final Square queenCorner = piece.getBoard().getSquareAt(piece.getPlayer().getQueenCorner());
 			if (queenCorner.getPiece() == null || queenCorner.getPiece().hasMoved() || !queenCorner.getPiece().is(PieceType.ROOK, piece.getPlayer())) {
 				isQueenSideCastlingValid = false;
 			}
@@ -247,14 +247,14 @@ public enum PieceType {
 			// all squares between king and rook must be empty and king must no be in check in all squares
 			if (isKingSideCastlingValid) {
 				for (int i = kingCorner.getIndex(); i <= piece.getSquare().getIndex() - 1; i++) {
-					final Square s = piece.getSquare().getBoard().getSquareAt(i);
+					final Square s = piece.getBoard().getSquareAt(i);
 					if (!s.isEmpty()) {
 						isKingSideCastlingValid = false;
 						break;
 					}
-					piece.getSquare().getBoard().movePiece(piece, s);
+					piece.getBoard().movePiece(piece, s);
 					// FIXME replace king at its previous location
-					if (piece.getSquare().getBoard().isCheck(piece.getPlayer())) {
+					if (piece.getBoard().isCheck(piece.getPlayer())) {
 						isKingSideCastlingValid = false;
 						break;
 					}
@@ -266,14 +266,14 @@ public enum PieceType {
 			// all squares between king and rook must be empty and king must no be in check in all squares
 			if (isQueenSideCastlingValid) {
 				for (int i = piece.getSquare().getIndex() + 1; i <= queenCorner.getIndex() - 1; i++) {
-					final Square s = piece.getSquare().getBoard().getSquareAt(i);
+					final Square s = piece.getBoard().getSquareAt(i);
 					if (!s.isEmpty()) {
 						isQueenSideCastlingValid = false;
 						break;
 					}
-					piece.getSquare().getBoard().movePiece(piece, s);
+					piece.getBoard().movePiece(piece, s);
 					// FIXME replace king at its previous location
-					if (piece.getSquare().getBoard().isCheck(piece.getPlayer())) {
+					if (piece.getBoard().isCheck(piece.getPlayer())) {
 						isQueenSideCastlingValid = false;
 						break;
 					}

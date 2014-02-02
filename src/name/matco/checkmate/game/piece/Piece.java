@@ -101,7 +101,7 @@ public class Piece implements Parcelable {
 	public List<Square> getAllowedPositions() {
 		Log.i(getClass().getName(), String.format("Check allowed positions for piece %s", this));
 		
-		final Board clonedBoard = new Board(getSquare().getBoard());
+		final Board clonedBoard = new Board(getBoard());
 		final Piece clonedPiece = clonedBoard.getPiece(id);
 		final Square clonedSquare = clonedPiece.getSquare();
 		
