@@ -7,8 +7,25 @@ import java.util.Set;
 import name.matco.checkmate.game.exception.InvalidAlgebraic;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Move {
+public class Move implements Parcelable {
+	
+	// TODO : choose a better key?
+	public static final String PARCELABLE_KEY = Move.class.getName();
+	
+	public static final Parcelable.Creator<Move> CREATOR = new Parcelable.Creator<Move>() {
+		@Override
+		public Move createFromParcel(final Parcel in) {
+			return new Move(in);
+		}
+		
+		@Override
+		public Move[] newArray(final int size) {
+			return new Move[size];
+		}
+	};
 	
 	protected final Player player;
 	protected final Piece piece;
@@ -51,8 +68,17 @@ public class Move {
 		this.pieceFirstMove = !piece.hasMoved();
 		this.from = piece.getSquare();
 		this.to = to;
-		this.movement = from.getMovementTo(to);
-		this.capturedPiece = to.getPiece();
+		movement = from.getMovementTo(to);
+		capturedPiece = to.getPiece();
+	}
+	
+	public Move(final Parcel in) {
+		player = Player.valueOf(in.readString());
+		piece = in.readParcelable(null);
+		from = in.readParcelable(null);
+		to = in.readParcelable(null);
+		movement = from.getMovementTo(to);
+		capturedPiece = to.getPiece();
 	}
 	
 	public Player getPlayer() {
@@ -127,6 +153,19 @@ public class Move {
 	@Override
 	public String toString() {
 		return capturedPiece == null ? String.format("%s moves %s from %s to %s", piece, movement, from, to) : String.format("%s moves %s  from %s to %s and captures %s", piece, movement, from, to, capturedPiece);
+	}
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	
+	@Override
+	public void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeString(player.name());
+		dest.writeParcelable(piece, 0);
+		dest.writeInt(from.getIndex());
+		dest.writeInt(to.getIndex());
 	}
 	
 }
