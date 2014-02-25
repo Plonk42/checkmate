@@ -44,7 +44,7 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 		
 		game = getArguments().getParcelable(Game.PARCELABLE_KEY);
 		Log.i(getClass().getName(), String.format("Game restored from arguments : %s", game));
-		Log.i(getClass().getName(), String.format("Game move size : %s", game.getMoves().size()));
+		Log.i(getClass().getName(), String.format("Game move size : %s", game.getBoard().getMoves().size()));
 		
 		algebraic = (ListView) getActivity().findViewById(R.id.algebraic);
 		algebraic.setDividerHeight(0);
@@ -66,7 +66,7 @@ public class AlgebraicFragment extends Fragment implements MovementListener, Gam
 		
 		// white -> black -> white -> black ...
 		TreeMap<String, String> move = null;
-		for (final Move m : game.getMoves()) {
+		for (final Move m : game.getBoard().getMoves()) {
 			if (Player.WHITE.equals(m.getPlayer())) {
 				move = new TreeMap<String, String>();
 				move.put(MOVE_INDEX, Integer.toString(moves.size() + 1));

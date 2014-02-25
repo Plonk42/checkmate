@@ -1,6 +1,5 @@
 package name.matco.checkmate.game;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +41,6 @@ public class Game implements Parcelable {
 	private Date _startDate;
 	private Date _endDate;
 	
-	private List<Move> moves = new ArrayList<Move>();
 	private int progression = 0;
 	
 	// no-arg constructor
@@ -55,11 +53,6 @@ public class Game implements Parcelable {
 		Log.i(getClass().getName(), "Restoring Game() from Parcel");
 		board = new Board(in);
 		progression = in.readInt();
-		// TODO : parcel moves;
-		// in.readList(this.moves, null);
-		for (int i = 0; i < progression; i++) {
-			moves.add(new Move(board, null, null, null));
-		}
 		
 		// for (final Piece p :this.pieces) {
 		// getSquareAt(p.getSquare().getCoordinate());
@@ -71,7 +64,6 @@ public class Game implements Parcelable {
 	
 	private void init() {
 		board = new Board();
-		moves.clear();
 		setProgression(0);
 		
 		for (final GameStateListener gl : gameStateListeners) {
@@ -107,15 +99,11 @@ public class Game implements Parcelable {
 	}
 	
 	public boolean isLastMove() {
-		return progression == moves.size();
-	}
-	
-	public List<Move> getMoves() {
-		return moves;
+		return progression == board.getMoves().size();
 	}
 	
 	public Move getLastMove() {
-		return moves.size() > 0 ? moves.get(progression - 1) : null;
+		return board.getMoves().size() > 0 ? board.getMoves().get(progression - 1) : null;
 	}
 	
 	public void reset() {
@@ -151,10 +139,12 @@ public class Game implements Parcelable {
 		Log.i(getClass().getName(), String.format("Logging : %s = %s", m.getAlgebraic(), m));
 		
 		// log movement
-		if (progression < moves.size()) {
-			moves = moves.subList(0, progression);
+		if (progression < board.getMoves().size()) {
+			final List<Move> moves = board.getMoves().subList(0, progression);
+			board.getMoves().clear();
+			board.getMoves().addAll(moves);
 		}
-		moves.add(m);
+		board.getMoves().add(m);
 		
 		playMoveWithoutLog(m, true);
 		
@@ -187,12 +177,6 @@ public class Game implements Parcelable {
 		else {
 			m.revertMove(this);
 		}
-		if (progression > 0) {
-			board.setLastMove(moves.get(progression - 1));
-		}
-		else {
-			board.setLastMove(null);
-		}
 		
 		// manage listeners
 		for (final MovementListener mv : movementListeners) {
@@ -205,15 +189,15 @@ public class Game implements Parcelable {
 	
 	public boolean goPrevious() {
 		if (progression > 0) {
-			playMoveWithoutLog(moves.get(progression - 1), false);
+			playMoveWithoutLog(board.getMoves().get(progression - 1), false);
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean goNext() {
-		if (progression < moves.size()) {
-			playMoveWithoutLog(moves.get(progression + 1), true);
+		if (progression < board.getMoves().size()) {
+			playMoveWithoutLog(board.getMoves().get(progression + 1), true);
 			return true;
 		}
 		return false;

@@ -39,7 +39,7 @@ public class Board implements Parcelable {
 	private final Piece whiteKing;
 	private final Piece blackKing;
 	
-	private Move lastMove;
+	private final List<Move> moves = Collections.synchronizedList(new ArrayList<Move>());
 	
 	// listeners
 	private final Set<CaptureListener> captureListeners = new HashSet<CaptureListener>();
@@ -47,6 +47,7 @@ public class Board implements Parcelable {
 	public Board(final Parcel in) {
 		in.readList(this.pieces, null);
 		in.readList(this.capturedPieces, null);
+		in.readList(this.moves, null);
 		
 		whiteKing = getPieces(Player.WHITE, PieceType.KING).get(0);
 		blackKing = getPieces(Player.BLACK, PieceType.KING).get(0);
@@ -54,6 +55,7 @@ public class Board implements Parcelable {
 	
 	public Board() {
 		capturedPieces.clear();
+		moves.clear();
 		
 		// init squares
 		for (int i = 0; i < 64; i++) {
@@ -116,6 +118,8 @@ public class Board implements Parcelable {
 			square.setPiece(p);
 			p.setSquare(square);
 		}
+		
+		moves.addAll(board.getMoves());
 	}
 	
 	public Square[] getSquares() {
@@ -126,12 +130,12 @@ public class Board implements Parcelable {
 		return pieces;
 	}
 	
-	public Move getLastMove() {
-		return lastMove;
+	public List<Move> getMoves() {
+		return moves;
 	}
 	
-	public void setLastMove(final Move lastMove) {
-		this.lastMove = lastMove;
+	public Move getLastMove() {
+		return moves.isEmpty() ? null : moves.get(moves.size() - 1);
 	}
 	
 	public final Piece getWhiteKing() {
