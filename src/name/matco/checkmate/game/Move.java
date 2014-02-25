@@ -91,10 +91,6 @@ public class Move implements Parcelable {
 		return piece;
 	}
 	
-	public Movement getMovement() {
-		return movement;
-	}
-	
 	public Set<Piece> getRelatedPieces() {
 		return Collections.singleton(getPiece());
 	}
