@@ -67,11 +67,11 @@ public class Board implements Parcelable {
 		}
 		
 		// white player
-		whiteKing = new Piece(this, 4, PieceType.KING, Player.WHITE);
 		addPiece(0, new Piece(this, 0, PieceType.ROOK, Player.WHITE));
 		addPiece(1, new Piece(this, 1, PieceType.KNIGHT, Player.WHITE));
 		addPiece(2, new Piece(this, 2, PieceType.BISHOP, Player.WHITE));
 		addPiece(3, new Piece(this, 3, PieceType.QUEEN, Player.WHITE));
+		whiteKing = new Piece(this, 4, PieceType.KING, Player.WHITE);
 		addPiece(4, whiteKing);
 		addPiece(5, new Piece(this, 5, PieceType.BISHOP, Player.WHITE));
 		addPiece(6, new Piece(this, 6, PieceType.KNIGHT, Player.WHITE));
@@ -82,10 +82,10 @@ public class Board implements Parcelable {
 		}
 		
 		// black player
-		blackKing = new Piece(this, 63 - 3, PieceType.KING, Player.BLACK);
 		addPiece(63 - 0, new Piece(this, 63 - 0, PieceType.ROOK, Player.BLACK));
 		addPiece(63 - 1, new Piece(this, 63 - 1, PieceType.KNIGHT, Player.BLACK));
 		addPiece(63 - 2, new Piece(this, 63 - 2, PieceType.BISHOP, Player.BLACK));
+		blackKing = new Piece(this, 63 - 3, PieceType.KING, Player.BLACK);
 		addPiece(63 - 3, blackKing);
 		addPiece(63 - 4, new Piece(this, 63 - 4, PieceType.QUEEN, Player.BLACK));
 		addPiece(63 - 5, new Piece(this, 63 - 5, PieceType.BISHOP, Player.BLACK));
@@ -344,5 +344,6 @@ public class Board implements Parcelable {
 	public void writeToParcel(final Parcel dest, final int flags) {
 		dest.writeList(pieces);
 		dest.writeList(capturedPieces);
+		dest.writeList(moves);
 	}
 }
