@@ -53,7 +53,7 @@ public class Promotion extends Move {
 	@Override
 	public String getAlgebraic() {
 		final StringBuilder algebraic = new StringBuilder();
-		algebraic.append(to.getAlgebraic());
+		algebraic.append(getSquareTo().getAlgebraic());
 		algebraic.append("=");
 		algebraic.append(chosenType.getAlgebraic());
 		return algebraic.toString();

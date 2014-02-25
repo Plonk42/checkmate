@@ -12,7 +12,7 @@ public class EnPassant extends Move {
 	
 	@Override
 	public String getAlgebraic() {
-		return String.format("%sx%se.p.", piece.getSquare().getFile(), to.getAlgebraic());
+		return String.format("%sx%se.p.", piece.getSquare().getFile(), getSquareTo().getAlgebraic());
 	}
 	
 	@Override

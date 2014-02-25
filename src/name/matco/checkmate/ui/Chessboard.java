@@ -249,26 +249,26 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 			// piece(s) to animate
 			Set<PieceMovement> pieceMovements;
 			
-			// some special moves have a special animation
+			// some moves have a special animation
 			if (animatedMove instanceof Promotion) {
 				final Promotion promotion = (Promotion) animatedMove;
 				PieceMovement pieceMovement;
 				if (endOfMove && animatedMoveWay) {
-					pieceMovement = new PieceMovement(promotion.getPromotedPiece(), promotion.getTo(), promotion.getTo());
+					pieceMovement = new PieceMovement(promotion.getPromotedPiece(), promotion.getSquareTo(), promotion.getSquareTo());
 				}
 				else {
-					pieceMovement = new PieceMovement(promotion.getPiece(), promotion.getFrom(), promotion.getTo());
+					pieceMovement = new PieceMovement(promotion.getPiece(), promotion.getSquareFrom(), promotion.getSquareTo());
 				}
 				pieceMovements = Collections.singleton(pieceMovement);
 			}
 			else if (animatedMove instanceof Castling) {
 				final Castling castling = (Castling) animatedMove;
 				pieceMovements = new HashSet<PieceMovement>();
-				pieceMovements.add(new PieceMovement(castling.getPiece(), castling.getFrom(), castling.getTo()));
+				pieceMovements.add(new PieceMovement(castling.getPiece(), castling.getSquareFrom(), castling.getSquareTo()));
 				pieceMovements.add(new PieceMovement(castling.getRook(), game.getBoard().getSquareAt(castling.getCorner()), game.getBoard().getSquareAt(castling.getRookDestination())));
 			}
 			else {
-				pieceMovements = Collections.singleton(new PieceMovement(animatedMove.getPiece(), animatedMove.getFrom(), animatedMove.getTo()));
+				pieceMovements = Collections.singleton(new PieceMovement(animatedMove.getPiece(), animatedMove.getSquareFrom(), animatedMove.getSquareTo()));
 			}
 			
 			for (final PieceMovement pa : pieceMovements) {

@@ -65,7 +65,7 @@ public enum PieceType {
 					movements.add(Collections.singletonList(withEast));
 				} else {
 					// "en passant"
-					if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, piece.getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getIndex() - lastMove.getTo().getIndex()) == 2 * GameUtils.CHESSBOARD_SIZE) {
+					if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, piece.getPlayer().getOpponent()) && Math.abs(lastMove.getFrom() - lastMove.getTo()) == 2 * GameUtils.CHESSBOARD_SIZE) {
 						if (lastMove.getPiece().equals(piece.getSquare().apply(Direction.EAST.getMovement()).getPiece())) {
 							movements.add(Collections.singletonList(withEast));
 						}
@@ -77,7 +77,7 @@ public enum PieceType {
 					movements.add(Collections.singletonList(withWest));
 				} else {
 					// "en passant"
-					if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, piece.getPlayer().getOpponent()) && Math.abs(lastMove.getFrom().getIndex() - lastMove.getTo().getIndex()) == 2 * GameUtils.CHESSBOARD_SIZE) {
+					if (lastMove != null && lastMove.getPiece().is(PieceType.PAWN, piece.getPlayer().getOpponent()) && Math.abs(lastMove.getFrom() - lastMove.getTo()) == 2 * GameUtils.CHESSBOARD_SIZE) {
 						if (lastMove.getPiece().equals(piece.getSquare().apply(Direction.WEST.getMovement()).getPiece())) {
 							movements.add(Collections.singletonList(withWest));
 						}

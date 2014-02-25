@@ -28,7 +28,7 @@ public class Castling extends Move {
 	}
 	
 	public int getCorner() {
-		return to.isKingSide() ? player.getKingCorner() : player.getQueenCorner();
+		return getSquareTo().isKingSide() ? player.getKingCorner() : player.getQueenCorner();
 	}
 	
 	public int getRookDestination() {
@@ -58,17 +58,17 @@ public class Castling extends Move {
 	@Override
 	public void revertMove(final Game game) {
 		// revert king move
-		game.getBoard().movePiece(piece, from.getIndex());
+		game.getBoard().movePiece(piece, from);
 		piece.setHasMoved(false);
 		
 		// revert rook move
-		game.getBoard().movePiece(rook, to.isKingSide() ? player.getKingCorner() : player.getQueenCorner());
+		game.getBoard().movePiece(rook, getCorner());
 		rook.setHasMoved(false);
 	}
 	
 	@Override
 	public String getAlgebraic() {
-		return to.isKingSide() ? "0-0" : "0-0-0";
+		return getSquareTo().isKingSide() ? "0-0" : "0-0-0";
 	}
 	
 	@Override

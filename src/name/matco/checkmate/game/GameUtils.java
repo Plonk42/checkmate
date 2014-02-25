@@ -25,6 +25,14 @@ public class GameUtils {
 		return checkIndex(index + m.dy * CHESSBOARD_SIZE + m.dx);
 	}
 	
+	public final static Movement getMovement(final int from, final int to) {
+		final int fromX = indexToX(from);
+		final int fromY = indexToX(from);
+		final int toX = indexToX(to);
+		final int toY = indexToX(to);
+		return new Movement(toX - fromX, toY - fromY);
+	}
+	
 	public final static int indexFromAlgebraic(final CharSequence algebraic) throws InvalidAlgebraic {
 		final char x = algebraic.charAt(0);
 		final char y = algebraic.charAt(1);

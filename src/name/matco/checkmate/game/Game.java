@@ -164,12 +164,12 @@ public class Game implements Parcelable {
 			if (board.isCheckmate(getActivePlayer())) {
 				Log.i(getClass().getName(), String.format("Checkmate"));
 				for (final CheckListener cv : checkListeners) {
-					cv.onCheckmate(m.getPiece(), m.getFrom(), m.getTo());
+					cv.onCheckmate(m.getPiece(), m.getSquareFrom(), m.getSquareTo());
 				}
 			}
 			else {
 				for (final CheckListener cv : checkListeners) {
-					cv.onCheck(m.getPiece(), m.getFrom(), m.getTo());
+					cv.onCheck(m.getPiece(), m.getSquareFrom(), m.getSquareTo());
 				}
 			}
 		}
