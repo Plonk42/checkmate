@@ -27,9 +27,9 @@ public class GameUtils {
 	
 	public final static Movement getMovement(final int from, final int to) {
 		final int fromX = indexToX(from);
-		final int fromY = indexToX(from);
+		final int fromY = indexToY(from);
 		final int toX = indexToX(to);
-		final int toY = indexToX(to);
+		final int toY = indexToY(to);
 		return new Movement(toX - fromX, toY - fromY);
 	}
 	
