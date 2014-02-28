@@ -7,15 +7,19 @@ public class Square implements Comparable<Square> {
 	
 	private final Board board;
 	private final int index;
-	private final int x;
-	private final int y;
 	private Piece piece;
 	
 	public Square(final Board board, final int index) throws OutOfBoardCoordinateException {
 		this.board = board;
 		this.index = GameUtils.checkIndex(index);
-		this.x = GameUtils.indexToX(index);
-		this.y = GameUtils.indexToY(index);
+	}
+	
+	public int getX() {
+		return GameUtils.indexToX(index);
+	}
+	
+	public int getY() {
+		return GameUtils.indexToY(index);
 	}
 	
 	public final int getIndex() {
@@ -39,12 +43,12 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public Movement getMovementTo(final Square to) {
-		return new Movement(to.x - x, to.y - y);
+		return new Movement(to.getX() - getX(), to.getY() - getY());
 	}
 	
 	@Override
 	public String toString() {
-		return x + "," + y + " = " + getAlgebraic();
+		return getX() + "," + getY() + " = " + getAlgebraic();
 	}
 	
 	public String getAlgebraic() {
@@ -52,11 +56,11 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public char getFile() {
-		return (char) ('a' + x);
+		return (char) ('a' + getX());
 	}
 	
 	public char getRank() {
-		return (char) ('1' + y);
+		return (char) ('1' + getY());
 	}
 	
 	public boolean isEmpty() {
@@ -64,19 +68,19 @@ public class Square implements Comparable<Square> {
 	}
 	
 	public boolean isQueenSide() {
-		return x <= 3;
+		return getX() <= 3;
 	}
 	
 	public boolean isKingSide() {
-		return x >= 4;
+		return getX() >= 4;
 	}
 	
 	public boolean isPromotionDestination(final Player player) {
-		return y == player.getOpponent().getBaseline();
+		return getY() == player.getOpponent().getBaseline();
 	}
 	
 	public boolean isCastlingDestination(final Player player) {
-		return y == player.getBaseline() && (x == 2 || x == 6);
+		return getY() == player.getBaseline() && (getX() == 2 || getX() == 6);
 	}
 	
 	@Override
