@@ -1,9 +1,17 @@
 <resources>
 
-	<color name="black_overlay">#66000000</color>
-	<color name="white">#FFFFFFFF</color>
-	<color name="black">#FF000000</color>
-	<color name="grey">#FF444444</color>
-	<color name="red">#FFFF0000</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="grey">#FF444444</color>
+    <color name="red">#FFFF0000</color>
+
+    <!-- chessboard -->
+    <color name="black_gradient_1">#FF525252</color>
+    <color name="black_gradient_2">#FF181818</color>
+    <color name="black_border">#FFA0A0A0</color>
+    <color name="white_gradient_1">#FFFFFFFF</color>
+    <color name="white_gradient_2">#FFD4D4D4</color>
+    <color name="white_border">#FFFFFFFF</color>
 
 </resources>
