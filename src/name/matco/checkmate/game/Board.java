@@ -31,7 +31,7 @@ public class Board implements Parcelable {
 		}
 	};
 	
-	private final List<Piece> pieces = new ArrayList<Piece>();
+	private List<Piece> pieces = new ArrayList<Piece>();
 	private final Piece whiteKing;
 	private final Piece blackKing;
 	
@@ -50,7 +50,7 @@ public class Board implements Parcelable {
 		whiteKing = getPieces(Player.WHITE, PieceType.KING).get(0);
 		blackKing = getPieces(Player.BLACK, PieceType.KING).get(0);
 		
-		Collections.unmodifiableList(pieces);
+		pieces = Collections.unmodifiableList(pieces);
 	}
 	
 	public Board() {
@@ -93,7 +93,7 @@ public class Board implements Parcelable {
 			addPiece(63 - i, new Piece(this, 63 - i, PieceType.PAWN, Player.BLACK));
 		}
 		
-		Collections.unmodifiableList(pieces);
+		pieces = Collections.unmodifiableList(pieces);
 	}
 	
 	public Board(final Board board) {
