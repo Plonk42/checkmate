@@ -188,8 +188,8 @@ public class Game implements Parcelable {
 	
 	public boolean goNext() {
 		Log.i(getClass().getName(), String.format("Go next, current progression is %d, moves number is %d", progression, board.getMoves().size()));
-		if (progression < board.getMoves().size() - 1) {
-			playMoveWithoutLog(board.getMoves().get(progression + 1), true);
+		if (progression < board.getMoves().size()) {
+			playMoveWithoutLog(board.getMoves().get(progression), true);
 			return true;
 		}
 		return false;
