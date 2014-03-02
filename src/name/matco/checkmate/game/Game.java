@@ -132,7 +132,7 @@ public class Game implements Parcelable {
 		
 		// log movement
 		if (progression < board.getMoves().size()) {
-			board.getMoves().subList(0, progression).clear();
+			board.getMoves().subList(progression, board.getMoves().size()).clear();
 		}
 		board.getMoves().add(m);
 		
