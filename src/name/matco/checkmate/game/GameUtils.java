@@ -23,12 +23,12 @@ public class GameUtils {
 	
 	public final static int apply(final int index, final Movement m) throws OutOfBoardCoordinateException {
 		final int toY = indexToY(index) + m.dy;
-		if (toY < 0 || toY > CHESSBOARD_SIZE) {
+		if (toY < 0 || toY >= CHESSBOARD_SIZE) {
 			// TODO improve exception
 			throw new OutOfBoardCoordinateException(toY);
 		}
 		final int toX = indexToX(index) + m.dx;
-		if (toX < 0 || toX > CHESSBOARD_SIZE) {
+		if (toX < 0 || toX >= CHESSBOARD_SIZE) {
 			// TODO same here
 			throw new OutOfBoardCoordinateException(toX);
 		}
