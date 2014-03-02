@@ -13,6 +13,7 @@ public class ChessboardDrawer {
 	
 	final private Runnable drawer;
 	final private ScheduledExecutorService scheduler;
+	final private Runnable cancellerTask;
 	
 	private ScheduledFuture<?> handler;
 	private ScheduledFuture<?> canceller;
@@ -20,6 +21,13 @@ public class ChessboardDrawer {
 	public ChessboardDrawer(final Runnable drawer) {
 		this.drawer = drawer;
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
+		this.cancellerTask = new Runnable() {
+			@Override
+			public void run() {
+				handler.cancel(false);
+				handler = null;
+			}
+		};
 	}
 	
 	public void shutdown() {
@@ -41,13 +49,7 @@ public class ChessboardDrawer {
 		drawStart();
 		
 		// create a new canceller
-		canceller = scheduler.schedule(new Runnable() {
-			@Override
-			public void run() {
-				handler.cancel(false);
-				handler = null;
-			}
-		}, milliseconds, TimeUnit.MILLISECONDS);
+		canceller = scheduler.schedule(cancellerTask, milliseconds, TimeUnit.MILLISECONDS);
 	}
 	
 	public void drawNow() {
