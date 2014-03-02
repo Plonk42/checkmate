@@ -33,21 +33,20 @@ public class Promotion extends Move {
 	}
 	
 	@Override
-	public void doMove(final Game game) {
+	public void doMove() {
 		// move the pawn
-		super.doMove(game);
+		super.doMove();
 		// transform pawn
 		getPiece().setType(this.chosenType);
-		
 		Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
 	}
 	
 	@Override
-	public void revertMove(final Game game) {
+	public void revertMove() {
 		// untransform piece
 		getPiece().setType(PieceType.PAWN);
 		// undo move
-		super.revertMove(game);
+		super.revertMove();
 	}
 	
 	@Override

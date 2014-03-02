@@ -119,7 +119,7 @@ public class Move implements Parcelable {
 		return board.getSquareAt(to);
 	}
 	
-	public void doMove(final Game game) {
+	public void doMove() {
 		if (capturedPiece != null) {
 			board.capturePiece(capturedPiece);
 		}
@@ -127,7 +127,7 @@ public class Move implements Parcelable {
 		piece.setHasMoved(true);
 	}
 	
-	public void revertMove(final Game game) {
+	public void revertMove() {
 		board.movePiece(piece, from);
 		if (capturedPiece != null) {
 			board.uncapturePiece(capturedPiece, to);

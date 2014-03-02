@@ -165,10 +165,10 @@ public class Game implements Parcelable {
 		Log.i(getClass().getName(), String.format("Playing : %s = %s", m.getAlgebraic(), m));
 		
 		if (way) {
-			m.doMove(this);
+			m.doMove();
 		}
 		else {
-			m.revertMove(this);
+			m.revertMove();
 		}
 		
 		// manage progression
