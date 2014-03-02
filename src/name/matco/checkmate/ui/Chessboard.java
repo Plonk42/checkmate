@@ -134,6 +134,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 					}
 				}
 			}
+			// unselect piece anyway
 			selectedPiece = null;
 		}
 		// select target piece
@@ -384,12 +385,15 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	
 	@Override
 	public void onMovement(final Move m, final boolean way) {
-		Log.i(getClass().getName(), String.format("Prepare to draw movement %s", m));
+		Log.i(getClass().getName(), String.format("Draw movement %s", m));
+		// clean ui
+		selectedPiece = null;
+		highlightedSquares.clear();
+		// do move
 		animatedMove = m;
 		animatedMoveWay = way;
 		startMovingMillis = System.currentTimeMillis();
 		drawer.drawFor(MOVE_DURATION);
-		Log.i(getClass().getName(), "Move started at " + startMovingMillis);
 	}
 	
 	@Override
