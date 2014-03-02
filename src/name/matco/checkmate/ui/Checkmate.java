@@ -166,7 +166,14 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		this.menu = menu;
 		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		return super.onCreateOptionsMenu(menu);
+		
+		super.onCreateOptionsMenu(menu);
+		
+		// manage menu actions
+		menu.findItem(R.id.action_previous_move).setEnabled(!game.isFirstMove());
+		menu.findItem(R.id.action_next_move).setEnabled(!game.isLastMove());
+		
+		return true;
 	}
 	
 	@Override
