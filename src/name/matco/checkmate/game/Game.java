@@ -2,7 +2,6 @@ package name.matco.checkmate.game;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
@@ -133,9 +132,7 @@ public class Game implements Parcelable {
 		
 		// log movement
 		if (progression < board.getMoves().size()) {
-			final List<Move> moves = board.getMoves().subList(0, progression);
-			board.getMoves().clear();
-			board.getMoves().addAll(moves);
+			board.getMoves().subList(0, progression).clear();
 		}
 		board.getMoves().add(m);
 		
