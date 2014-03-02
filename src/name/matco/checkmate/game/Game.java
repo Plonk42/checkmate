@@ -53,13 +53,6 @@ public class Game implements Parcelable {
 		Log.i(getClass().getName(), "Restoring Game() from Parcel");
 		board = new Board(in);
 		progression = in.readInt();
-		
-		// for (final Piece p :this.pieces) {
-		// getSquareAt(p.getSquare().getCoordinate());
-		// this.pieces.add(p);
-		// }
-		
-		// TODO : whiteKing && BlackKing
 	}
 	
 	private void init() {
@@ -178,16 +171,17 @@ public class Game implements Parcelable {
 			m.revertMove(this);
 		}
 		
+		// manage progression
+		setProgression(progression + (way ? 1 : -1));
+		
 		// manage listeners
 		for (final MovementListener mv : movementListeners) {
 			mv.onMovement(m, way);
 		}
-		
-		// manage progression
-		setProgression(progression + (way ? 1 : -1));
 	}
 	
 	public boolean goPrevious() {
+		Log.i(getClass().getName(), String.format("Go previous, current progression is %d, moves number is %d", progression, board.getMoves().size()));
 		if (progression > 0) {
 			playMoveWithoutLog(board.getMoves().get(progression - 1), false);
 			return true;
@@ -196,7 +190,8 @@ public class Game implements Parcelable {
 	}
 	
 	public boolean goNext() {
-		if (progression < board.getMoves().size()) {
+		Log.i(getClass().getName(), String.format("Go next, current progression is %d, moves number is %d", progression, board.getMoves().size()));
+		if (progression < board.getMoves().size() - 1) {
 			playMoveWithoutLog(board.getMoves().get(progression + 1), true);
 			return true;
 		}
@@ -250,9 +245,8 @@ public class Game implements Parcelable {
 	
 	@Override
 	public void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeParcelable(board, 0);
 		dest.writeInt(progression);
-		// TODO : parcel moves
-		// dest.writeList(moves);
 	}
 	
 }

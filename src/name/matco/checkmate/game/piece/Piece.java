@@ -49,7 +49,6 @@ public class Piece implements Parcelable {
 	protected final int id;
 	protected PieceType type;
 	protected final Player player;
-	protected Square square;
 	protected boolean hasMoved;
 	
 	public Piece(final Board board, final int id, final PieceType type, final Player player) {
@@ -102,24 +101,22 @@ public class Piece implements Parcelable {
 		Log.i(getClass().getName(), String.format("Check allowed positions for piece %s", this));
 		
 		final Board clonedBoard = new Board(getBoard());
-		final Piece clonedPiece = clonedBoard.getPiece(id);
-		final Square clonedSquare = clonedPiece.getSquare();
 		
 		final ArrayList<Square> allowed = new ArrayList<Square>();
 		for (final List<Movement> directions : getType().getAllowedMovements(this)) {
 			for (final Movement m : directions) {
 				try {
-					final Square candidate = clonedSquare.apply(m);
+					final Square candidate = getSquare().apply(m);
 					final Piece p = candidate.getPiece();
 					// square is empty
 					if (p == null) {
-						clonedPiece.checkCheckAndAdd(candidate, allowed);
+						checkCheckAndAdd(clonedBoard, this, candidate, allowed);
 					}
 					// there is a piece on square
 					else {
 						// if piece is capturable, movement is possible only if it does not set player in check
 						if (!p.is(getPlayer()) && !p.is(PieceType.KING)) {
-							clonedPiece.checkCheckAndAdd(candidate, allowed);
+							checkCheckAndAdd(clonedBoard, this, candidate, allowed);
 						}
 						// once a piece has been encountered, direction is blocked
 						break;
@@ -139,21 +136,30 @@ public class Piece implements Parcelable {
 		return realAllowed;
 	}
 	
-	private void checkCheckAndAdd(final Square candidate, final List<Square> to) {
-		// ensure that moving this piece does not set the player in check
-		final Square previousSquare = getSquare();
-		final Piece previous = candidate.getPiece();
-		getSquare().setPiece(null);
-		// put piece on candidate
-		candidate.setPiece(this);
-		setSquare(candidate);
-		if (!getSquare().getBoard().isCheck(getPlayer())) {
+	// TODO this must not be in piece
+	// ensure that moving this piece does not set the player in check
+	private static void checkCheckAndAdd(final Board board, final Piece piece, final Square candidate, final List<Square> to) {
+		// capture piece on candidate if any
+		final Piece capturedPiece = candidate.getPiece();
+		if (capturedPiece != null) {
+			board.capturePiece(capturedPiece);
+		}
+		// keep a handle on current piece position
+		final Square previousSquare = piece.getSquare();
+		
+		// move piece to candidate square
+		board.movePiece(piece, candidate.getIndex());
+		
+		// check if this state is viable
+		if (!board.isCheck(piece.getPlayer())) {
 			to.add(candidate);
 		}
+		
 		// restore state
-		setSquare(previousSquare);
-		previousSquare.setPiece(this);
-		candidate.setPiece(previous);
+		board.movePiece(piece, previousSquare.getIndex());
+		if (capturedPiece != null) {
+			board.movePiece(capturedPiece, candidate.getIndex());
+		}
 	}
 	
 	public String getDescription() {
@@ -169,11 +175,7 @@ public class Piece implements Parcelable {
 	}
 	
 	public final Square getSquare() {
-		return square;
-	}
-	
-	public final void setSquare(final Square place) {
-		this.square = place;
+		return board.getSquare(this);
 	}
 	
 	public final int getId() {

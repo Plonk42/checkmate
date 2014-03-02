@@ -22,6 +22,14 @@ public class GameUtils {
 	}
 	
 	public final static int apply(final int index, final Movement m) throws OutOfBoardCoordinateException {
+		if (indexToY(index) + m.dy > 8) {
+			// TODO improve exception
+			throw new OutOfBoardCoordinateException(index);
+		}
+		if (indexToX(index) + m.dx > 8) {
+			// TODO same here
+			throw new OutOfBoardCoordinateException(index);
+		}
 		return checkIndex(index + m.dy * CHESSBOARD_SIZE + m.dx);
 	}
 	

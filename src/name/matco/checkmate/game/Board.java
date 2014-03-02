@@ -39,6 +39,7 @@ public class Board implements Parcelable {
 	private final Piece whiteKing;
 	private final Piece blackKing;
 	
+	private final Piece[] positions = new Piece[64];
 	private final List<Move> moves = Collections.synchronizedList(new ArrayList<Move>());
 	
 	// listeners
@@ -54,9 +55,6 @@ public class Board implements Parcelable {
 	}
 	
 	public Board() {
-		capturedPieces.clear();
-		moves.clear();
-		
 		// init squares
 		for (int i = 0; i < 64; i++) {
 			try {
@@ -100,26 +98,94 @@ public class Board implements Parcelable {
 	public Board(final Board board) {
 		this();
 		
+		// copy all positions
+		for (int i = 0; i < positions.length; i++) {
+			positions[i] = board.positions[i];
+		}
+		
+		// copy captured pieces
 		for (final Piece piece : board.getCapturedPieces()) {
-			final Piece p = getPiece(piece.getId());
-			p.getSquare().setPiece(null);
-			p.setSquare(null);
-			pieces.remove(piece);
-			capturedPieces.add(piece);
+			final Piece p = getPieceFromId(piece.getId());
+			p.setHasMoved(piece.hasMoved());
+			capturedPieces.add(p);
+			pieces.remove(p);
 		}
 		
 		for (final Piece piece : board.getPieces()) {
-			final Piece p = getPiece(piece.getId());
+			final Piece p = getPieceFromId(piece.getId());
 			p.setHasMoved(piece.hasMoved());
-			// remove piece from initial square
-			p.getSquare().setPiece(null);
-			// put piece on the right square
-			final Square square = getSquareAt(piece.getSquare().getIndex());
-			square.setPiece(p);
-			p.setSquare(square);
 		}
 		
+		// copy all moves
 		moves.addAll(board.getMoves());
+	}
+	
+	private Integer findPiece(final Piece piece) {
+		for (int i = 0; i < positions.length; i++) {
+			final Piece p = positions[i];
+			if (p != null && p.getId() == piece.getId()) {
+				return i;
+			}
+		}
+		return null;
+	}
+	
+	public void movePiece(final Piece piece, final int index) {
+		// there is already a piece on square
+		if (positions[index] != null) {
+			throw new UnsupportedOperationException();
+		}
+		// find previous piece square
+		final Integer previousIndex = findPiece(piece);
+		if (previousIndex != null) {
+			positions[previousIndex] = null;
+		}
+		// piece was captured
+		else {
+			// trigger release event
+			for (final CaptureListener cl : captureListeners) {
+				cl.onRelease(piece);
+			}
+		}
+		// put piece on its new square
+		positions[index] = piece;
+	}
+	
+	public void capturePiece(final Piece piece) {
+		final Integer index = findPiece(piece);
+		// piece has already been captured
+		if (index == null) {
+			throw new UnsupportedOperationException();
+		}
+		positions[index] = null;
+		// trigger capture event
+		for (final CaptureListener cl : captureListeners) {
+			cl.onCapture(piece);
+		}
+		pieces.remove(piece);
+		capturedPieces.add(piece);
+	}
+	
+	public void uncapturePiece(final Piece piece, final int index) {
+		// trigger uncapture event
+		for (final CaptureListener cl : captureListeners) {
+			cl.onRelease(piece);
+		}
+		pieces.remove(piece);
+		capturedPieces.add(piece);
+		movePiece(piece, index);
+	}
+	
+	public Square getSquare(final Piece piece) {
+		final Integer index = findPiece(piece);
+		if (index != null) {
+			return getSquareAt(index);
+		}
+		return null;
+	}
+	
+	public Piece getPiece(final int index) {
+		return positions[index];
 	}
 	
 	public Square[] getSquares() {
@@ -182,7 +248,7 @@ public class Board implements Parcelable {
 		return pieces;
 	}
 	
-	public Piece getPiece(final int id) {
+	public Piece getPieceFromId(final int id) {
 		for (final Piece piece : this.pieces) {
 			if (piece.getId() == id) {
 				return piece;
@@ -192,16 +258,8 @@ public class Board implements Parcelable {
 	}
 	
 	private void addPiece(final int index, final Piece piece) {
-		final Square square = squares[index];
-		square.setPiece(piece);
-		piece.setSquare(square);
+		positions[index] = piece;
 		pieces.add(piece);
-	}
-	
-	public void movePiece(final Piece p, final int index) {
-		p.getSquare().setPiece(null);
-		getSquareAt(index).setPiece(p);
-		p.setSquare(getSquareAt(index));
 	}
 	
 	// improve this by describing which piece can do what kind of movement

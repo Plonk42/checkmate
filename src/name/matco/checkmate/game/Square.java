@@ -7,7 +7,6 @@ public class Square implements Comparable<Square> {
 	
 	private final Board board;
 	private final int index;
-	private Piece piece;
 	
 	public Square(final Board board, final int index) throws OutOfBoardCoordinateException {
 		this.board = board;
@@ -30,12 +29,8 @@ public class Square implements Comparable<Square> {
 		return board;
 	}
 	
-	public final void setPiece(final Piece piece) {
-		this.piece = piece;
-	}
-	
 	public final Piece getPiece() {
-		return piece;
+		return board.getPiece(index);
 	}
 	
 	public Square apply(final Movement m) throws OutOfBoardCoordinateException {
