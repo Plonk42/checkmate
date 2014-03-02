@@ -166,7 +166,7 @@ public class Board implements Parcelable {
 		capturedPieces.add(piece);
 	}
 	
-	public void uncapturePiece(final Piece piece, final int index) {
+	public void releasePiece(final Piece piece, final int index) {
 		// trigger uncapture event
 		for (final CaptureListener cl : captureListeners) {
 			cl.onRelease(piece);
@@ -374,7 +374,7 @@ public class Board implements Parcelable {
 					// revert movement
 					movePiece(piece, originalPieceSquare.getIndex());
 					if (capturedPiece != null) {
-						uncapturePiece(capturedPiece, square.getIndex());
+						releasePiece(capturedPiece, square.getIndex());
 					}
 					
 					if (!isCheck) {
