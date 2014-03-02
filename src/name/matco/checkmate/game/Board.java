@@ -34,7 +34,6 @@ public class Board implements Parcelable {
 	private final Square[] squares = new Square[64];
 	
 	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
-	private final List<Piece> capturedPieces = Collections.synchronizedList(new ArrayList<Piece>());
 	
 	private final Piece whiteKing;
 	private final Piece blackKing;
@@ -47,7 +46,6 @@ public class Board implements Parcelable {
 	
 	public Board(final Parcel in) {
 		in.readList(this.pieces, null);
-		in.readList(this.capturedPieces, null);
 		in.readList(this.moves, null);
 		
 		whiteKing = getPieces(Player.WHITE, PieceType.KING).get(0);
@@ -93,6 +91,8 @@ public class Board implements Parcelable {
 		for (int i = 8; i < 16; i++) {
 			addPiece(63 - i, new Piece(this, 63 - i, PieceType.PAWN, Player.BLACK));
 		}
+		
+		Collections.synchronizedList(pieces);
 	}
 	
 	public Board(final Board board) {
@@ -103,14 +103,7 @@ public class Board implements Parcelable {
 			positions[i] = board.positions[i];
 		}
 		
-		// copy captured pieces
-		for (final Piece piece : board.getCapturedPieces()) {
-			final Piece p = getPieceFromId(piece.getId());
-			p.setHasMoved(piece.hasMoved());
-			capturedPieces.add(p);
-			pieces.remove(p);
-		}
-		
+		// copy pieces status
 		for (final Piece piece : board.getPieces()) {
 			final Piece p = getPieceFromId(piece.getId());
 			p.setHasMoved(piece.hasMoved());
@@ -162,18 +155,14 @@ public class Board implements Parcelable {
 		for (final CaptureListener cl : captureListeners) {
 			cl.onCapture(piece);
 		}
-		pieces.remove(piece);
-		capturedPieces.add(piece);
 	}
 	
 	public void releasePiece(final Piece piece, final int index) {
+		movePiece(piece, index);
 		// trigger uncapture event
 		for (final CaptureListener cl : captureListeners) {
 			cl.onRelease(piece);
 		}
-		pieces.remove(piece);
-		capturedPieces.add(piece);
-		movePiece(piece, index);
 	}
 	
 	public Square getSquare(final Piece piece) {
@@ -212,22 +201,20 @@ public class Board implements Parcelable {
 		return blackKing;
 	}
 	
+	public List<Piece> getOnboardPieces() {
+		final List<Piece> onboardPieces = new ArrayList<Piece>();
+		for (int i = 0; i < positions.length; i++) {
+			if (positions[i] != null) {
+				onboardPieces.add(positions[i]);
+			}
+		}
+		return onboardPieces;
+	}
+	
 	public List<Piece> getCapturedPieces() {
-		return Collections.unmodifiableList(capturedPieces);
-	}
-	
-	public void addCapturedPiece(final Piece piece) {
-		capturedPieces.add(piece);
-		for (final CaptureListener cl : captureListeners) {
-			cl.onCapture(piece);
-		}
-	}
-	
-	public void removeCapturedPiece(final Piece piece) {
-		capturedPieces.remove(piece);
-		for (final CaptureListener cl : captureListeners) {
-			cl.onRelease(piece);
-		}
+		final List<Piece> capturedPieces = new ArrayList<Piece>(pieces);
+		capturedPieces.removeAll(getOnboardPieces());
+		return capturedPieces;
 	}
 	
 	// TODO : check index bounds?
@@ -357,8 +344,8 @@ public class Board implements Parcelable {
 			return false;
 		}
 		// check if any movement of any piece can save player
-		for (final Piece piece : pieces) {
-			if (player.equals(piece.getPlayer()) && !capturedPieces.contains(piece)) {
+		for (final Piece piece : getOnboardPieces()) {
+			if (player.equals(piece.getPlayer())) {
 				final Square originalPieceSquare = piece.getSquare();
 				for (final Square square : piece.getAllowedPositions()) {
 					// try movement
@@ -404,7 +391,6 @@ public class Board implements Parcelable {
 	@Override
 	public void writeToParcel(final Parcel dest, final int flags) {
 		dest.writeList(pieces);
-		dest.writeList(capturedPieces);
 		dest.writeList(moves);
 	}
 }
