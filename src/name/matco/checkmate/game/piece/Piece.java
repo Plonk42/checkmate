@@ -46,10 +46,10 @@ public class Piece implements Parcelable {
 	};
 	
 	private Board board;
-	protected final int id;
-	protected PieceType type;
-	protected final Player player;
-	protected boolean hasMoved;
+	private final int id;
+	private PieceType type;
+	private final Player player;
+	private boolean hasMoved;
 	
 	public Piece(final Board board, final int id, final PieceType type, final Player player) {
 		this.board = board;
@@ -73,12 +73,32 @@ public class Piece implements Parcelable {
 		this.board = board;
 	}
 	
+	public final Player getPlayer() {
+		return player;
+	}
+	
+	public final int getId() {
+		return id;
+	}
+	
 	public void setType(final PieceType type) {
 		this.type = type;
 	}
 	
 	public PieceType getType() {
 		return type;
+	}
+	
+	public final boolean hasMoved() {
+		return hasMoved;
+	}
+	
+	public final void setHasMoved(final boolean hasMoved) {
+		this.hasMoved = hasMoved;
+	}
+	
+	public final Square getSquare() {
+		return board.getSquare(this);
 	}
 	
 	public final int getImageResource() {
@@ -164,26 +184,6 @@ public class Piece implements Parcelable {
 	
 	public String getDescription() {
 		return player + " " + getType();
-	}
-	
-	public final boolean hasMoved() {
-		return hasMoved;
-	}
-	
-	public final void setHasMoved(final boolean hasMoved) {
-		this.hasMoved = hasMoved;
-	}
-	
-	public final Square getSquare() {
-		return board.getSquare(this);
-	}
-	
-	public final int getId() {
-		return id;
-	}
-	
-	public final Player getPlayer() {
-		return player;
 	}
 	
 	@Override
