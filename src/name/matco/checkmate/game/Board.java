@@ -361,17 +361,20 @@ public class Board implements Parcelable {
 			if (player.equals(piece.getPlayer()) && !capturedPieces.contains(piece)) {
 				final Square originalPieceSquare = piece.getSquare();
 				for (final Square square : piece.getAllowedPositions()) {
-					// apply movement
-					// FIXME : that's dangerous and that's ugly
+					// try movement
 					final Piece capturedPiece = square.getPiece();
+					if (capturedPiece != null) {
+						capturePiece(capturedPiece);
+					}
 					movePiece(piece, square.getIndex());
 					
+					// check if player is in check
 					final boolean isCheck = isCheck(player);
 					
-					// revert back to original position
+					// revert movement
 					movePiece(piece, originalPieceSquare.getIndex());
 					if (capturedPiece != null) {
-						movePiece(capturedPiece, square.getIndex());
+						uncapturePiece(capturedPiece, square.getIndex());
 					}
 					
 					if (!isCheck) {
