@@ -201,12 +201,11 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		}
 		
 		// draw pieces
-		for (final Square s : game.getBoard().getSquares()) {
+		for (final Piece p : game.getBoard().getOnboardPieces()) {
 			
-			final Piece p = s.getPiece();
 			// draw piece if it's not moving piece(s)
 			if (p != null && (animatedMove == null || !animatedMove.getRelatedPieces().contains(p))) {
-				final int index = s.getIndex();
+				final int index = p.getSquare().getIndex();
 				final int x = index % GameUtils.CHESSBOARD_SIZE;
 				final int y = index / GameUtils.CHESSBOARD_SIZE;
 				final int left = x * squareSize + PIECE_MARGIN;
