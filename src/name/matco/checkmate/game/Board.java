@@ -31,14 +31,13 @@ public class Board implements Parcelable {
 		}
 	};
 	
-	private final Square[] squares = new Square[64];
-	
-	private final List<Piece> pieces = Collections.synchronizedList(new ArrayList<Piece>());
-	
+	private final List<Piece> pieces = new ArrayList<Piece>();
 	private final Piece whiteKing;
 	private final Piece blackKing;
 	
+	private final Square[] squares = new Square[64];
 	private final Piece[] positions = new Piece[64];
+	
 	private final List<Move> moves = Collections.synchronizedList(new ArrayList<Move>());
 	
 	// listeners
@@ -50,6 +49,8 @@ public class Board implements Parcelable {
 		
 		whiteKing = getPieces(Player.WHITE, PieceType.KING).get(0);
 		blackKing = getPieces(Player.BLACK, PieceType.KING).get(0);
+		
+		Collections.unmodifiableList(pieces);
 	}
 	
 	public Board() {
@@ -92,7 +93,7 @@ public class Board implements Parcelable {
 			addPiece(63 - i, new Piece(this, 63 - i, PieceType.PAWN, Player.BLACK));
 		}
 		
-		Collections.synchronizedList(pieces);
+		Collections.unmodifiableList(pieces);
 	}
 	
 	public Board(final Board board) {
