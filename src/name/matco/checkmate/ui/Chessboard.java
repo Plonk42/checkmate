@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import name.matco.checkmate.R;
 import name.matco.checkmate.game.Castling;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.GameUtils;
@@ -43,8 +44,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	private ChessboardDrawer drawer;
 	// private final Object drawLock = new Object();
 	
-	private static Paint blackPainter;
-	private static Paint whitePainter;
+	private static Drawable blackSquareDrawable;
+	private static Drawable whiteSquareDrawable;
 	private static Paint hightlightPainter;
 	
 	private Move animatedMove;
@@ -64,16 +65,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	private final List<Square> highlightedSquares = new ArrayList<Square>();
 	
 	static {
-		blackPainter = new Paint();
-		blackPainter.setAntiAlias(true);
-		blackPainter.setStyle(Style.FILL);
-		blackPainter.setARGB(255, 209, 139, 71);
-		
-		whitePainter = new Paint();
-		whitePainter.setAntiAlias(true);
-		whitePainter.setStyle(Style.FILL);
-		whitePainter.setARGB(255, 255, 206, 158);
-		
 		hightlightPainter = new Paint();
 		hightlightPainter.setAntiAlias(true);
 		hightlightPainter.setStyle(Style.FILL);
@@ -85,6 +76,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
 		getHolder().addCallback(this);
 		buildDrawableCache();
+		blackSquareDrawable = getContext().getResources().getDrawable(R.drawable.black_square);
+		whiteSquareDrawable = getContext().getResources().getDrawable(R.drawable.white_square);
 	}
 	
 	public void setGame(final Game game) {
@@ -198,7 +191,10 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 			final int top = boardSize - (y + 1) * squareSize;
 			final int bottom = top + squareSize;
 			
-			canvas.drawRect(left, top, right, bottom, ((x + y) % 2 == 0) ? whitePainter : blackPainter);
+			final Drawable squareDrawable = ((x + y) % 2 == 0) ? whiteSquareDrawable : blackSquareDrawable;
+			squareDrawable.setBounds(left + 1, top + 1, right - 1, bottom - 1);
+			squareDrawable.draw(canvas);
+			
 			if (highlightedSquares.contains(s)) {
 				canvas.drawRect(left, top, right, bottom, hightlightPainter);
 			}
