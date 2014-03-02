@@ -152,7 +152,12 @@ public class Move implements Parcelable {
 	
 	@Override
 	public String toString() {
-		return capturedPiece == null ? String.format("%s moves %s from %s to %s", piece, movement, from, to) : String.format("%s moves %s  from %s to %s and captures %s", piece, movement, from, to, capturedPiece);
+		final String algebraicFrom = GameUtils.algebraicFromIndex(from);
+		final String algebraicTo = GameUtils.algebraicFromIndex(to);
+		if (capturedPiece != null) {
+			return String.format("%s moves %s  from %s to %s and captures %s", piece, movement, algebraicFrom, algebraicTo, capturedPiece);
+		}
+		return String.format("%s moves %s from %s to %s", piece, movement, algebraicFrom, algebraicTo);
 	}
 	
 	@Override
