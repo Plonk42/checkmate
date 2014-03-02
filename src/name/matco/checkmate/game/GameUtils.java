@@ -22,13 +22,15 @@ public class GameUtils {
 	}
 	
 	public final static int apply(final int index, final Movement m) throws OutOfBoardCoordinateException {
-		if (indexToY(index) + m.dy > 8) {
+		final int toY = indexToY(index) + m.dy;
+		if (toY < 0 || toY > CHESSBOARD_SIZE) {
 			// TODO improve exception
-			throw new OutOfBoardCoordinateException(index);
+			throw new OutOfBoardCoordinateException(toY);
 		}
-		if (indexToX(index) + m.dx > 8) {
+		final int toX = indexToX(index) + m.dx;
+		if (toX < 0 || toX > CHESSBOARD_SIZE) {
 			// TODO same here
-			throw new OutOfBoardCoordinateException(index);
+			throw new OutOfBoardCoordinateException(toX);
 		}
 		return checkIndex(index + m.dy * CHESSBOARD_SIZE + m.dx);
 	}
@@ -56,11 +58,11 @@ public class GameUtils {
 	}
 	
 	public final static int indexToX(final int index) {
-		return index % 8;
+		return index % CHESSBOARD_SIZE;
 	}
 	
 	public final static int indexToY(final int index) {
-		return index / 8;
+		return index / CHESSBOARD_SIZE;
 	}
 	
 	public static boolean onSameFile(final Square s1, final Square s2) {
