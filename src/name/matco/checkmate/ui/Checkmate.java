@@ -13,6 +13,7 @@ import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
@@ -23,8 +24,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.ShareActionProvider;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Checkmate extends FragmentActivity implements MovementListener, GameStateListener, CheckListener {
+	
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 	
 	public static final int FRAGMENT_ONE = 0;
 	public static final int FRAGMENT_TWO = 1;
@@ -37,6 +44,8 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 	
 	private ChessboardFragment chessboardFragment;
 	private AlgebraicFragment algebraicFragment;
+	
+	private ShareActionProvider shareActionProvider;
 	
 	public void setTwoPlayerMode(final boolean twoPlayerMode) {
 		this.twoPlayerMode = twoPlayerMode;
@@ -173,6 +182,9 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 		menu.findItem(R.id.action_previous_move).setEnabled(!game.isFirstMove());
 		menu.findItem(R.id.action_next_move).setEnabled(!game.isLastMove());
 		
+		final MenuItem item = menu.findItem(R.id.action_share);
+		shareActionProvider = (ShareActionProvider) item.getActionProvider();
+		
 		return true;
 	}
 	
@@ -196,6 +208,17 @@ public class Checkmate extends FragmentActivity implements MovementListener, Gam
 				item.setChecked(twoPlayerMode);
 				chessboardFragment.redraw();
 				return true;
+			case R.id.action_share:
+				try {
+					final Intent sendIntent = new Intent();
+					sendIntent.setAction(Intent.ACTION_SEND);
+					sendIntent.putExtra(Intent.EXTRA_TEXT, MAPPER.writeValueAsString(game.getBoard()));
+					sendIntent.setType("text/plain");
+					shareActionProvider.setShareIntent(sendIntent);
+				} catch (final JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			default:
 				return super.onOptionsItemSelected(item);
 		}

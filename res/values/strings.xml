@@ -15,6 +15,7 @@
     <string name="previous_move">Previous</string>
     <string name="next_move">Next</string>
     <string name="two_players_mode">2 players mode</string>
+    <string name="share">Share</string>
     
     <!-- pieces -->
     <string name="pawn">Pawn</string>

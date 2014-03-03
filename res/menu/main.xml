@@ -13,10 +13,17 @@
 		android:icon="@drawable/icon_restart"
 		android:title="@string/restart"
 		android:showAsAction="ifRoom" />
-	
+
+	<item android:id="@+id/action_share"
+		android:icon="@drawable/icon_share"
+		android:title="@string/share"
+		android:showAsAction="ifRoom"
+		android:actionProviderClass="android.widget.ShareActionProvider" /> 
+
 	<item android:id="@+id/action_two_players_mode"
 		android:icon="@drawable/icon_two_players_mode"
 		android:title="@string/two_players_mode"
 		android:showAsAction="never"
 		android:checkable="true" />
+	
 </menu>
