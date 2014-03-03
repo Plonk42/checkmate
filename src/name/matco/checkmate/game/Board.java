@@ -182,12 +182,12 @@ public class Board implements Parcelable {
 	}
 	
 	@JsonProperty("positions")
-	public Piece[] getPositionsSerialized() {
+	public List<Integer> getPositionsSerialized() {
 		final List<Integer> positionIds = new ArrayList<Integer>();
 		for (int i = 0; i < positions.length; i++) {
 			positionIds.add(positions[i] == null ? null : positions[i].getId());
 		}
-		return positions;
+		return positionIds;
 	}
 	
 	@JsonIgnore
