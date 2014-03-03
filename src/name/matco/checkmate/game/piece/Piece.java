@@ -12,6 +12,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Piece implements Parcelable {
 	
 	public static boolean is(final Piece piece, final Player player) {
@@ -65,6 +67,7 @@ public class Piece implements Parcelable {
 		hasMoved = (parcel.readByte() == 1);
 	}
 	
+	@JsonIgnore
 	public Board getBoard() {
 		return board;
 	}
@@ -97,10 +100,12 @@ public class Piece implements Parcelable {
 		this.hasMoved = hasMoved;
 	}
 	
+	@JsonIgnore
 	public final Square getSquare() {
 		return board.getSquare(this);
 	}
 	
+	@JsonIgnore
 	public final int getImageResource() {
 		return getType().getImageResource(getPlayer());
 	}
@@ -117,6 +122,7 @@ public class Piece implements Parcelable {
 		return is(this, type, player);
 	}
 	
+	@JsonIgnore
 	public List<Square> getAllowedPositions() {
 		Log.i(getClass().getName(), String.format("Check allowed positions for piece %s", this));
 		
@@ -182,6 +188,7 @@ public class Piece implements Parcelable {
 		}
 	}
 	
+	@JsonIgnore
 	public String getDescription() {
 		return player + " " + getType();
 	}

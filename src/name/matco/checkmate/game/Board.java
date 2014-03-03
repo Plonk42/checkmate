@@ -15,6 +15,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Board implements Parcelable {
 	
 	public static final String PARCELABLE_KEY = Board.class.getName();
@@ -35,8 +38,8 @@ public class Board implements Parcelable {
 	private final Piece whiteKing;
 	private final Piece blackKing;
 	
-	private final Square[] squares = new Square[64];
 	private final Piece[] positions = new Piece[64];
+	private final Square[] squares = new Square[64];
 	
 	private final List<Move> moves = Collections.synchronizedList(new ArrayList<Move>());
 	
@@ -178,6 +181,16 @@ public class Board implements Parcelable {
 		return positions[index];
 	}
 	
+	@JsonProperty("positions")
+	public Piece[] getPositionsSerialized() {
+		final List<Integer> positionIds = new ArrayList<Integer>();
+		for (int i = 0; i < positions.length; i++) {
+			positionIds.add(positions[i] == null ? null : positions[i].getId());
+		}
+		return positions;
+	}
+	
+	@JsonIgnore
 	public Square[] getSquares() {
 		return squares;
 	}
@@ -190,18 +203,22 @@ public class Board implements Parcelable {
 		return moves;
 	}
 	
+	@JsonIgnore
 	public Move getLastMove() {
 		return moves.isEmpty() ? null : moves.get(moves.size() - 1);
 	}
 	
+	@JsonIgnore
 	public final Piece getWhiteKing() {
 		return whiteKing;
 	}
 	
+	@JsonIgnore
 	public final Piece getBlackKing() {
 		return blackKing;
 	}
 	
+	@JsonIgnore
 	public List<Piece> getOnboardPieces() {
 		final List<Piece> onboardPieces = new ArrayList<Piece>();
 		for (int i = 0; i < positions.length; i++) {
@@ -212,6 +229,7 @@ public class Board implements Parcelable {
 		return onboardPieces;
 	}
 	
+	@JsonIgnore
 	public List<Piece> getCapturedPieces() {
 		final List<Piece> capturedPieces = new ArrayList<Piece>(pieces);
 		capturedPieces.removeAll(getOnboardPieces());

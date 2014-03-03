@@ -10,6 +10,8 @@ import name.matco.checkmate.game.piece.PieceType;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Move implements Parcelable {
 	
 	// TODO : choose a better key?
@@ -91,14 +93,17 @@ public class Move implements Parcelable {
 		return piece;
 	}
 	
+	@JsonIgnore
 	public Set<Piece> getRelatedPieces() {
 		return Collections.singleton(getPiece());
 	}
 	
+	@JsonIgnore
 	public boolean isPieceFirstMove() {
 		return pieceFirstMove;
 	}
 	
+	@JsonIgnore
 	public Piece getCapturedPiece() {
 		return capturedPiece;
 	}
@@ -111,10 +116,12 @@ public class Move implements Parcelable {
 		return to;
 	}
 	
+	@JsonIgnore
 	public Square getSquareFrom() {
 		return board.getSquareAt(from);
 	}
 	
+	@JsonIgnore
 	public Square getSquareTo() {
 		return board.getSquareAt(to);
 	}
