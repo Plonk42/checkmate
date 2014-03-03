@@ -57,9 +57,14 @@ public enum PieceType {
 					}
 				}
 				movements.add(forwardMovements);
-				
-				// pawn can move on diagonal if there is a piece to capture or "en passant"capture
-				final Move lastMove = piece.getBoard().getLastMove();
+			} catch (final OutOfBoardCoordinateException e) {
+				// out of board moves not allowed
+			}
+			
+			final Move lastMove = piece.getBoard().getLastMove();
+			
+			// pawn can move on diagonal if there is a piece to capture or "en passant"capture
+			try {
 				final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
 				if (piece.getSquare().apply(withEast).getPiece() != null) {
 					movements.add(Collections.singletonList(withEast));
@@ -71,6 +76,11 @@ public enum PieceType {
 						}
 					}
 				}
+			} catch (final OutOfBoardCoordinateException e) {
+				// out of board moves not allowed
+			}
+			
+			try {
 				// pawn can move on diagonal if there is a piece to capture
 				final Movement withWest = forward.getMovement().withAdd(Direction.WEST.getMovement());
 				if (piece.getSquare().apply(withWest).getPiece() != null) {
