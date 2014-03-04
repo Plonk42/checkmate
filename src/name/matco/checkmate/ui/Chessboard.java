@@ -400,4 +400,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	public void run() {
 		doDraw();
 	}
+	
+	public Checkmate getContainer() {
+		return container;
+	}
 }

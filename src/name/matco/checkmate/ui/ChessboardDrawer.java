@@ -11,16 +11,25 @@ public class ChessboardDrawer {
 	public static int FPS = 60;
 	private static int FRAME_TIME = 1000 / FPS;
 	
-	final private Runnable drawer;
+	final private Chessboard drawer;
 	final private ScheduledExecutorService scheduler;
 	final private Runnable cancellerTask;
+	final private Runnable drawerTask;
 	
 	private ScheduledFuture<?> handler;
 	private ScheduledFuture<?> canceller;
 	
-	public ChessboardDrawer(final Runnable drawer) {
+	public ChessboardDrawer(final Chessboard drawer) {
 		this.drawer = drawer;
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
+		this.drawerTask = new Runnable() {
+			@Override
+			public void run() {
+				// if (scheduler.isTerminated()) {
+				drawer.getContainer().runOnUiThread(drawer);
+				// }
+			}
+		};
 		this.cancellerTask = new Runnable() {
 			@Override
 			public void run() {
@@ -31,7 +40,7 @@ public class ChessboardDrawer {
 	}
 	
 	public void shutdown() {
-		this.scheduler.shutdown();
+		scheduler.shutdown();
 	}
 	
 	public void drawStart() {
@@ -41,7 +50,7 @@ public class ChessboardDrawer {
 		}
 		// create handler if it does not exists
 		if (handler == null) {
-			handler = scheduler.scheduleAtFixedRate(drawer, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
+			handler = scheduler.scheduleAtFixedRate(drawerTask, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
 		}
 	}
 	
@@ -53,7 +62,7 @@ public class ChessboardDrawer {
 	}
 	
 	public void drawNow() {
-		this.drawer.run();
+		drawerTask.run();
 	}
 	
 	public void drawStop() {
