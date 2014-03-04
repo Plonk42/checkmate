@@ -11,7 +11,6 @@ public class ChessboardDrawer {
 	public static int FPS = 60;
 	private static int FRAME_TIME = 1000 / FPS;
 	
-	final private Chessboard drawer;
 	final private ScheduledExecutorService scheduler;
 	final private Runnable cancellerTask;
 	final private Runnable drawerTask;
@@ -20,7 +19,6 @@ public class ChessboardDrawer {
 	private ScheduledFuture<?> canceller;
 	
 	public ChessboardDrawer(final Chessboard drawer) {
-		this.drawer = drawer;
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
 		this.drawerTask = new Runnable() {
 			@Override
