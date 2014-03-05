@@ -7,6 +7,7 @@ import name.matco.checkmate.game.Board;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.Player;
+import name.matco.checkmate.game.Promotion;
 import name.matco.checkmate.game.Square;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import android.os.Parcel;
@@ -50,20 +51,20 @@ public class Piece implements Parcelable {
 	
 	private Board board;
 	private final int id;
-	private PieceType type;
+	private final PieceType initialType;
 	private final Player player;
 	
-	public Piece(final Board board, final int id, final PieceType type, final Player player) {
+	public Piece(final Board board, final int id, final PieceType initialType, final Player player) {
 		this.board = board;
 		this.id = id;
-		this.type = type;
+		this.initialType = initialType;
 		this.player = player;
 	}
 	
 	public Piece(final Parcel parcel) {
 		id = parcel.readInt();
 		player = (Player) parcel.readSerializable();
-		type = (PieceType) parcel.readSerializable();
+		initialType = (PieceType) parcel.readSerializable();
 	}
 	
 	@JsonIgnore
@@ -83,12 +84,21 @@ public class Piece implements Parcelable {
 		return id;
 	}
 	
-	public void setType(final PieceType type) {
-		this.type = type;
+	public PieceType getInitialType() {
+		return initialType;
 	}
 	
 	public PieceType getType() {
-		return type;
+		if (!PieceType.PAWN.equals(initialType)) {
+			return initialType;
+		}
+		// TODO only loop until game progression
+		for (final Move move : board.getMoves()) {
+			if (move instanceof Promotion && move.getPiece().getId() == id) {
+				return ((Promotion) move).getChosenType();
+			}
+		}
+		return PieceType.PAWN;
 	}
 	
 	public final boolean hasMoved() {

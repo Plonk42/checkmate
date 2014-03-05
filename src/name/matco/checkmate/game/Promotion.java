@@ -1,16 +1,11 @@
 package name.matco.checkmate.game;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
-import android.util.Log;
 
 public class Promotion extends Move {
 	
 	private PieceType chosenType;
-	private Piece promotedPiece;
 	
 	public Promotion(final Board board, final Player player, final Piece pawn, final Square to) {
 		super(board, player, pawn, to);
@@ -20,33 +15,8 @@ public class Promotion extends Move {
 		this.chosenType = chosenType;
 	}
 	
-	public Piece getPromotedPiece() {
-		return promotedPiece;
-	}
-	
-	@Override
-	public Set<Piece> getRelatedPieces() {
-		final Set<Piece> relatedPieces = new HashSet<Piece>();
-		relatedPieces.add(piece);
-		relatedPieces.add(promotedPiece);
-		return relatedPieces;
-	}
-	
-	@Override
-	public void doMove() {
-		// move the pawn
-		super.doMove();
-		// transform pawn
-		getPiece().setType(this.chosenType);
-		Log.d(getClass().getName(), String.format("Promote %s to %s", getPiece(), promotedPiece));
-	}
-	
-	@Override
-	public void revertMove() {
-		// untransform piece
-		getPiece().setType(PieceType.PAWN);
-		// undo move
-		super.revertMove();
+	public PieceType getChosenType() {
+		return chosenType;
 	}
 	
 	@Override

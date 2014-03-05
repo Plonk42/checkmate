@@ -250,7 +250,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				final Promotion promotion = (Promotion) animatedMove;
 				PieceMovement pieceMovement;
 				if (endOfMove && animatedMoveWay) {
-					pieceMovement = new PieceMovement(promotion.getPromotedPiece(), promotion.getSquareTo(), promotion.getSquareTo());
+					// TODO improve piece movement to include modification of piece type
+					pieceMovement = new PieceMovement(promotion.getPiece(), promotion.getSquareTo(), promotion.getSquareTo());
 				}
 				else {
 					pieceMovement = new PieceMovement(promotion.getPiece(), promotion.getSquareFrom(), promotion.getSquareTo());
