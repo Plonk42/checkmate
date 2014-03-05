@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.checkmate.game.Board;
+import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.Player;
+import name.matco.checkmate.game.Promotion;
 import name.matco.checkmate.game.Square;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import android.os.Parcel;
@@ -49,22 +51,20 @@ public class Piece implements Parcelable {
 	
 	private Board board;
 	private final int id;
-	private PieceType type;
+	private final PieceType initialType;
 	private final Player player;
-	private boolean hasMoved;
 	
-	public Piece(final Board board, final int id, final PieceType type, final Player player) {
+	public Piece(final Board board, final int id, final PieceType initialType, final Player player) {
 		this.board = board;
 		this.id = id;
-		this.type = type;
+		this.initialType = initialType;
 		this.player = player;
 	}
 	
 	public Piece(final Parcel parcel) {
 		id = parcel.readInt();
 		player = (Player) parcel.readSerializable();
-		type = (PieceType) parcel.readSerializable();
-		hasMoved = (parcel.readByte() == 1);
+		initialType = (PieceType) parcel.readSerializable();
 	}
 	
 	@JsonIgnore
@@ -84,20 +84,32 @@ public class Piece implements Parcelable {
 		return id;
 	}
 	
-	public void setType(final PieceType type) {
-		this.type = type;
+	public PieceType getInitialType() {
+		return initialType;
 	}
 	
 	public PieceType getType() {
-		return type;
+		if (!PieceType.PAWN.equals(initialType)) {
+			return initialType;
+		}
+		// TODO only loop until game progression
+		for (final Move move : board.getMoves()) {
+			if (move instanceof Promotion && move.getPiece().getId() == id) {
+				return ((Promotion) move).getChosenType();
+			}
+		}
+		return PieceType.PAWN;
 	}
 	
 	public final boolean hasMoved() {
-		return hasMoved;
-	}
-	
-	public final void setHasMoved(final boolean hasMoved) {
-		this.hasMoved = hasMoved;
+		// TODO this only make sense for Pawn or King
+		// TODO only loop until game progression
+		for (final Move move : board.getMoves()) {
+			if (move.getPiece().getId() == id) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@JsonIgnore
@@ -207,7 +219,6 @@ public class Piece implements Parcelable {
 	public void writeToParcel(final Parcel dest, final int flags) {
 		dest.writeInt(id);
 		dest.writeSerializable(player);
-		dest.writeByte((byte) (hasMoved ? 1 : 0));
 	}
 	
 }

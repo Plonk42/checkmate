@@ -1,8 +1,8 @@
 package name.matco.checkmate.game;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import name.matco.checkmate.game.exception.InvalidAlgebraic;
 import name.matco.checkmate.game.piece.Piece;
@@ -31,13 +31,10 @@ public class Move implements Parcelable {
 	
 	protected Board board;
 	protected final Player player;
-	protected final Piece piece;
-	protected Piece capturedPiece;
-	protected boolean pieceFirstMove;
+	protected final PieceModification mainModification;
+	protected PieceModification sideModification;
 	
-	protected int from;
-	protected final int to;
-	protected final Movement movement;
+	private Date date;
 	
 	public static Move fromAlgebraic(final Board board, final Player player, final String a) throws InvalidAlgebraic {
 		// TODO manage castling, en passant and promotion
@@ -68,86 +65,94 @@ public class Move implements Parcelable {
 	public Move(final Board board, final Player player, final Piece piece, final Square to) {
 		this.board = board;
 		this.player = player;
-		this.piece = piece;
-		this.pieceFirstMove = !piece.hasMoved();
-		this.from = piece.getSquare().getIndex();
-		this.to = to.getIndex();
-		movement = GameUtils.getMovement(from, this.to);
-		capturedPiece = to.getPiece();
+		mainModification = new PieceModification(piece.getId(), piece.getSquare().getIndex(), to.getIndex(), null);
+		if (to.getPiece() != null) {
+			sideModification = new PieceModification(to.getPiece().getId(), to.getIndex(), null, null);
+		}
+		else {
+			sideModification = null;
+		}
 	}
 	
 	public Move(final Parcel in) {
 		player = Player.valueOf(in.readString());
-		piece = in.readParcelable(null);
-		capturedPiece = in.readParcelable(null);
-		from = in.readParcelable(null);
-		to = in.readParcelable(null);
-		movement = GameUtils.getMovement(from, to);
+		mainModification = in.readParcelable(null);
+		sideModification = in.readParcelable(null);
 	}
 	
 	public Player getPlayer() {
 		return player;
 	}
 	
+	public List<PieceModification> getModifications() {
+		final List<PieceModification> modifications = new ArrayList<PieceModification>();
+		modifications.add(mainModification);
+		if (sideModification != null) {
+			modifications.add(sideModification);
+		}
+		return modifications;
+	}
+	
+	public List<Integer> getRelatedPiece() {
+		final List<Integer> pieces = new ArrayList<Integer>();
+		pieces.add(mainModification.getPieceId());
+		if (sideModification != null) {
+			pieces.add(sideModification.getPieceId());
+		}
+		return pieces;
+	}
+	
+	public boolean isCapture() {
+		return sideModification != null && sideModification.getTo() == null;
+	}
+	
 	public Piece getPiece() {
-		return piece;
-	}
-	
-	@JsonIgnore
-	public Set<Piece> getRelatedPieces() {
-		return Collections.singleton(getPiece());
-	}
-	
-	@JsonIgnore
-	public boolean isPieceFirstMove() {
-		return pieceFirstMove;
+		return board.getPieceFromId(mainModification.getPieceId());
 	}
 	
 	@JsonIgnore
 	public Piece getCapturedPiece() {
-		return capturedPiece;
+		return board.getPieceFromId(sideModification.getPieceId());
 	}
 	
 	public int getFrom() {
-		return from;
+		return mainModification.getFrom();
 	}
 	
 	public int getTo() {
-		return to;
+		return mainModification.getTo();
 	}
 	
 	@JsonIgnore
 	public Square getSquareFrom() {
-		return board.getSquareAt(from);
+		return board.getSquareAt(mainModification.getFrom());
 	}
 	
 	@JsonIgnore
 	public Square getSquareTo() {
-		return board.getSquareAt(to);
+		return board.getSquareAt(mainModification.getTo());
 	}
 	
 	public void doMove() {
-		if (capturedPiece != null) {
-			board.capturePiece(capturedPiece);
+		if (isCapture()) {
+			board.capturePiece(getCapturedPiece());
 		}
-		board.movePiece(piece, to);
-		piece.setHasMoved(true);
+		board.movePiece(getPiece(), mainModification.getTo());
+		date = new Date();
 	}
 	
 	public void revertMove() {
-		board.movePiece(piece, from);
-		if (capturedPiece != null) {
-			board.releasePiece(capturedPiece, to);
-		}
-		if (pieceFirstMove) {
-			piece.setHasMoved(false);
+		board.movePiece(getPiece(), mainModification.getFrom());
+		if (isCapture()) {
+			board.releasePiece(getCapturedPiece(), sideModification.getFrom());
 		}
 	}
 	
 	// TODO : Disambiguating moves
 	// TODO : check, checkmate
 	public String getAlgebraic() {
-		if (capturedPiece != null) {
+		final Piece piece = getPiece();
+		if (isCapture()) {
 			if (piece.is(PieceType.PAWN)) {
 				return String.format("%sx%s", piece.getSquare().getFile(), getSquareTo().getAlgebraic());
 			}
@@ -159,12 +164,12 @@ public class Move implements Parcelable {
 	
 	@Override
 	public String toString() {
-		final String algebraicFrom = GameUtils.algebraicFromIndex(from);
-		final String algebraicTo = GameUtils.algebraicFromIndex(to);
-		if (capturedPiece != null) {
-			return String.format("%s moves %s  from %s to %s and captures %s", piece, movement, algebraicFrom, algebraicTo, capturedPiece);
+		final String algebraicFrom = GameUtils.algebraicFromIndex(mainModification.getFrom());
+		final String algebraicTo = GameUtils.algebraicFromIndex(mainModification.getTo());
+		if (isCapture()) {
+			return String.format("%s moves %s from %s to %s and captures %s", getPiece(), mainModification.getMovement(), algebraicFrom, algebraicTo, sideModification.getPieceId());
 		}
-		return String.format("%s moves %s from %s to %s", piece, movement, algebraicFrom, algebraicTo);
+		return String.format("%s moves %s from %s to %s", getPiece(), mainModification.getMovement(), algebraicFrom, algebraicTo);
 	}
 	
 	@Override
@@ -175,10 +180,8 @@ public class Move implements Parcelable {
 	@Override
 	public void writeToParcel(final Parcel dest, final int flags) {
 		dest.writeString(player.name());
-		dest.writeParcelable(piece, 0);
-		dest.writeParcelable(capturedPiece, 0);
-		dest.writeInt(from);
-		dest.writeInt(to);
+		dest.writeParcelable(mainModification, 0);
+		dest.writeParcelable(sideModification, 0);
 	}
 	
 }

@@ -107,12 +107,6 @@ public class Board implements Parcelable {
 			positions[i] = board.positions[i];
 		}
 		
-		// copy pieces status
-		for (final Piece piece : board.getPieces()) {
-			final Piece p = getPieceFromId(piece.getId());
-			p.setHasMoved(piece.hasMoved());
-		}
-		
 		// copy all moves
 		moves.addAll(board.getMoves());
 	}
