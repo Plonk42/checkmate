@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.checkmate.game.Board;
+import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
@@ -51,7 +52,6 @@ public class Piece implements Parcelable {
 	private final int id;
 	private PieceType type;
 	private final Player player;
-	private boolean hasMoved;
 	
 	public Piece(final Board board, final int id, final PieceType type, final Player player) {
 		this.board = board;
@@ -64,7 +64,6 @@ public class Piece implements Parcelable {
 		id = parcel.readInt();
 		player = (Player) parcel.readSerializable();
 		type = (PieceType) parcel.readSerializable();
-		hasMoved = (parcel.readByte() == 1);
 	}
 	
 	@JsonIgnore
@@ -93,11 +92,14 @@ public class Piece implements Parcelable {
 	}
 	
 	public final boolean hasMoved() {
-		return hasMoved;
-	}
-	
-	public final void setHasMoved(final boolean hasMoved) {
-		this.hasMoved = hasMoved;
+		// TODO this only make sense for Pawn or King
+		// TODO only loop until game progression
+		for (final Move move : board.getMoves()) {
+			if (move.getPiece().getId() == id) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@JsonIgnore
@@ -207,7 +209,6 @@ public class Piece implements Parcelable {
 	public void writeToParcel(final Parcel dest, final int flags) {
 		dest.writeInt(id);
 		dest.writeSerializable(player);
-		dest.writeByte((byte) (hasMoved ? 1 : 0));
 	}
 	
 }

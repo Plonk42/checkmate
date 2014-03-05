@@ -131,16 +131,12 @@ public class Move implements Parcelable {
 			board.capturePiece(capturedPiece);
 		}
 		board.movePiece(piece, to);
-		piece.setHasMoved(true);
 	}
 	
 	public void revertMove() {
 		board.movePiece(piece, from);
 		if (capturedPiece != null) {
 			board.releasePiece(capturedPiece, to);
-		}
-		if (pieceFirstMove) {
-			piece.setHasMoved(false);
 		}
 	}
 	

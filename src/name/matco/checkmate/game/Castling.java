@@ -52,18 +52,15 @@ public class Castling extends Move {
 		rook = board.getSquareAt(getCorner()).getPiece();
 		Log.d(getClass().getName(), String.format("Found %s at square %s", rook, rook.getSquare()));
 		board.movePiece(rook, getRookDestination());
-		rook.setHasMoved(true);
 	}
 	
 	@Override
 	public void revertMove() {
 		// revert king move
 		board.movePiece(piece, from);
-		piece.setHasMoved(false);
 		
 		// revert rook move
 		board.movePiece(rook, getCorner());
-		rook.setHasMoved(false);
 	}
 	
 	@Override
