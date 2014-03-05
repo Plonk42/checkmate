@@ -1,6 +1,7 @@
 package name.matco.checkmate.game;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +39,8 @@ public class Move implements Parcelable {
 	protected int from;
 	protected final int to;
 	protected final Movement movement;
+	
+	private Date date;
 	
 	public static Move fromAlgebraic(final Board board, final Player player, final String a) throws InvalidAlgebraic {
 		// TODO manage castling, en passant and promotion
@@ -131,6 +134,7 @@ public class Move implements Parcelable {
 			board.capturePiece(capturedPiece);
 		}
 		board.movePiece(piece, to);
+		date = new Date();
 	}
 	
 	public void revertMove() {

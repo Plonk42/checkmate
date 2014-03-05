@@ -37,8 +37,8 @@ public class Game implements Parcelable {
 	
 	private Board board;
 	
-	private Date _startDate;
-	private Date _endDate;
+	private Date startDate;
+	private Date endDate;
 	
 	private int progression = 0;
 	
@@ -57,6 +57,7 @@ public class Game implements Parcelable {
 	private void init() {
 		board = new Board();
 		setProgression(0);
+		startDate = new Date();
 		
 		for (final GameStateListener gl : gameStateListeners) {
 			gl.onGameInit();
@@ -64,11 +65,11 @@ public class Game implements Parcelable {
 	}
 	
 	public Date getStartDate() {
-		return _startDate;
+		return startDate;
 	}
 	
 	public Date getEndDate() {
-		return _endDate;
+		return endDate;
 	}
 	
 	public int getProgression() {
