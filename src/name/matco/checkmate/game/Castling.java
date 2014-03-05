@@ -6,7 +6,6 @@ import android.util.Log;
 
 public class Castling extends Move {
 	
-	private int rookDestinationIndex;
 	private Piece rook;
 	
 	public Castling(final Board board, final Player player, final Piece king, final Square to) {
@@ -25,26 +24,6 @@ public class Castling extends Move {
 	
 	public int getCorner() {
 		return getSquareTo().isKingSide() ? player.getKingCorner() : player.getQueenCorner();
-	}
-	
-	@Override
-	public void doMove() {
-		// move the king
-		super.doMove();
-		
-		// move rook
-		rook = board.getSquareAt(getCorner()).getPiece();
-		Log.d(getClass().getName(), String.format("Found %s at square %s", rook, rook.getSquare()));
-		board.movePiece(rook, sideModification.getTo());
-	}
-	
-	@Override
-	public void revertMove() {
-		// revert king move
-		board.movePiece(getPiece(), mainModification.getTo());
-		
-		// revert rook move
-		board.movePiece(rook, getCorner());
 	}
 	
 	@Override

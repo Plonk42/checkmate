@@ -133,18 +133,26 @@ public class Move implements Parcelable {
 		return board.getSquareAt(mainModification.getTo());
 	}
 	
-	public void doMove() {
+	public final void doMove() {
 		if (isCapture()) {
 			board.capturePiece(getCapturedPiece());
 		}
 		board.movePiece(getPiece(), mainModification.getTo());
+		if (sideModification != null && !isCapture()) {
+			board.movePiece(board.getPieceFromId(sideModification.getPieceId()), sideModification.getTo());
+		}
 		date = new Date();
 	}
 	
-	public void revertMove() {
+	public final void revertMove() {
 		board.movePiece(getPiece(), mainModification.getFrom());
-		if (isCapture()) {
-			board.releasePiece(getCapturedPiece(), sideModification.getFrom());
+		if (sideModification != null) {
+			if (isCapture()) {
+				board.releasePiece(getCapturedPiece(), sideModification.getFrom());
+			}
+			else {
+				board.movePiece(board.getPieceFromId(sideModification.getPieceId()), sideModification.getFrom());
+			}
 		}
 	}
 	
