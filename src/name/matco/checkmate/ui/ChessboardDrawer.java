@@ -3,6 +3,7 @@ package name.matco.checkmate.ui;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.graphics.Canvas;
+import android.os.SystemClock;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -10,7 +11,8 @@ public class ChessboardDrawer implements Runnable {
 	
 	// TODO make this a preference in settings
 	public static int FPS = 60;
-	private static int FRAME_TIME = 1000 / FPS;
+	private static long FRAME_TIME = 1000 / FPS;
+	private static long POLLING_TIME = 10; // time between two post tries
 	
 	private final AtomicBoolean drawing = new AtomicBoolean(false);
 	private long stopTime = -1;
@@ -30,10 +32,10 @@ public class ChessboardDrawer implements Runnable {
 	@Override
 	public void run() {
 		while (run) {
-			while (System.currentTimeMillis() < stopTime) {
-				doDraw(false);
+			while (SystemClock.uptimeMillis() < stopTime) {
+				final long sleepTime = doDraw(false) ? FRAME_TIME : POLLING_TIME;
 				try {
-					Thread.sleep(FRAME_TIME);
+					Thread.sleep(sleepTime);
 				} catch (final InterruptedException e) {
 					// propagate the interruption and stop
 					Thread.currentThread().interrupt();
@@ -55,7 +57,7 @@ public class ChessboardDrawer implements Runnable {
 		}
 	}
 	
-	private void doDraw(final boolean forceSchedule) {
+	private boolean doDraw(final boolean forceSchedule) {
 		if (forceSchedule || !drawing.getAndSet(true)) {
 			final boolean posted = surface.post(new Runnable() {
 				@Override
@@ -75,7 +77,9 @@ public class ChessboardDrawer implements Runnable {
 			if (!posted) { // won't be executed: reset flag
 				drawing.set(false);
 			}
+			return posted;
 		}
+		return false;
 	}
 	
 	/**
@@ -97,7 +101,7 @@ public class ChessboardDrawer implements Runnable {
 	 * @param milliseconds
 	 */
 	public synchronized void drawFor(final int milliseconds) {
-		stopTime = System.currentTimeMillis() + milliseconds;
+		stopTime = SystemClock.uptimeMillis() + milliseconds;
 		notifyAll();
 	}
 }
