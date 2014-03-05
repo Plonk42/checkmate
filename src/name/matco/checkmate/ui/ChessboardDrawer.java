@@ -8,22 +8,25 @@ import java.util.concurrent.TimeUnit;
 public class ChessboardDrawer {
 	
 	// TODO make this a preference in settings
-	public static int FPS = 60;
+	public static int FPS = 50;
 	private static int FRAME_TIME = 1000 / FPS;
 	
-	final private ScheduledExecutorService scheduler;
+	final private ScheduledExecutorService drawerScheduler;
+	final private ScheduledExecutorService cancellerScheduler;
+	
 	final private Runnable cancellerTask;
 	final private Runnable drawerTask;
 	
-	private ScheduledFuture<?> handler;
-	private ScheduledFuture<?> canceller;
+	private ScheduledFuture<?> drawerFuture;
+	private ScheduledFuture<?> cancellerFuture;
 	
 	public ChessboardDrawer(final Chessboard drawer) {
-		this.scheduler = Executors.newSingleThreadScheduledExecutor();
+		this.drawerScheduler = Executors.newSingleThreadScheduledExecutor();
+		this.cancellerScheduler = Executors.newSingleThreadScheduledExecutor();
 		this.drawerTask = new Runnable() {
 			@Override
 			public void run() {
-				// if (scheduler.isTerminated()) {
+				// if (drawerScheduler.isTerminated()) {
 				drawer.getContainer().runOnUiThread(drawer);
 				// }
 			}
@@ -31,32 +34,33 @@ public class ChessboardDrawer {
 		this.cancellerTask = new Runnable() {
 			@Override
 			public void run() {
-				handler.cancel(false);
-				handler = null;
+				drawStop();
+				// run one last time to finish animation
+				drawer.run();
 			}
 		};
 	}
 	
 	public void shutdown() {
-		scheduler.shutdown();
+		drawerScheduler.shutdown();
 	}
 	
 	public void drawStart() {
-		// cancel current canceller
-		if (canceller != null) {
-			canceller.cancel(false);
+		// cancel current cancellerFuture
+		if (cancellerFuture != null) {
+			cancellerFuture.cancel(false);
 		}
-		// create handler if it does not exists
-		if (handler == null) {
-			handler = scheduler.scheduleAtFixedRate(drawerTask, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
+		// create drawerFuture if it does not exists
+		if (drawerFuture == null) {
+			drawerFuture = drawerScheduler.scheduleAtFixedRate(drawerTask, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
 		}
 	}
 	
 	public void drawFor(final int milliseconds) {
 		drawStart();
 		
-		// create a new canceller
-		canceller = scheduler.schedule(cancellerTask, milliseconds, TimeUnit.MILLISECONDS);
+		// create a new cancellerFuture
+		cancellerFuture = cancellerScheduler.schedule(cancellerTask, milliseconds, TimeUnit.MILLISECONDS);
 	}
 	
 	public void drawNow() {
@@ -64,9 +68,9 @@ public class ChessboardDrawer {
 	}
 	
 	public void drawStop() {
-		if (handler != null) {
-			handler.cancel(false);
-			handler = null;
+		if (drawerFuture != null) {
+			drawerFuture.cancel(false);
+			drawerFuture = null;
 		}
 	}
 	
