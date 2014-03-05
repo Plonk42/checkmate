@@ -205,7 +205,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		for (final Piece p : game.getBoard().getOnboardPieces()) {
 			
 			// draw piece if it's not moving piece(s)
-			if (animatedMove == null || !animatedMove.getRelatedPieces().contains(p)) {
+			if (animatedMove == null || !animatedMove.getRelatedPiece().contains(p.getId())) {
 				final int index = p.getSquare().getIndex();
 				final int x = index % GameUtils.CHESSBOARD_SIZE;
 				final int y = index / GameUtils.CHESSBOARD_SIZE;
@@ -262,7 +262,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				final Castling castling = (Castling) animatedMove;
 				pieceMovements = new HashSet<PieceMovement>();
 				pieceMovements.add(new PieceMovement(castling.getPiece(), castling.getSquareFrom(), castling.getSquareTo()));
-				pieceMovements.add(new PieceMovement(castling.getRook(), game.getBoard().getSquareAt(castling.getCorner()), game.getBoard().getSquareAt(castling.getRookDestination())));
+				// pieceMovements.add(new PieceMovement(castling.getRook(), game.getBoard().getSquareAt(castling.getCorner()), game.getBoard().getSquareAt(castling.getRookDestination())));
 			}
 			else {
 				pieceMovements = Collections.singleton(new PieceMovement(animatedMove.getPiece(), animatedMove.getSquareFrom(), animatedMove.getSquareTo()));

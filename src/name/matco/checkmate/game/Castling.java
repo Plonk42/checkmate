@@ -1,8 +1,5 @@
 package name.matco.checkmate.game;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import name.matco.checkmate.game.piece.Piece;
 import android.util.Log;
@@ -15,11 +12,10 @@ public class Castling extends Move {
 	public Castling(final Board board, final Player player, final Piece king, final Square to) {
 		super(board, player, king, to);
 		try {
-			this.rookDestinationIndex = to.apply(new Movement(to.isKingSide() ? -1 : 1, 0)).getIndex();
+			sideModification = new PieceModification(board.getPiece(getCorner()).getId(), getCorner(), to.apply(new Movement(to.isKingSide() ? -1 : 1, 0)).getIndex(), null);
 		} catch (final OutOfBoardCoordinateException e) {
 			// no move could have been done outside board
 			Log.e(getClass().getName(), "Move is outside board", e);
-			this.rookDestinationIndex = -1;
 		}
 	}
 	
@@ -31,18 +27,6 @@ public class Castling extends Move {
 		return getSquareTo().isKingSide() ? player.getKingCorner() : player.getQueenCorner();
 	}
 	
-	public int getRookDestination() {
-		return rookDestinationIndex;
-	}
-	
-	@Override
-	public Set<Piece> getRelatedPieces() {
-		final Set<Piece> relatedPieces = new HashSet<Piece>();
-		relatedPieces.add(piece);
-		relatedPieces.add(rook);
-		return relatedPieces;
-	}
-	
 	@Override
 	public void doMove() {
 		// move the king
@@ -51,13 +35,13 @@ public class Castling extends Move {
 		// move rook
 		rook = board.getSquareAt(getCorner()).getPiece();
 		Log.d(getClass().getName(), String.format("Found %s at square %s", rook, rook.getSquare()));
-		board.movePiece(rook, getRookDestination());
+		board.movePiece(rook, sideModification.getTo());
 	}
 	
 	@Override
 	public void revertMove() {
 		// revert king move
-		board.movePiece(piece, from);
+		board.movePiece(getPiece(), mainModification.getTo());
 		
 		// revert rook move
 		board.movePiece(rook, getCorner());
@@ -70,7 +54,7 @@ public class Castling extends Move {
 	
 	@Override
 	public String toString() {
-		return String.format("Castling %s with move %s", piece, movement);
+		return String.format("Castling %s with move %s", getPiece(), mainModification.getMovement());
 	}
 	
 }

@@ -30,7 +30,7 @@ public class Promotion extends Move {
 	
 	@Override
 	public String toString() {
-		return String.format("%s is promoted by move %s", piece, movement);
+		return String.format("%s is promoted by move %s", getPiece(), mainModification.getMovement());
 	}
 	
 }
