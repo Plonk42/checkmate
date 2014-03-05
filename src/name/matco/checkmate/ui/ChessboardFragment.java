@@ -103,6 +103,6 @@ public class ChessboardFragment extends Fragment implements GameStateListener {
 	}
 	
 	public void redraw() {
-		chessboard.run();
+		chessboard.redraw();
 	}
 }

@@ -1,77 +1,107 @@
 package name.matco.checkmate.ui;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ChessboardDrawer {
+import android.graphics.Canvas;
+import android.os.SystemClock;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+public class ChessboardDrawer implements Runnable {
 	
 	// TODO make this a preference in settings
-	public static int FPS = 50;
-	private static int FRAME_TIME = 1000 / FPS;
+	public static int FPS = 60;
+	private static long FRAME_TIME = 1000 / FPS;
+	private static long POLLING_TIME = 10; // time between two post tries
 	
-	final private ScheduledExecutorService drawerScheduler;
-	final private ScheduledExecutorService cancellerScheduler;
+	private final AtomicBoolean drawing = new AtomicBoolean(false);
+	private long stopTime = -1;
+	private boolean run = true;
 	
-	final private Runnable cancellerTask;
-	final private Runnable drawerTask;
+	final private SurfaceView surface;
 	
-	private ScheduledFuture<?> drawerFuture;
-	private ScheduledFuture<?> cancellerFuture;
-	
-	public ChessboardDrawer(final Chessboard drawer) {
-		this.drawerScheduler = Executors.newSingleThreadScheduledExecutor();
-		this.cancellerScheduler = Executors.newSingleThreadScheduledExecutor();
-		this.drawerTask = new Runnable() {
-			@Override
-			public void run() {
-				// if (drawerScheduler.isTerminated()) {
-				drawer.getContainer().runOnUiThread(drawer);
-				// }
-			}
-		};
-		this.cancellerTask = new Runnable() {
-			@Override
-			public void run() {
-				drawStop();
-				// run one last time to finish animation
-				drawer.run();
-			}
-		};
+	public ChessboardDrawer(final SurfaceView surface) {
+		this.surface = surface;
+		new Thread(this).start();
 	}
 	
 	public void shutdown() {
-		drawerScheduler.shutdown();
+		run = false;
 	}
 	
-	public void drawStart() {
-		// cancel current cancellerFuture
-		if (cancellerFuture != null) {
-			cancellerFuture.cancel(false);
+	@Override
+	public void run() {
+		while (run) {
+			while (SystemClock.uptimeMillis() < stopTime) {
+				final long sleepTime = doDraw(false) ? FRAME_TIME : POLLING_TIME;
+				try {
+					Thread.sleep(sleepTime);
+				} catch (final InterruptedException e) {
+					// propagate the interruption and stop
+					Thread.currentThread().interrupt();
+					return;
+				}
+			}
+			
+			doDraw(true); // force a draw after timeout to ensure animation completeness
+			
+			synchronized (ChessboardDrawer.this) {
+				try {
+					wait();
+				} catch (final InterruptedException e) {
+					// propagate the interruption and stop
+					Thread.currentThread().interrupt();
+					return;
+				}
+			}
 		}
-		// create drawerFuture if it does not exists
-		if (drawerFuture == null) {
-			drawerFuture = drawerScheduler.scheduleAtFixedRate(drawerTask, 0, FRAME_TIME, TimeUnit.MILLISECONDS);
+	}
+	
+	private boolean doDraw(final boolean forceSchedule) {
+		if (forceSchedule || !drawing.getAndSet(true)) {
+			final boolean posted = surface.post(new Runnable() {
+				@Override
+				public void run() {
+					final SurfaceHolder holder = surface.getHolder();
+					final Canvas canvas = holder.lockCanvas();
+					if (canvas != null) {
+						try {
+							surface.draw(canvas);
+						} finally {
+							holder.unlockCanvasAndPost(canvas);
+						}
+					}
+					drawing.set(false);
+				}
+			});
+			if (!posted) { // won't be executed: reset flag
+				drawing.set(false);
+			}
+			return posted;
 		}
+		return false;
 	}
 	
-	public void drawFor(final int milliseconds) {
-		drawStart();
-		
-		// create a new cancellerFuture
-		cancellerFuture = cancellerScheduler.schedule(cancellerTask, milliseconds, TimeUnit.MILLISECONDS);
-	}
-	
+	/**
+	 * Immediately schedule a draw
+	 */
 	public void drawNow() {
-		drawerTask.run();
+		doDraw(false);
 	}
 	
-	public void drawStop() {
-		if (drawerFuture != null) {
-			drawerFuture.cancel(false);
-			drawerFuture = null;
-		}
+	public synchronized void drawContinuous() {
+		stopTime = Long.MAX_VALUE;
+		notifyAll();
 	}
 	
+	/**
+	 * Refresh drawing for the given time, in milliseconds.
+	 * At least one draw is executed after the timeout
+	 * 
+	 * @param milliseconds
+	 */
+	public synchronized void drawFor(final int milliseconds) {
+		stopTime = SystemClock.uptimeMillis() + milliseconds;
+		notifyAll();
+	}
 }

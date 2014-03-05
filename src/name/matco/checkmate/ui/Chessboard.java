@@ -31,7 +31,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, GameStateListener, MovementListener, Runnable {
+public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, GameStateListener, MovementListener {
 	
 	private static final int PIECE_MARGIN = 5;
 	
@@ -145,7 +145,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 					selectedPiece = p;
 					selectionMillis = System.currentTimeMillis();
 					highlightedSquares.addAll(allowedPositions);
-					drawer.drawStart();
+					drawer.drawContinuous();
 				}
 				
 				final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
@@ -323,16 +323,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		// }
 	}
 	
-	private void doDraw() {
-		final SurfaceHolder holder = getHolder();
-		final Canvas canvas = holder.lockCanvas();
-		if (canvas != null) {
-			try {
-				draw(canvas);
-			} finally {
-				holder.unlockCanvasAndPost(canvas);
-			}
-		}
+	public void redraw() {
+		drawer.drawNow();
 	}
 	
 	public void reset() {
@@ -342,7 +334,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		highlightedSquares.clear();
 		// }
 		
-		doDraw();
+		redraw();
 	}
 	
 	@Override
@@ -363,7 +355,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	
 	@Override
 	public void surfaceRedrawNeeded(final SurfaceHolder holder) {
-		doDraw();
+		redraw();
 	}
 	
 	@Override
@@ -397,12 +389,4 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		drawer.drawFor(MOVE_DURATION);
 	}
 	
-	@Override
-	public void run() {
-		doDraw();
-	}
-	
-	public Checkmate getContainer() {
-		return container;
-	}
 }
