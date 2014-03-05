@@ -34,7 +34,6 @@ public class Move implements Parcelable {
 	protected final Player player;
 	protected final Piece piece;
 	protected Piece capturedPiece;
-	protected boolean pieceFirstMove;
 	
 	protected int from;
 	protected final int to;
@@ -72,7 +71,6 @@ public class Move implements Parcelable {
 		this.board = board;
 		this.player = player;
 		this.piece = piece;
-		this.pieceFirstMove = !piece.hasMoved();
 		this.from = piece.getSquare().getIndex();
 		this.to = to.getIndex();
 		movement = GameUtils.getMovement(from, this.to);
@@ -99,11 +97,6 @@ public class Move implements Parcelable {
 	@JsonIgnore
 	public Set<Piece> getRelatedPieces() {
 		return Collections.singleton(getPiece());
-	}
-	
-	@JsonIgnore
-	public boolean isPieceFirstMove() {
-		return pieceFirstMove;
 	}
 	
 	@JsonIgnore
