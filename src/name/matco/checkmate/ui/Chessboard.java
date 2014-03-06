@@ -39,7 +39,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	private Game game;
 	
 	private ChessboardDrawer drawer;
-	// private final Object drawLock = new Object();
 	
 	private static Drawable blackSquareDrawable;
 	private static Drawable whiteSquareDrawable;
@@ -111,7 +110,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		
 		final Square s = getSquareAt(event.getX(), event.getY());
 		
-		// synchronized (drawLock) {
 		final Piece p = s.getPiece();
 		
 		// move selected piece
@@ -149,8 +147,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				Log.i(getClass().getName(), String.format("Selected piece : %s", str));
 			}
 		}
-		// }
-		
 		return true;
 	}
 	
@@ -176,8 +172,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		Log.v(getClass().getName(), String.format("Draw canvas [board size = %dx%d, square size = %d]", canvas.getWidth(), canvas.getHeight(), squareSize));
 		
 		final long now = System.currentTimeMillis();
-		
-		// synchronized (drawLock) {
 		
 		// draw squares
 		for (final Square s : game.getBoard().getSquares()) {
@@ -296,8 +290,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				animatedMove = null;
 			}
 		}
-		
-		// }
 	}
 	
 	public void redraw() {
@@ -305,11 +297,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	}
 	
 	public void reset() {
-		// synchronized (drawLock) {
 		animatedMove = null;
 		selectedPiece = null;
 		highlightedSquares.clear();
-		// }
 		
 		redraw();
 	}
