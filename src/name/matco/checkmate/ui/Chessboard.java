@@ -1,27 +1,22 @@
 package name.matco.checkmate.ui;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
-import name.matco.checkmate.R;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.GameUtils;
 import name.matco.checkmate.game.Move;
-import name.matco.checkmate.game.Movement;
 import name.matco.checkmate.game.PieceModification;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Promotion;
 import name.matco.checkmate.game.Square;
+import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import name.matco.checkmate.game.piece.Piece;
-import name.matco.checkmate.game.piece.PieceType;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,8 +25,6 @@ import android.view.SurfaceView;
 
 public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, GameStateListener, MovementListener {
 	
-	private static final int PIECE_MARGIN = 5;
-	
 	private static final int SELECTION_ANIMATION_DURATION = 200; // ms
 	private static final int MOVE_DURATION = 200; // ms
 	
@@ -39,41 +32,21 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	private Game game;
 	
 	private ChessboardDrawer drawer;
-	
-	private static Drawable blackSquareDrawable;
-	private static Drawable whiteSquareDrawable;
-	private static Paint hightlightPainter;
+	private final DrawFactory drawFactory;
 	
 	private Move animatedMove;
 	private boolean animatedMoveWay;
 	private long startMovingMillis = 0;
 	private long selectionMillis = 0;
 	
-	private final Hashtable<Integer, Drawable> drawableCache = new Hashtable<Integer, Drawable>();
-	
-	private int x0;
-	private int y0;
-	int boardSize;
-	int squareSize;
-	float isometricScaleFactor = 1;
-	
 	private Piece selectedPiece;
 	private final List<Square> highlightedSquares = new ArrayList<Square>();
-	
-	static {
-		hightlightPainter = new Paint();
-		hightlightPainter.setAntiAlias(true);
-		hightlightPainter.setStyle(Style.FILL);
-		hightlightPainter.setARGB(96, 255, 255, 255);
-	}
 	
 	public Chessboard(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		Log.i(getClass().getName(), "Chessboard instantiated [context = " + context + ", attrs = " + attrs);
+		drawFactory = new DrawFactory(context);
 		getHolder().addCallback(this);
-		buildDrawableCache();
-		blackSquareDrawable = getContext().getResources().getDrawable(R.drawable.black_square);
-		whiteSquareDrawable = getContext().getResources().getDrawable(R.drawable.white_square);
 	}
 	
 	public void setGame(final Game game) {
@@ -86,17 +59,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		this.container = container;
 	}
 	
-	private void buildDrawableCache() {
-		for (final Player player : Player.values()) {
-			for (final PieceType pieceType : PieceType.values()) {
-				final int resourceId = pieceType.getImageResource(player);
-				drawableCache.put(resourceId, getContext().getResources().getDrawable(resourceId));
-			}
-		}
-	}
-	
-	public Drawable getPieceImage(final Piece piece) {
-		return drawableCache.get(piece.getImageResource());
+	public DrawFactory getDrawFactory() {
+		return drawFactory;
 	}
 	
 	@Override
@@ -109,7 +73,6 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		highlightedSquares.clear();
 		
 		final Square s = getSquareAt(event.getX(), event.getY());
-		
 		final Piece p = s.getPiece();
 		
 		// move selected piece
@@ -138,26 +101,30 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 				final List<Square> allowedPositions = p.getAllowedPositions();
 				if (!allowedPositions.isEmpty()) {
 					selectedPiece = p;
-					selectionMillis = System.currentTimeMillis();
+					selectionMillis = SystemClock.uptimeMillis();
 					highlightedSquares.addAll(allowedPositions);
 					drawer.drawContinuous();
 				}
-				
 				final String str = selectedPiece != null ? selectedPiece.getDescription() : "[none]";
 				Log.i(getClass().getName(), String.format("Selected piece : %s", str));
 			}
 		}
+		
 		return true;
 	}
 	
 	private Square getSquareAt(final float x, final float y) {
-		if (x < x0 || x > x0 + squareSize * GameUtils.CHESSBOARD_SIZE || y < y0 || y > y0 + squareSize * GameUtils.CHESSBOARD_SIZE) {
+		final int squareSize = drawFactory.getSquareSize();
+		final int boardSize = drawFactory.getBoardSize();
+		
+		final int squareX = (int) x / squareSize;
+		final int squareY = (int) ((boardSize - y) / squareSize);
+		
+		try {
+			return game.getBoard().getSquareAt(GameUtils.coordinateToIndex(squareX, squareY));
+		} catch (final OutOfBoardCoordinateException e) {
 			return null;
 		}
-		
-		final int squareX = (int) ((x - x0) / squareSize);
-		final int squareY = (int) ((y0 + boardSize - y) / squareSize);
-		return game.getBoard().getSquares()[squareY * GameUtils.CHESSBOARD_SIZE + squareX];
 	}
 	
 	@Override
@@ -169,58 +136,30 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 			return;
 		}
 		
-		Log.v(getClass().getName(), String.format("Draw canvas [board size = %dx%d, square size = %d]", canvas.getWidth(), canvas.getHeight(), squareSize));
+		Log.v(getClass().getName(), String.format("Draw canvas [board size = %dx%d, square size = %d]", canvas.getWidth(), canvas.getHeight(), drawFactory.getSquareSize()));
 		
-		final long now = System.currentTimeMillis();
+		final long now = SystemClock.uptimeMillis();
 		
 		// draw squares
 		for (final Square s : game.getBoard().getSquares()) {
-			final int index = s.getIndex();
-			final int x = index % GameUtils.CHESSBOARD_SIZE;
-			final int y = index / GameUtils.CHESSBOARD_SIZE;
-			final int left = x * squareSize;
-			final int right = left + squareSize;
-			final int top = boardSize - (y + 1) * squareSize;
-			final int bottom = top + squareSize;
-			
-			final Drawable squareDrawable = ((x + y) % 2 == 0) ? whiteSquareDrawable : blackSquareDrawable;
-			squareDrawable.setBounds(left + 1, top + 1, right - 1, bottom - 1);
-			squareDrawable.draw(canvas);
-			
-			if (highlightedSquares.contains(s)) {
-				canvas.drawRect(left, top, right, bottom, hightlightPainter);
-			}
+			drawFactory.draw(canvas, s, highlightedSquares.contains(s));
 		}
 		
 		// draw pieces
 		for (final Piece p : game.getBoard().getOnboardPieces()) {
-			
 			// draw piece if it's not moving piece(s)
 			if (animatedMove == null || !animatedMove.getMovingPieces().contains(p.getId())) {
-				final int index = p.getSquare().getIndex();
-				final int x = index % GameUtils.CHESSBOARD_SIZE;
-				final int y = index / GameUtils.CHESSBOARD_SIZE;
-				final int left = x * squareSize + PIECE_MARGIN;
-				final int right = left + squareSize - 2 * PIECE_MARGIN;
-				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
-				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
+				final boolean flipped = container.getTwoPlayerMode() && p.is(Player.BLACK);
 				
-				final int offset = p.equals(selectedPiece) ? (int) (8.0 * Math.sin((now - selectionMillis) / (float) SELECTION_ANIMATION_DURATION) + 8.0) : 0;
-				
-				final Drawable drawable = getPieceImage(p);
-				drawable.setBounds(
-						(int) (isometricScaleFactor * left),
-						(int) (isometricScaleFactor * top - offset),
-						(int) (isometricScaleFactor * right),
-						(int) (isometricScaleFactor * bottom - offset));
-				
-				if (container.getTwoPlayerMode() && p.is(Player.BLACK)) {
+				if (p.equals(selectedPiece)) {
+					final int offset = (int) (8.0 * Math.sin((now - selectionMillis) / (float) SELECTION_ANIMATION_DURATION) + 8.0);
 					canvas.save();
-					canvas.rotate(180, left - PIECE_MARGIN, top - PIECE_MARGIN);
-					canvas.translate(-squareSize, -squareSize);
+					canvas.translate(0, flipped ? offset : -offset);
 				}
-				drawable.draw(canvas);
-				if (container.getTwoPlayerMode() && p.is(Player.BLACK)) {
+				
+				drawFactory.draw(canvas, p, flipped);
+				
+				if (p.equals(selectedPiece)) {
 					canvas.restore();
 				}
 			}
@@ -229,60 +168,24 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		// draw moving piece
 		// moving piece must be drawn after all other pieces to appear over all other pieces (knight jump over other pieces)
 		if (animatedMove != null) {
-			
 			// detect end of move
 			final boolean endOfMove = now >= startMovingMillis + MOVE_DURATION;
+			// calculate current position offset
+			final float coeff;
+			if (endOfMove) {
+				coeff = 1;
+				Log.i(getClass().getName(), "Move finished at " + now);
+			} else {
+				coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
+			}
 			
 			for (final PieceModification modification : animatedMove.getModifications()) {
 				if (modification.isMovement()) {
-					final Piece piece = game.getBoard().getPieceFromId(modification.getPieceId());
+					final Piece p = game.getBoard().getPieceFromId(modification.getPieceId());
 					final Square from = game.getBoard().getSquareAt(modification.getFrom());
 					final Square to = game.getBoard().getSquareAt(modification.getTo());
-					
-					final Drawable drawable = getPieceImage(piece);
-					
-					final Square s = animatedMoveWay ? to : from;
-					final Movement pam = modification.getMovement();
-					final Movement m = animatedMoveWay ? pam : pam.withInversion();
-					
-					// calculate current position offset
-					final float coeff;
-					if (endOfMove) {
-						coeff = 1;
-						Log.i(getClass().getName(), "Move finished at " + now);
-					} else {
-						coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
-					}
-					
-					final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
-					final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
-					final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
-					
-					final int index = s.getIndex();
-					final int x = index % GameUtils.CHESSBOARD_SIZE;
-					final int y = index / GameUtils.CHESSBOARD_SIZE;
-					final int left = x * squareSize + PIECE_MARGIN;
-					final int right = left + squareSize - 2 * PIECE_MARGIN;
-					final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
-					final int bottom = top + squareSize - 2 * PIECE_MARGIN;
-					
-					Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy + ", factor " + factor);
-					
-					drawable.setBounds(
-							(int) (isometricScaleFactor * (left + dx - factor)),
-							(int) (isometricScaleFactor * (top + dy - factor)),
-							(int) (isometricScaleFactor * (right + dx + factor)),
-							(int) (isometricScaleFactor * (bottom + dy + factor)));
-					
-					if (container.getTwoPlayerMode() && piece.is(Player.BLACK)) {
-						canvas.save();
-						canvas.rotate(180, left - PIECE_MARGIN + dx, top - PIECE_MARGIN + dy);
-						canvas.translate(-squareSize, -squareSize);
-					}
-					drawable.draw(canvas);
-					if (container.getTwoPlayerMode() && piece.is(Player.BLACK)) {
-						canvas.restore();
-					}
+					final PieceMovement move = new PieceMovement(p, from, to);
+					drawFactory.drawMovement(canvas, move, animatedMoveWay, coeff, container.getTwoPlayerMode() && p.is(Player.BLACK));
 				}
 			}
 			
@@ -315,9 +218,9 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
 		Log.i(getClass().getName(), String.format("Surface size changed to %d, %d", width, height));
 		// board and square sizes must be recalculated when surface size changes
-		boardSize = Math.min(width, height);
-		squareSize = boardSize / GameUtils.CHESSBOARD_SIZE;
-		holder.setFixedSize(boardSize, boardSize);
+		final int size = Math.min(width, height);
+		drawFactory.setBoardSize(size);
+		holder.setFixedSize(size, size);
 	}
 	
 	@Override
@@ -352,7 +255,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		// do move
 		animatedMove = m;
 		animatedMoveWay = way;
-		startMovingMillis = System.currentTimeMillis();
+		startMovingMillis = SystemClock.uptimeMillis();
 		drawer.drawFor(MOVE_DURATION);
 	}
 	

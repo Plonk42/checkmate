@@ -81,8 +81,8 @@ public class CapturedPieces extends SurfaceView implements SurfaceHolder.Callbac
 	}
 	
 	private void drawCapturedPieces(final Canvas canvas) {
-		final float isometricScaleFactor = chessboard.isometricScaleFactor;
-		final int pieceSize = chessboard.squareSize / 2;
+		final float isometricScaleFactor = chessboard.getDrawFactory().getIsometricScaleFactor();
+		final int pieceSize = chessboard.getDrawFactory().getSquareSize() / 2;
 		int offset = 0;
 		
 		synchronized (game.getBoard().getCapturedPieces()) {
@@ -90,7 +90,7 @@ public class CapturedPieces extends SurfaceView implements SurfaceHolder.Callbac
 			for (final Piece p : game.getBoard().getCapturedPieces()) {
 				if (p.is(player)) {
 					Log.i(getClass().getName(), String.format("Draw captured piece %s", p));
-					final Drawable drawable = chessboard.getPieceImage(p);
+					final Drawable drawable = chessboard.getDrawFactory().getPieceImage(p);
 					drawable.setBounds(
 							(int) isometricScaleFactor * offset,
 							0,

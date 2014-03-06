@@ -5,6 +5,10 @@ import name.matco.checkmate.game.piece.Piece;
 
 public class Square implements Comparable<Square> {
 	
+	public enum Color {
+		BLACK, WHITE
+	}
+	
 	private final Board board;
 	private final int index;
 	
@@ -44,6 +48,10 @@ public class Square implements Comparable<Square> {
 	@Override
 	public String toString() {
 		return getX() + "," + getY() + " = " + getAlgebraic();
+	}
+	
+	public Color getColor() {
+		return ((getX() + getY()) % 2 == 0) ? Color.WHITE : Color.BLACK;
 	}
 	
 	public String getAlgebraic() {
