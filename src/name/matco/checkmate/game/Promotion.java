@@ -5,18 +5,12 @@ import name.matco.checkmate.game.piece.PieceType;
 
 public class Promotion extends Move {
 	
-	private PieceType chosenType;
-	
 	public Promotion(final Board board, final Player player, final Piece pawn, final Square to) {
 		super(board, player, pawn, to);
 	}
 	
 	public void setChosenType(final PieceType chosenType) {
-		this.chosenType = chosenType;
-	}
-	
-	public PieceType getChosenType() {
-		return chosenType;
+		this.mainModification.setNewType(chosenType);
 	}
 	
 	@Override
@@ -24,7 +18,7 @@ public class Promotion extends Move {
 		final StringBuilder algebraic = new StringBuilder();
 		algebraic.append(getSquareTo().getAlgebraic());
 		algebraic.append("=");
-		algebraic.append(chosenType.getAlgebraic());
+		algebraic.append(mainModification.getNewType().getAlgebraic());
 		return algebraic.toString();
 	}
 	

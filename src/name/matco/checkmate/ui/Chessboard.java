@@ -1,18 +1,15 @@
 package name.matco.checkmate.ui;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 import name.matco.checkmate.R;
-import name.matco.checkmate.game.Castling;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.GameUtils;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Movement;
+import name.matco.checkmate.game.PieceModification;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Promotion;
 import name.matco.checkmate.game.Square;
@@ -205,7 +202,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		for (final Piece p : game.getBoard().getOnboardPieces()) {
 			
 			// draw piece if it's not moving piece(s)
-			if (animatedMove == null || !animatedMove.getRelatedPiece().contains(p.getId())) {
+			if (animatedMove == null || !animatedMove.getMovingPieces().contains(p.getId())) {
 				final int index = p.getSquare().getIndex();
 				final int x = index % GameUtils.CHESSBOARD_SIZE;
 				final int y = index / GameUtils.CHESSBOARD_SIZE;
@@ -242,76 +239,56 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 			// detect end of move
 			final boolean endOfMove = now >= startMovingMillis + MOVE_DURATION;
 			
-			// piece(s) to animate
-			Set<PieceMovement> pieceMovements;
-			
-			// some moves have a special animation
-			if (animatedMove instanceof Promotion) {
-				final Promotion promotion = (Promotion) animatedMove;
-				PieceMovement pieceMovement;
-				if (endOfMove && animatedMoveWay) {
-					// TODO improve piece movement to include modification of piece type
-					pieceMovement = new PieceMovement(promotion.getPiece(), promotion.getSquareTo(), promotion.getSquareTo());
-				}
-				else {
-					pieceMovement = new PieceMovement(promotion.getPiece(), promotion.getSquareFrom(), promotion.getSquareTo());
-				}
-				pieceMovements = Collections.singleton(pieceMovement);
-			}
-			else if (animatedMove instanceof Castling) {
-				final Castling castling = (Castling) animatedMove;
-				pieceMovements = new HashSet<PieceMovement>();
-				pieceMovements.add(new PieceMovement(castling.getPiece(), castling.getSquareFrom(), castling.getSquareTo()));
-				// pieceMovements.add(new PieceMovement(castling.getRook(), game.getBoard().getSquareAt(castling.getCorner()), game.getBoard().getSquareAt(castling.getRookDestination())));
-			}
-			else {
-				pieceMovements = Collections.singleton(new PieceMovement(animatedMove.getPiece(), animatedMove.getSquareFrom(), animatedMove.getSquareTo()));
-			}
-			
-			for (final PieceMovement pa : pieceMovements) {
-				final Drawable drawable = getPieceImage(pa.getPiece());
-				
-				final Square s = animatedMoveWay ? pa.getTo() : pa.getFrom();
-				final Movement pam = pa.getFrom().getMovementTo(pa.getTo());
-				final Movement m = animatedMoveWay ? pam : pam.withInversion();
-				
-				// calculate current position offset
-				final float coeff;
-				if (endOfMove) {
-					coeff = 1;
-					Log.i(getClass().getName(), "Move finished at " + now);
-				} else {
-					coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
-				}
-				
-				final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
-				final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
-				final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
-				
-				final int index = s.getIndex();
-				final int x = index % GameUtils.CHESSBOARD_SIZE;
-				final int y = index / GameUtils.CHESSBOARD_SIZE;
-				final int left = x * squareSize + PIECE_MARGIN;
-				final int right = left + squareSize - 2 * PIECE_MARGIN;
-				final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
-				final int bottom = top + squareSize - 2 * PIECE_MARGIN;
-				
-				Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy + ", factor " + factor);
-				
-				drawable.setBounds(
-						(int) (isometricScaleFactor * (left + dx - factor)),
-						(int) (isometricScaleFactor * (top + dy - factor)),
-						(int) (isometricScaleFactor * (right + dx + factor)),
-						(int) (isometricScaleFactor * (bottom + dy + factor)));
-				
-				if (container.getTwoPlayerMode() && pa.getPiece().is(Player.BLACK)) {
-					canvas.save();
-					canvas.rotate(180, left - PIECE_MARGIN + dx, top - PIECE_MARGIN + dy);
-					canvas.translate(-squareSize, -squareSize);
-				}
-				drawable.draw(canvas);
-				if (container.getTwoPlayerMode() && pa.getPiece().is(Player.BLACK)) {
-					canvas.restore();
+			for (final PieceModification modification : animatedMove.getModifications()) {
+				if (modification.isMovement()) {
+					final Piece piece = game.getBoard().getPieceFromId(modification.getPieceId());
+					final Square from = game.getBoard().getSquareAt(modification.getFrom());
+					final Square to = game.getBoard().getSquareAt(modification.getTo());
+					
+					final Drawable drawable = getPieceImage(piece);
+					
+					final Square s = animatedMoveWay ? to : from;
+					final Movement pam = modification.getMovement();
+					final Movement m = animatedMoveWay ? pam : pam.withInversion();
+					
+					// calculate current position offset
+					final float coeff;
+					if (endOfMove) {
+						coeff = 1;
+						Log.i(getClass().getName(), "Move finished at " + now);
+					} else {
+						coeff = (float) (now - startMovingMillis) / MOVE_DURATION;
+					}
+					
+					final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
+					final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
+					final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
+					
+					final int index = s.getIndex();
+					final int x = index % GameUtils.CHESSBOARD_SIZE;
+					final int y = index / GameUtils.CHESSBOARD_SIZE;
+					final int left = x * squareSize + PIECE_MARGIN;
+					final int right = left + squareSize - 2 * PIECE_MARGIN;
+					final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
+					final int bottom = top + squareSize - 2 * PIECE_MARGIN;
+					
+					Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy + ", factor " + factor);
+					
+					drawable.setBounds(
+							(int) (isometricScaleFactor * (left + dx - factor)),
+							(int) (isometricScaleFactor * (top + dy - factor)),
+							(int) (isometricScaleFactor * (right + dx + factor)),
+							(int) (isometricScaleFactor * (bottom + dy + factor)));
+					
+					if (container.getTwoPlayerMode() && piece.is(Player.BLACK)) {
+						canvas.save();
+						canvas.rotate(180, left - PIECE_MARGIN + dx, top - PIECE_MARGIN + dy);
+						canvas.translate(-squareSize, -squareSize);
+					}
+					drawable.draw(canvas);
+					if (container.getTwoPlayerMode() && piece.is(Player.BLACK)) {
+						canvas.restore();
+					}
 				}
 			}
 			

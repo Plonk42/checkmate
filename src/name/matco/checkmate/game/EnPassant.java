@@ -8,7 +8,7 @@ public class EnPassant extends Move {
 	public EnPassant(final Board board, final Player player, final Piece pawn, final Square to) throws OutOfBoardCoordinateException {
 		super(board, player, pawn, to);
 		final Square opponentPawnTo = to.apply(player.getForward().getMovement().withInversion());
-		sideModification = new PieceModification(opponentPawnTo.getPiece().getId(), opponentPawnTo.getIndex(), null, null);
+		sideModification = new PieceModification(opponentPawnTo.getPiece().getId(), opponentPawnTo.getIndex(), null);
 	}
 	
 	@Override

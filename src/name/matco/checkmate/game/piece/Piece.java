@@ -95,7 +95,7 @@ public class Piece implements Parcelable {
 		// TODO only loop until game progression
 		for (final Move move : board.getMoves()) {
 			if (move instanceof Promotion && move.getPiece().getId() == id) {
-				return ((Promotion) move).getChosenType();
+				return ((Promotion) move).getMainModification().getNewType();
 			}
 		}
 		return PieceType.PAWN;
