@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.graphics.Canvas;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -17,6 +18,11 @@ public class ChessboardDrawer implements Runnable {
 	private final AtomicBoolean drawing = new AtomicBoolean(false);
 	private long stopTime = -1;
 	private boolean run = true;
+	
+	// logging
+	private int actualDraws = 0;
+	private int skippedDraws = 0;
+	private long drawingTime = 0;
 	
 	final private SurfaceView surface;
 	
@@ -65,20 +71,29 @@ public class ChessboardDrawer implements Runnable {
 					final SurfaceHolder holder = surface.getHolder();
 					final Canvas canvas = holder.lockCanvas();
 					if (canvas != null) {
+						actualDraws++;
+						long start, stop;
 						try {
+							start = SystemClock.uptimeMillis();
 							surface.draw(canvas);
+							stop = SystemClock.uptimeMillis();
 						} finally {
 							holder.unlockCanvasAndPost(canvas);
 						}
+						drawingTime += stop - start;
+						// TODO : conditional log to avoid String computation
+						Log.v(getClass().getName(), String.format("Frame %d (%d skipped = %d%%), %dms, avg = %dms", actualDraws, skippedDraws, 100 * skippedDraws / (actualDraws + skippedDraws), stop - start, drawingTime / actualDraws));
 					}
 					drawing.set(false);
 				}
 			});
 			if (!posted) { // won't be executed: reset flag
+				skippedDraws++;
 				drawing.set(false);
 			}
 			return posted;
 		}
+		skippedDraws++;
 		return false;
 	}
 	

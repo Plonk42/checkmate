@@ -232,8 +232,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	public void surfaceDestroyed(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface destroyed");
 		// drawer is shutdown to stop scheduler
-		// FIXME : this makes the next draw fail (once the surface has been re created)
-		// drawer.shutdown();
+		drawer.shutdown();
 	}
 	
 	@Override
