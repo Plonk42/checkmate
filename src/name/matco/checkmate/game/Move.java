@@ -67,7 +67,7 @@ public class Move implements Parcelable {
 		this.player = player;
 		mainModification = new PieceModification(piece.getId(), piece.getSquare().getIndex(), to.getIndex());
 		if (to.getPiece() != null) {
-			sideModification = new PieceModification(to.getPiece().getId(), to.getIndex(), null);
+			sideModification = new PieceModification(to.getPiece().getId(), to.getIndex(), -1);
 		}
 		else {
 			sideModification = null;
@@ -105,7 +105,7 @@ public class Move implements Parcelable {
 	public List<Integer> getMovingPieces() {
 		final List<Integer> pieces = new ArrayList<Integer>();
 		pieces.add(mainModification.getPieceId());
-		if (sideModification != null && sideModification.getTo() != null) {
+		if (sideModification != null && sideModification.isMovement()) {
 			pieces.add(sideModification.getPieceId());
 		}
 		return pieces;
@@ -120,7 +120,7 @@ public class Move implements Parcelable {
 	}
 	
 	public boolean isCapture() {
-		return sideModification != null && sideModification.getTo() == null;
+		return sideModification != null && !sideModification.isMovement();
 	}
 	
 	public Piece getPiece() {

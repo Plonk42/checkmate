@@ -26,7 +26,7 @@ public class PieceModification implements Parcelable {
 	private final Integer to;
 	private PieceType newType;
 	
-	public PieceModification(final int pieceId, final int from, final Integer to) {
+	public PieceModification(final int pieceId, final int from, final int to) {
 		this.pieceId = pieceId;
 		this.from = from;
 		this.to = to;
@@ -47,7 +47,7 @@ public class PieceModification implements Parcelable {
 		return from;
 	}
 	
-	public Integer getTo() {
+	public int getTo() {
 		return to;
 	}
 	
@@ -60,7 +60,7 @@ public class PieceModification implements Parcelable {
 	}
 	
 	public boolean isMovement() {
-		return to != null;
+		return to >= 0;
 	}
 	
 	public Movement getMovement() {
