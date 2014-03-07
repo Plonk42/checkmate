@@ -1,6 +1,7 @@
 package name.matco.checkmate.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import name.matco.checkmate.game.Game;
@@ -127,8 +128,34 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		}
 	}
 	
+	boolean firstDraw = true;
+	
 	@Override
 	public void draw(final Canvas canvas) {
+		final List<Square> squares;
+		List<Piece> pieces;
+		
+		if (firstDraw) {
+			squares = Arrays.asList(game.getBoard().getSquares());
+			pieces = game.getBoard().getOnboardPieces();
+			firstDraw = false;
+		} else {
+			// TODO : avoid instantiation in draw()
+			squares = new ArrayList<Square>();
+			pieces = new ArrayList<Piece>();
+			if (selectedPiece != null) {
+				pieces.add(selectedPiece);
+				squares.add(selectedPiece.getSquare());
+				squares.addAll(highlightedSquares);
+			}
+		}
+		
+		if (!squares.isEmpty() || !pieces.isEmpty() || animatedMove != null) {
+			drawParts(canvas, squares, pieces);
+		}
+	}
+	
+	public void drawParts(final Canvas canvas, final List<Square> squares, final List<Piece> pieces) {
 		super.draw(canvas);
 		
 		// TODO improve this
@@ -141,12 +168,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		final long now = SystemClock.uptimeMillis();
 		
 		// draw squares
-		for (final Square s : game.getBoard().getSquares()) {
+		for (final Square s : squares) {
 			drawFactory.draw(canvas, s, highlightedSquares.contains(s));
 		}
 		
 		// draw pieces
-		for (final Piece p : game.getBoard().getOnboardPieces()) {
+		for (final Piece p : pieces) {
 			// draw piece if it's not moving piece(s)
 			if (animatedMove == null || !animatedMove.getMovingPieces().contains(p.getId())) {
 				final boolean flipped = container.getTwoPlayerMode() && p.is(Player.BLACK);

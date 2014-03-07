@@ -69,6 +69,7 @@ public class ChessboardDrawer implements Runnable {
 				@Override
 				public void run() {
 					final SurfaceHolder holder = surface.getHolder();
+					// TODO : get dirty region
 					final Canvas canvas = holder.lockCanvas();
 					if (canvas != null) {
 						actualDraws++;
