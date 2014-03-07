@@ -36,7 +36,7 @@ public class PieceModification implements Parcelable {
 		pieceId = in.readInt();
 		from = in.readInt();
 		to = in.readInt();
-		newType = PieceType.valueOf(in.readString());
+		newType = (PieceType) in.readValue(PieceType.class.getClassLoader());
 	}
 	
 	public int getPieceId() {
@@ -77,7 +77,7 @@ public class PieceModification implements Parcelable {
 		dest.writeInt(pieceId);
 		dest.writeInt(from);
 		dest.writeInt(to);
-		dest.writeString(newType.name());
+		dest.writeValue(newType);
 	}
 	
 }
