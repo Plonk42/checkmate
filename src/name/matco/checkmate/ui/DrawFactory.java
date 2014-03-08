@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -30,6 +31,7 @@ public class DrawFactory {
 		hightlightPainter.setARGB(96, 255, 255, 255);
 	}
 	
+	private static final int SQUARE_MARGIN = 1;
 	private static final int PIECE_MARGIN = 5;
 	
 	// TODO : to be used?
@@ -84,37 +86,31 @@ public class DrawFactory {
 		throw new RuntimeException("Invalid square color : " + square.getColor());
 	}
 	
-	public void draw(final Canvas canvas, final Piece piece) {
-		draw(canvas, piece, false);
+	public boolean[] getSquaresInRect(final Rect rect) {
+		final boolean[] results = new boolean[GameUtils.CHESSBOARD_SIZE * GameUtils.CHESSBOARD_SIZE];
+		for (int i = 0; i < GameUtils.CHESSBOARD_SIZE * GameUtils.CHESSBOARD_SIZE; i++) {
+			results[i] = Rect.intersects(rect, getSquareBounds(i));
+		}
+		return results;
 	}
 	
-	public void draw(final Canvas canvas, final Piece piece, final boolean flipped) {
-		final int index = piece.getSquare().getIndex();
-		final Drawable drawable = getPieceImage(piece);
-		
+	public Rect getSquareBounds(final Square square) {
+		return getSquareBounds(square.getIndex());
+	}
+	
+	public Rect getSquareBounds(final int index) {
 		final int x = index % GameUtils.CHESSBOARD_SIZE;
 		final int y = index / GameUtils.CHESSBOARD_SIZE;
-		final int left = x * squareSize + PIECE_MARGIN;
-		final int right = left + squareSize - 2 * PIECE_MARGIN;
-		final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
-		final int bottom = top + squareSize - 2 * PIECE_MARGIN;
-		
-		if (flipped) {
-			canvas.save();
-			canvas.rotate(180, left - PIECE_MARGIN, top - PIECE_MARGIN);
-			canvas.translate(-squareSize, -squareSize);
-		}
-		
-		drawable.setBounds(
-				isometricScaleFactor * left,
+		final int left = x * squareSize;
+		final int right = left + squareSize;
+		final int top = boardSize - (y + 1) * squareSize;
+		final int bottom = top + squareSize;
+		final Rect ret = new Rect(isometricScaleFactor * left,
 				isometricScaleFactor * top,
 				isometricScaleFactor * right,
 				isometricScaleFactor * bottom);
-		drawable.draw(canvas);
-		
-		if (flipped) {
-			canvas.restore();
-		}
+		ret.inset(SQUARE_MARGIN, SQUARE_MARGIN);
+		return ret;
 	}
 	
 	public void draw(final Canvas canvas, final Square square) {
@@ -122,25 +118,43 @@ public class DrawFactory {
 	}
 	
 	public void draw(final Canvas canvas, final Square square, final boolean highlighted) {
-		final int index = square.getIndex();
 		final Drawable drawable = getSquareDrawable(square);
 		
-		final int x = index % GameUtils.CHESSBOARD_SIZE;
-		final int y = index / GameUtils.CHESSBOARD_SIZE;
-		final int left = x * squareSize;
-		final int right = left + squareSize;
-		final int top = boardSize - (y + 1) * squareSize;
-		final int bottom = top + squareSize;
-		
-		drawable.setBounds(
-				left + 1,
-				top + 1,
-				right - 1,
-				bottom - 1);
+		final Rect bound = getSquareBounds(square);
+		drawable.setBounds(bound);
 		drawable.draw(canvas);
 		
 		if (highlighted) {
-			canvas.drawRect(left, top, right, bottom, hightlightPainter);
+			canvas.drawRect(bound, hightlightPainter);
+		}
+	}
+	
+	public Rect getPieceBounds(final Piece piece) {
+		final Rect ret = getSquareBounds(piece.getSquare());
+		ret.inset(PIECE_MARGIN, PIECE_MARGIN);
+		return ret;
+	}
+	
+	public void draw(final Canvas canvas, final Piece piece) {
+		draw(canvas, piece, false);
+	}
+	
+	public void draw(final Canvas canvas, final Piece piece, final boolean flipped) {
+		final Drawable drawable = getPieceImage(piece);
+		
+		final Rect bound = getPieceBounds(piece);
+		if (flipped) {
+			canvas.save();
+			canvas.rotate(180, bound.left - PIECE_MARGIN, bound.top - PIECE_MARGIN);
+			canvas.translate(-squareSize, -squareSize);
+		}
+		
+		drawable.setBounds(bound);
+		
+		drawable.draw(canvas);
+		
+		if (flipped) {
+			canvas.restore();
 		}
 	}
 	

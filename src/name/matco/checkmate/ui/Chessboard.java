@@ -1,7 +1,6 @@
 package name.matco.checkmate.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import name.matco.checkmate.game.Game;
@@ -17,6 +16,7 @@ import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -129,65 +129,81 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	}
 	
 	boolean firstDraw = true;
+	final Rect previousDirtyRegion = new Rect();
+	final Rect newDirtyRegion = new Rect();
+	final Rect dirtyRegion = new Rect();
+	
+	private Rect getDirtyRegion() {
+		if (dirtyRegion.isEmpty()) {
+			dirtyRegion.set(0, 0, getWidth(), getHeight());
+		} else {
+			dirtyRegion.set(previousDirtyRegion);
+			if (selectedPiece != null) {
+				newDirtyRegion.set(drawFactory.getPieceBounds(selectedPiece));
+				for (final Square s : highlightedSquares) {
+					newDirtyRegion.union(drawFactory.getSquareBounds(s));
+				}
+			} else if (animatedMove != null) {
+				newDirtyRegion.set(drawFactory.getSquareBounds(animatedMove.getFrom()));
+				newDirtyRegion.union(drawFactory.getSquareBounds(animatedMove.getTo()));
+			}
+			dirtyRegion.union(newDirtyRegion);
+			previousDirtyRegion.set(newDirtyRegion);
+		}
+		return dirtyRegion;
+	}
 	
 	@Override
 	public void draw(final Canvas canvas) {
-		final List<Square> squares;
-		List<Piece> pieces;
-		
-		if (firstDraw) {
-			squares = Arrays.asList(game.getBoard().getSquares());
-			pieces = game.getBoard().getOnboardPieces();
-			firstDraw = false;
-		} else {
-			// TODO : avoid instantiation in draw()
-			squares = new ArrayList<Square>();
-			pieces = new ArrayList<Piece>();
-			if (selectedPiece != null) {
-				pieces.add(selectedPiece);
-				squares.add(selectedPiece.getSquare());
-				squares.addAll(highlightedSquares);
+		super.draw(canvas);
+		myDraw();
+	}
+	
+	public void myDraw() {
+		final Rect dirty = getDirtyRegion();
+		final boolean[] indices = drawFactory.getSquaresInRect(dirty);
+		final List<Square> dirtySquares = new ArrayList<Square>();
+		for (int i = 0; i < indices.length; i++) {
+			if (indices[i]) {
+				dirtySquares.add(game.getBoard().getSquareAt(i));
 			}
 		}
 		
-		if (!squares.isEmpty() || !pieces.isEmpty() || animatedMove != null) {
-			drawParts(canvas, squares, pieces);
+		if (!dirtySquares.isEmpty()) {
+			final Canvas canvas = getHolder().lockCanvas(dirty);
+			if (canvas != null) {
+				try {
+					drawParts(canvas, dirtySquares);
+				} finally {
+					getHolder().unlockCanvasAndPost(canvas);
+				}
+			}
 		}
 	}
 	
-	public void drawParts(final Canvas canvas, final List<Square> squares, final List<Piece> pieces) {
-		super.draw(canvas);
-		
-		// TODO improve this
-		if (game == null) {
-			return;
-		}
-		
-		Log.v(getClass().getName(), String.format("Draw canvas [board size = %dx%d, square size = %d]", canvas.getWidth(), canvas.getHeight(), drawFactory.getSquareSize()));
-		
+	private void drawParts(final Canvas canvas, final List<Square> squares) {
 		final long now = SystemClock.uptimeMillis();
 		
 		// draw squares
 		for (final Square s : squares) {
 			drawFactory.draw(canvas, s, highlightedSquares.contains(s));
-		}
-		
-		// draw pieces
-		for (final Piece p : pieces) {
-			// draw piece if it's not moving piece(s)
-			if (animatedMove == null || !animatedMove.getMovingPieces().contains(p.getId())) {
-				final boolean flipped = container.getTwoPlayerMode() && p.is(Player.BLACK);
-				
-				if (p.equals(selectedPiece)) {
-					final int offset = (int) (8.0 * Math.sin((now - selectionMillis) / (float) SELECTION_ANIMATION_DURATION) + 8.0);
-					canvas.save();
-					canvas.translate(0, flipped ? offset : -offset);
-				}
-				
-				drawFactory.draw(canvas, p, flipped);
-				
-				if (p.equals(selectedPiece)) {
-					canvas.restore();
+			final Piece p = s.getPiece();
+			if (p != null) {
+				// draw piece if it's not moving piece(s)
+				if (animatedMove == null || !animatedMove.getMovingPieces().contains(p.getId())) {
+					final boolean flipped = container.getTwoPlayerMode() && p.is(Player.BLACK);
+					
+					if (p.equals(selectedPiece)) {
+						final int offset = (int) (8.0 * Math.sin((now - selectionMillis) / (float) SELECTION_ANIMATION_DURATION) + 8.0);
+						canvas.save();
+						canvas.translate(0, flipped ? offset : -offset);
+					}
+					
+					drawFactory.draw(canvas, p, flipped);
+					
+					if (p.equals(selectedPiece)) {
+						canvas.restore();
+					}
 				}
 			}
 		}
@@ -208,6 +224,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 			
 			for (final PieceModification modification : animatedMove.getModifications()) {
 				if (modification.isMovement()) {
+					// TODO : avoid instantiation in draw()
 					final Piece p = game.getBoard().getPieceFromId(modification.getPieceId());
 					final Square from = game.getBoard().getSquareAt(modification.getFrom());
 					final Square to = game.getBoard().getSquareAt(modification.getTo());

@@ -2,11 +2,8 @@ package name.matco.checkmate.ui;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import android.graphics.Canvas;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 public class ChessboardDrawer implements Runnable {
 	
@@ -24,10 +21,10 @@ public class ChessboardDrawer implements Runnable {
 	private int skippedDraws = 0;
 	private long drawingTime = 0;
 	
-	final private SurfaceView surface;
+	final private Chessboard chessboard;
 	
-	public ChessboardDrawer(final SurfaceView surface) {
-		this.surface = surface;
+	public ChessboardDrawer(final Chessboard chessboard) {
+		this.chessboard = chessboard;
 		new Thread(this).start();
 	}
 	
@@ -65,26 +62,17 @@ public class ChessboardDrawer implements Runnable {
 	
 	private boolean doDraw(final boolean forceSchedule) {
 		if (forceSchedule || !drawing.getAndSet(true)) {
-			final boolean posted = surface.post(new Runnable() {
+			final boolean posted = chessboard.post(new Runnable() {
 				@Override
 				public void run() {
-					final SurfaceHolder holder = surface.getHolder();
-					// TODO : get dirty region
-					final Canvas canvas = holder.lockCanvas();
-					if (canvas != null) {
-						actualDraws++;
-						long start, stop;
-						try {
-							start = SystemClock.uptimeMillis();
-							surface.draw(canvas);
-							stop = SystemClock.uptimeMillis();
-						} finally {
-							holder.unlockCanvasAndPost(canvas);
-						}
-						drawingTime += stop - start;
-						// TODO : conditional log to avoid String computation
-						Log.v(getClass().getName(), String.format("Frame %d (%d skipped = %d%%), %dms, avg = %dms", actualDraws, skippedDraws, 100 * skippedDraws / (actualDraws + skippedDraws), stop - start, drawingTime / actualDraws));
-					}
+					actualDraws++;
+					long start, stop;
+					start = SystemClock.uptimeMillis();
+					chessboard.myDraw();
+					stop = SystemClock.uptimeMillis();
+					drawingTime += stop - start;
+					// TODO : conditional log to avoid String computation
+					Log.v(getClass().getName(), String.format("Frame %d (%d skipped = %d%%), %dms, avg = %dms", actualDraws, skippedDraws, 100 * skippedDraws / (actualDraws + skippedDraws), stop - start, drawingTime / actualDraws));
 					drawing.set(false);
 				}
 			});
