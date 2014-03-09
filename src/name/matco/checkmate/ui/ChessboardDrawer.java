@@ -35,7 +35,7 @@ public class ChessboardDrawer implements Runnable {
 	@Override
 	public void run() {
 		while (run) {
-			while (SystemClock.uptimeMillis() < stopTime) {
+			while (run && SystemClock.uptimeMillis() < stopTime) {
 				final long sleepTime = doDraw(false) ? FRAME_TIME : POLLING_TIME;
 				try {
 					Thread.sleep(sleepTime);
