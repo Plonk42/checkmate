@@ -23,8 +23,13 @@ public class DrawFactory {
 	private static Drawable blackSquareDrawable;
 	private static Drawable whiteSquareDrawable;
 	
+	private static Paint backgroundPainter;
 	private static Paint hightlightPainter;
 	static {
+		backgroundPainter = new Paint();
+		backgroundPainter.setAntiAlias(true);
+		backgroundPainter.setStyle(Style.FILL);
+		backgroundPainter.setARGB(255, 0, 0, 0);
 		hightlightPainter = new Paint();
 		hightlightPainter.setAntiAlias(true);
 		hightlightPainter.setStyle(Style.FILL);
@@ -158,24 +163,21 @@ public class DrawFactory {
 		}
 	}
 	
-	public void drawMovement(final Canvas canvas, final PieceMovement move, final boolean way, final float coeff, final boolean flipped) {
+	public void drawMovement(final Canvas canvas, final PieceMovement move, final float coeff, final boolean flipped) {
 		final Drawable drawable = getPieceImage(move.getPiece());
 		
-		final Square s = way ? move.getTo() : move.getFrom();
-		final Movement pam = move.getFrom().getMovementTo(move.getTo());
-		final Movement m = way ? pam : pam.withInversion();
-		
-		final int dx = (int) ((coeff - 1.0) * m.dx * squareSize);
-		final int dy = (int) ((1.0 - coeff) * m.dy * squareSize);
-		final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
-		
-		final int index = s.getIndex();
+		final int index = move.getFrom().getIndex();
 		final int x = index % GameUtils.CHESSBOARD_SIZE;
 		final int y = index / GameUtils.CHESSBOARD_SIZE;
 		final int left = x * squareSize + PIECE_MARGIN;
 		final int right = left + squareSize - 2 * PIECE_MARGIN;
 		final int top = boardSize - (y + 1) * squareSize + PIECE_MARGIN;
 		final int bottom = top + squareSize - 2 * PIECE_MARGIN;
+		
+		final Movement m = move.getFrom().getMovementTo(move.getTo());
+		final int dx = (int) (coeff * m.dx * squareSize);
+		final int dy = (int) (-coeff * m.dy * squareSize);
+		final int factor = (int) (Math.sin(coeff * Math.PI) * squareSize / 3);
 		
 		Log.v(getClass().getName(), "Painting movement : coeff = " + coeff + ", dx = " + dx + ", dy = " + dy + ", factor " + factor);
 		
@@ -194,6 +196,10 @@ public class DrawFactory {
 		if (flipped) {
 			canvas.restore();
 		}
+	}
+	
+	public void clearDirtyRegion(final Canvas canvas, final Rect dirtyRegion) {
+		canvas.drawRect(dirtyRegion, backgroundPainter);
 	}
 	
 }

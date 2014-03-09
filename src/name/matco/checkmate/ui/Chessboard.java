@@ -133,6 +133,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	final Rect newDirtyRegion = new Rect();
 	final Rect dirtyRegion = new Rect();
 	
+	private void resetDirtyRegion() {
+		previousDirtyRegion.setEmpty();
+		newDirtyRegion.setEmpty();
+		dirtyRegion.setEmpty();
+	}
+	
 	private Rect getDirtyRegion() {
 		if (dirtyRegion.isEmpty()) {
 			dirtyRegion.set(0, 0, getWidth(), getHeight());
@@ -156,6 +162,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	@Override
 	public void draw(final Canvas canvas) {
 		super.draw(canvas);
+		// perform a complete draw
+		resetDirtyRegion();
 		myDraw();
 	}
 	
@@ -183,6 +191,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	
 	private void drawParts(final Canvas canvas, final List<Square> squares) {
 		final long now = SystemClock.uptimeMillis();
+		
+		drawFactory.clearDirtyRegion(canvas, dirtyRegion);
 		
 		// draw squares
 		for (final Square s : squares) {
@@ -228,8 +238,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 					final Piece p = game.getBoard().getPieceFromId(modification.getPieceId());
 					final Square from = game.getBoard().getSquareAt(modification.getFrom());
 					final Square to = game.getBoard().getSquareAt(modification.getTo());
-					final PieceMovement move = new PieceMovement(p, from, to);
-					drawFactory.drawMovement(canvas, move, animatedMoveWay, coeff, container.getTwoPlayerMode() && p.is(Player.BLACK));
+					final PieceMovement move = animatedMoveWay ? new PieceMovement(p, from, to) : new PieceMovement(p, to, from);
+					drawFactory.drawMovement(canvas, move, coeff, container.getTwoPlayerMode() && p.is(Player.BLACK));
 				}
 			}
 			
@@ -240,6 +250,7 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	}
 	
 	public void redraw() {
+		resetDirtyRegion();
 		drawer.drawNow();
 	}
 	
@@ -254,8 +265,12 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 	@Override
 	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.i(getClass().getName(), "Surface created");
+		resetDirtyRegion();
 		// create new drawer each time surface is created
 		drawer = new ChessboardDrawer(this);
+		if (selectedPiece != null) {
+			drawer.drawContinuous();
+		}
 	}
 	
 	@Override
