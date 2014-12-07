@@ -7,6 +7,7 @@ import java.util.Set;
 import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
+import name.matco.checkmate.ui.listeners.CheckListener;
 import name.matco.checkmate.ui.listeners.GameListener;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;

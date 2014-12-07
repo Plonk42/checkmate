@@ -1,5 +1,6 @@
-package name.matco.checkmate.game;
+package name.matco.checkmate.ui.listeners;
 
+import name.matco.checkmate.game.Square;
 import name.matco.checkmate.game.piece.Piece;
 
 public interface CheckListener {

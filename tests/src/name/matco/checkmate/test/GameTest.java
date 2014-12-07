@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.matco.checkmate.game.CheckListener;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.GameUtils;
 import name.matco.checkmate.game.Move;
@@ -16,6 +15,7 @@ import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import name.matco.checkmate.game.piece.Piece;
 import name.matco.checkmate.game.piece.PieceType;
 import name.matco.checkmate.ui.PieceMovement;
+import name.matco.checkmate.ui.listeners.CheckListener;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 

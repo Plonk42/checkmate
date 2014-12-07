@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.matco.checkmate.R;
-import name.matco.checkmate.game.CheckListener;
 import name.matco.checkmate.game.Game;
 import name.matco.checkmate.game.Move;
 import name.matco.checkmate.game.Player;
 import name.matco.checkmate.game.Square;
 import name.matco.checkmate.game.piece.Piece;
+import name.matco.checkmate.ui.listeners.CheckListener;
 import name.matco.checkmate.ui.listeners.GameStateListener;
 import name.matco.checkmate.ui.listeners.MovementListener;
 import android.app.Fragment;
