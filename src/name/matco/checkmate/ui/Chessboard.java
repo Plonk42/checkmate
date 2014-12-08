@@ -108,8 +108,8 @@ public class Chessboard extends SurfaceView implements SurfaceHolder.Callback2, 
 		
 		highlightedSquares.clear();
 		
+		// retrieve square and piece
 		final Square s = getSquareAt(event.getX(), event.getY());
-		
 		final Piece p = s.getPiece();
 		
 		// move selected piece
