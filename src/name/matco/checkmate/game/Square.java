@@ -61,6 +61,18 @@ public class Square implements Comparable<Square> {
 	public boolean isEmpty() {
 		return getPiece() == null;
 	}
+	
+	public boolean onSameFile(final Square otherSquare) {
+		return getX() == otherSquare.getX();
+	}
+	
+	public boolean onSameRank(final Square otherSquare) {
+		return getY() == otherSquare.getY();
+	}
+	
+	public boolean onSameDiagonale(final Square otherSquare) {
+		return Math.abs(getX() - otherSquare.getX()) == Math.abs(getY() - otherSquare.getY());
+	}
 
 	public boolean isQueenSide() {
 		return getX() <= 3;

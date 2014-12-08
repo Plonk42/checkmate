@@ -20,21 +20,94 @@ import android.test.InstrumentationTestCase;
 import android.util.Log;
 
 public class GameTest extends InstrumentationTestCase {
-	
+
 	public void testGame() {
 		final Game game = new Game();
-		
+
 		assertEquals(game.getBoard().getSquares().length, 64);
-		
+
 		// check some squares
 		assertNotNull(game.getBoard().getSquares()[0]);
 		assertNotNull(game.getBoard().getSquares()[3]);
 		assertNotNull(game.getBoard().getSquares()[63]);
 	}
-	
+
+	public void testSquares() {
+		final Game game = new Game();
+
+		// using square on the corner
+		// same rank
+		assertTrue(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[0]));
+		assertTrue(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[1]));
+		assertTrue(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[2]));
+		assertTrue(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[7]));
+		
+		assertFalse(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[8]));
+		assertFalse(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[9]));
+		assertFalse(game.getBoard().getSquares()[0].onSameRank(game.getBoard().getSquares()[10]));
+
+		// same file
+		assertTrue(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[0]));
+		assertTrue(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[8]));
+		assertTrue(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[16]));
+		assertTrue(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[24]));
+
+		assertFalse(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[1]));
+		assertFalse(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[2]));
+		assertFalse(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[7]));
+		assertFalse(game.getBoard().getSquares()[0].onSameFile(game.getBoard().getSquares()[9]));
+		
+		// same diagonale
+		assertTrue(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[0]));
+		assertTrue(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[9]));
+		assertTrue(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[18]));
+		assertTrue(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[27]));
+
+		assertFalse(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[1]));
+		assertFalse(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[7]));
+		assertFalse(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[8]));
+		assertFalse(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[8]));
+		assertFalse(game.getBoard().getSquares()[0].onSameDiagonale(game.getBoard().getSquares()[16]));
+		
+		// using square almost in the corner
+		// same rank
+		assertTrue(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[9]));
+		assertTrue(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[8]));
+		assertTrue(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[10]));
+		assertTrue(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[11]));
+		
+		assertFalse(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[0]));
+		assertFalse(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[17]));
+		assertFalse(game.getBoard().getSquares()[9].onSameRank(game.getBoard().getSquares()[18]));
+
+		// same file
+		assertTrue(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[9]));
+		assertTrue(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[1]));
+		assertTrue(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[17]));
+		assertTrue(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[25]));
+
+		assertFalse(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[0]));
+		assertFalse(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[8]));
+		assertFalse(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[10]));
+		assertFalse(game.getBoard().getSquares()[9].onSameFile(game.getBoard().getSquares()[11]));
+		
+		// same diagonale
+		assertTrue(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[9]));
+		assertTrue(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[0]));
+		assertTrue(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[18]));
+		assertTrue(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[27]));
+		assertTrue(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[2]));
+		assertTrue(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[16]));
+
+		assertFalse(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[8]));
+		assertFalse(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[10]));
+		assertFalse(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[1]));
+		assertFalse(game.getBoard().getSquares()[9].onSameDiagonale(game.getBoard().getSquares()[17]));
+	}
+
 	public void testInitialGame() {
 		final Game game = new Game();
-		
+
 		// check piece positions
 		assertTrue(game.getBoard().getSquares()[0].getPiece().is(PieceType.ROOK, Player.WHITE));
 		assertTrue(game.getBoard().getSquares()[1].getPiece().is(PieceType.KNIGHT, Player.WHITE));
@@ -58,22 +131,22 @@ public class GameTest extends InstrumentationTestCase {
 		assertTrue(game.getBoard().getSquares()[61].getPiece().is(PieceType.BISHOP, Player.BLACK));
 		assertTrue(game.getBoard().getSquares()[62].getPiece().is(PieceType.KNIGHT, Player.BLACK));
 		assertTrue(game.getBoard().getSquares()[63].getPiece().is(PieceType.ROOK, Player.BLACK));
-		
+
 	}
-	
+
 	public void testInitialAllowedPositions() {
 		final Game game = new Game();
-		
+
 		final Piece whiteQueen = game.getBoard().getSquares()[3].getPiece();
 		final Piece whiteKing = game.getBoard().getSquares()[4].getPiece();
 		final Piece whiteQueenPawn = game.getBoard().getSquares()[11].getPiece();
-		
+
 		// check some piece allowed positions
 		assertTrue(whiteQueen.getAllowedPositions().isEmpty());
 		assertTrue(whiteKing.getAllowedPositions().isEmpty());
-		
+
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
-		
+
 		try {
 			assertEquals(2, whiteQueenPawnAllowedPosition.size());
 			assertTrue(whiteQueenPawnAllowedPosition.contains(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 2))));
@@ -82,7 +155,7 @@ public class GameTest extends InstrumentationTestCase {
 			fail(e.getLocalizedMessage());
 		}
 	}
-	
+
 	private void checkBoardConsistency(final Game game) {
 		for (final Square s : game.getBoard().getSquares()) {
 			if (s.getPiece() != null && !s.getPiece().getSquare().equals(s)) {
@@ -90,16 +163,16 @@ public class GameTest extends InstrumentationTestCase {
 			}
 		}
 	}
-	
+
 	private final Map<Piece, Square> piecePositions = new HashMap<Piece, Square>();
-	
+
 	private void saveBoardState(final Game game) {
 		piecePositions.clear();
 		for (final Piece p : game.getBoard().getPieces()) {
 			piecePositions.put(p, p.getSquare());
 		}
 	}
-	
+
 	public List<PieceMovement> compareAgainsLastSave(final Game game) {
 		final List<PieceMovement> movements = new ArrayList<PieceMovement>();
 		for (final Piece p : game.getBoard().getPieces()) {
@@ -109,18 +182,18 @@ public class GameTest extends InstrumentationTestCase {
 		}
 		return movements;
 	}
-	
+
 	public void testMove() {
 		final Game game = new Game();
-		
+
 		final Piece whiteQueenPawn = game.getBoard().getSquares()[11].getPiece();
 		final List<Square> whiteQueenPawnAllowedPosition = whiteQueenPawn.getAllowedPositions();
-		
+
 		saveBoardState(game);
 		final Move move = game.getMove(whiteQueenPawn, whiteQueenPawnAllowedPosition.get(0));
 		game.playMove(move);
 		final List<PieceMovement> movements = compareAgainsLastSave(game);
-		
+
 		try {
 			checkBoardConsistency(game);
 			assertEquals(1, movements.size());
@@ -131,26 +204,26 @@ public class GameTest extends InstrumentationTestCase {
 			fail(e.getLocalizedMessage());
 		}
 	}
-	
+
 	public void testScholarsMate() {
 		final Game game = new Game();
-		
+
 		final List<Piece> checks = new ArrayList<Piece>();
 		final List<Piece> checkMates = new ArrayList<Piece>();
-		
+
 		game.addCheckListener(new CheckListener() {
-			
+
 			@Override
 			public void onCheckmate(final Piece p, final Square from, final Square to) {
 				checkMates.add(p);
 			}
-			
+
 			@Override
 			public void onCheck(final Piece p, final Square from, final Square to) {
 				checks.add(p);
 			}
 		});
-		
+
 		try {
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "e4"));
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "e5"));
@@ -158,29 +231,29 @@ public class GameTest extends InstrumentationTestCase {
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Bc5"));
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Qh5"));
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Nc6"));
-			
+
 			try {
 				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece());
 				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece().is(PieceType.PAWN, Player.BLACK));
-				
+
 				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(4, 7)).getPiece());
 				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(4, 7)).getPiece().is(PieceType.KING, Player.BLACK));
-				
+
 				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 7)).getPiece());
 				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(3, 7)).getPiece().is(PieceType.QUEEN, Player.BLACK));
-				
+
 				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(2, 3)).getPiece());
 				Log.i(getClass().getName(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(2, 3)).getPiece().toString());
 				assertTrue(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(2, 3)).getPiece().is(PieceType.BISHOP, Player.WHITE));
 			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
-			
+
 			assertEquals(0, checks.size());
 			assertEquals(0, checkMates.size());
-			
+
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Qxf7"));
-			
+
 			try {
 				assertNotNull(game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece());
 				Log.i(getClass().getName(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 6)).getPiece().toString());
@@ -188,35 +261,35 @@ public class GameTest extends InstrumentationTestCase {
 			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
-			
+
 			assertEquals(0, checks.size());
 			assertEquals(1, checkMates.size());
-			
+
 		} catch (final InvalidAlgebraic e) {
 			e.printStackTrace();
 			fail(e.getLocalizedMessage());
 		}
 	}
-	
+
 	public void testKings() {
 		final Game game = new Game();
-		
+
 		final List<Piece> checks = new ArrayList<Piece>();
 		final List<Piece> checkMates = new ArrayList<Piece>();
-		
+
 		game.addCheckListener(new CheckListener() {
-			
+
 			@Override
 			public void onCheckmate(final Piece p, final Square from, final Square to) {
 				checkMates.add(p);
 			}
-			
+
 			@Override
 			public void onCheck(final Piece p, final Square from, final Square to) {
 				checks.add(p);
 			}
 		});
-		
+
 		try {
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "e4"));
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "e5"));
@@ -224,27 +297,27 @@ public class GameTest extends InstrumentationTestCase {
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Ke7"));
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Kf3"));
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.BLACK, "Kf6"));
-			
+
 			assertEquals(0, checks.size());
 			assertEquals(0, checkMates.size());
-			
+
 			try {
 				assertEquals(game.getBoard().getWhiteKing(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 2)).getPiece());
 				assertEquals(game.getBoard().getBlackKing(), game.getBoard().getSquareAt(GameUtils.coordinateToIndex(5, 5)).getPiece());
-				
+
 				assertEquals(game.getBoard().getWhiteKing().getAllowedPositions().size(), 4);
 				assertEquals(game.getBoard().getBlackKing().getAllowedPositions().size(), 4);
 			} catch (final OutOfBoardCoordinateException e) {
 				fail(e.getLocalizedMessage());
 			}
-			
+
 			game.playMove(Move.fromAlgebraic(game.getBoard(), Player.WHITE, "Kg4"));
-			
+
 			assertEquals(game.getBoard().getBlackKing().getAllowedPositions().size(), 3);
-			
+
 			assertEquals(0, checks.size());
 			assertEquals(0, checkMates.size());
-			
+
 		} catch (final InvalidAlgebraic e) {
 			e.printStackTrace();
 			fail(e.getLocalizedMessage());
