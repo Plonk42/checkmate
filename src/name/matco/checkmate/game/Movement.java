@@ -62,15 +62,8 @@ public class Movement {
 	public final static List<List<Movement>> LINE_MOVEMENTS;
 	static {
 		final List<List<Movement>> lines = new ArrayList<List<Movement>>();
-		for (final Direction dir : new Direction[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST }) {
-			final List<Movement> moves = new ArrayList<Movement>();
-			Movement prev = dir.getMovement();
-			moves.add(prev);
-			for (int i = 0; i < GameUtils.CHESSBOARD_SIZE - 1; i++) {
-				prev = prev.withAdd(dir.getMovement());
-				moves.add(prev);
-			}
-			lines.add(Collections.unmodifiableList(moves));
+		for (final Direction direction : new Direction[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST }) {
+			lines.add(Movement.getMovements(direction));
 		}
 		LINE_MOVEMENTS = Collections.unmodifiableList(lines);
 	}
@@ -78,15 +71,8 @@ public class Movement {
 	public final static List<List<Movement>> DIAGONAL_MOVEMENTS;
 	static {
 		final List<List<Movement>> diagonals = new ArrayList<List<Movement>>();
-		for (final Direction dir : new Direction[] { Direction.NORTH_EAST, Direction.SOUTH_EAST, Direction.SOUTH_WEST, Direction.NORTH_WEST }) {
-			final List<Movement> moves = new ArrayList<Movement>();
-			Movement prev = dir.getMovement();
-			moves.add(prev);
-			for (int i = 0; i < GameUtils.CHESSBOARD_SIZE - 1; i++) {
-				prev = prev.withAdd(dir.getMovement());
-				moves.add(prev);
-			}
-			diagonals.add(Collections.unmodifiableList(moves));
+		for (final Direction direction : new Direction[] { Direction.NORTH_EAST, Direction.SOUTH_EAST, Direction.SOUTH_WEST, Direction.NORTH_WEST }) {
+			diagonals.add(Movement.getMovements(direction));
 		}
 		DIAGONAL_MOVEMENTS = Collections.unmodifiableList(diagonals);
 	}
@@ -136,6 +122,17 @@ public class Movement {
 	@Override
 	public String toString() {
 		return new StringBuilder().append("(").append(dx).append(",").append(dy).append(")").toString();
+	}
+	
+	public static List<Movement> getMovements(final Direction direction) {
+		final List<Movement> movements = new ArrayList<Movement>();
+		Movement unit = direction.getMovement();
+		movements.add(unit);
+		for (int i = 0; i < GameUtils.CHESSBOARD_SIZE - 1; i++) {
+			unit = unit.withAdd(direction.getMovement());
+			movements.add(unit);
+		}
+		return Collections.unmodifiableList(movements);
 	}
 	
 }
