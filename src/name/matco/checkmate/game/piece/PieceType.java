@@ -16,33 +16,33 @@ import name.matco.checkmate.game.exception.OutOfBoardCoordinateException;
 import android.util.Log;
 
 public enum PieceType {
-	
+
 	PAWN {
 		@Override
 		public String toString() {
 			return "Pawn";
 		}
-		
+
 		@Override
 		public String getAlgebraic() {
 			return ""; // not letter for Pawn, or (P)
 		}
-		
+
 		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_pawn : R.drawable.white_pawn;
 		}
-		
+
 		@Override
 		public int getNameResource() {
 			return R.string.pawn;
 		}
-		
+
 		@Override
 		public List<List<Movement>> getAllowedMovements(final Piece piece) {
 			final List<List<Movement>> movements = new ArrayList<List<Movement>>();
 			final Direction forward = piece.getPlayer().getForward();
-			
+
 			try {
 				final List<Movement> forwardMovements = new ArrayList<Movement>();
 				// pawn can not capture on line movements
@@ -60,9 +60,9 @@ public enum PieceType {
 			} catch (final OutOfBoardCoordinateException e) {
 				// out of board moves not allowed
 			}
-			
+
 			final Move lastMove = piece.getBoard().getLastMove();
-			
+
 			// pawn can move on diagonal if there is a piece to capture or "en passant"capture
 			try {
 				final Movement withEast = forward.getMovement().withAdd(Direction.EAST.getMovement());
@@ -79,7 +79,7 @@ public enum PieceType {
 			} catch (final OutOfBoardCoordinateException e) {
 				// out of board moves not allowed
 			}
-			
+
 			try {
 				// pawn can move on diagonal if there is a piece to capture
 				final Movement withWest = forward.getMovement().withAdd(Direction.WEST.getMovement());
@@ -96,7 +96,7 @@ public enum PieceType {
 			} catch (final OutOfBoardCoordinateException e) {
 				// out of board moves not allowed
 			}
-			
+
 			return movements;
 		}
 	},
@@ -105,22 +105,22 @@ public enum PieceType {
 		public String toString() {
 			return "Rook";
 		}
-		
+
 		@Override
 		public String getAlgebraic() {
 			return "R";
 		}
-		
+
 		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_rook : R.drawable.white_rook;
 		}
-		
+
 		@Override
 		public int getNameResource() {
 			return R.string.rook;
 		}
-		
+
 		@Override
 		public List<List<Movement>> getAllowedMovements(final Piece piece) {
 			return Movement.LINE_MOVEMENTS;
@@ -131,22 +131,22 @@ public enum PieceType {
 		public String toString() {
 			return "Knight";
 		}
-		
+
 		@Override
 		public String getAlgebraic() {
 			return "N";
 		}
-		
+
 		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_knight : R.drawable.white_knight;
 		}
-		
+
 		@Override
 		public int getNameResource() {
 			return R.string.knight;
 		}
-		
+
 		@Override
 		public List<List<Movement>> getAllowedMovements(final Piece piece) {
 			return Movement.KNIGHT_MOVEMENTS;
@@ -157,22 +157,22 @@ public enum PieceType {
 		public String toString() {
 			return "Bishop";
 		}
-		
+
 		@Override
 		public String getAlgebraic() {
 			return "B";
 		}
-		
+
 		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_bishop : R.drawable.white_bishop;
 		}
-		
+
 		@Override
 		public int getNameResource() {
 			return R.string.bishop;
 		}
-		
+
 		@Override
 		public List<List<Movement>> getAllowedMovements(final Piece piece) {
 			return Movement.DIAGONAL_MOVEMENTS;
@@ -183,22 +183,22 @@ public enum PieceType {
 		public String toString() {
 			return "Queen";
 		}
-		
+
 		@Override
 		public String getAlgebraic() {
 			return "Q";
 		}
-		
+
 		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_queen : R.drawable.white_queen;
 		}
-		
+
 		@Override
 		public int getNameResource() {
 			return R.string.queen;
 		}
-		
+
 		@Override
 		public List<List<Movement>> getAllowedMovements(final Piece piece) {
 			final List<List<Movement>> movements = new ArrayList<List<Movement>>(Movement.LINE_MOVEMENTS);
@@ -211,22 +211,22 @@ public enum PieceType {
 		public String toString() {
 			return "King";
 		}
-		
+
 		@Override
 		public String getAlgebraic() {
 			return "K";
 		}
-		
+
 		@Override
 		public int getImageResource(final Player player) {
 			return Player.BLACK.equals(player) ? R.drawable.black_king : R.drawable.white_king;
 		}
-		
+
 		@Override
 		public int getNameResource() {
 			return R.string.king;
 		}
-		
+
 		@Override
 		public List<List<Movement>> getAllowedMovements(final Piece piece) {
 			// king has already been moved
@@ -240,19 +240,38 @@ public enum PieceType {
 			// castling
 			boolean isKingSideCastlingValid = true;
 			boolean isQueenSideCastlingValid = true;
-			
+
 			// rook must be at its original square
 			final Square kingCorner = piece.getBoard().getSquareAt(piece.getPlayer().getKingCorner());
 			if (kingCorner.getPiece() == null || kingCorner.getPiece().hasMoved() || !kingCorner.getPiece().is(PieceType.ROOK, piece.getPlayer())) {
 				isKingSideCastlingValid = false;
 			}
+			// squares between king and rook must be empty
+			else {
+				for (final Square square : piece.getSquare().getSquaresInBetween(kingCorner)) {
+					if (!square.isEmpty()) {
+						isKingSideCastlingValid = false;
+						break;
+					}
+				}
+			}
 			final Square queenCorner = piece.getBoard().getSquareAt(piece.getPlayer().getQueenCorner());
 			if (queenCorner.getPiece() == null || queenCorner.getPiece().hasMoved() || !queenCorner.getPiece().is(PieceType.ROOK, piece.getPlayer())) {
 				isQueenSideCastlingValid = false;
 			}
+			// squares between king and rook must be empty
+			else {
+				for (final Square square : piece.getSquare().getSquaresInBetween(queenCorner)) {
+					if (!square.isEmpty()) {
+						isQueenSideCastlingValid = false;
+						break;
+					}
+				}
+			}
+
 			Log.i(getClass().getName(), String.format("Kingside castling seems to be possible? " + isKingSideCastlingValid));
 			Log.i(getClass().getName(), String.format("Queenside castling seems to be possible? " + isQueenSideCastlingValid));
-			
+
 			// kingside castling
 			// all squares between king and rook must be empty and king must no be in check in all squares
 			if (isKingSideCastlingValid) {
@@ -271,7 +290,7 @@ public enum PieceType {
 				}
 			}
 			Log.i(getClass().getName(), String.format("Kingside castling : all squares between king and rook are empty and king is not in check in all squares for kingside castling = " + isKingSideCastlingValid));
-			
+
 			// queenside castling
 			// all squares between king and rook must be empty and king must no be in check in all squares
 			if (isQueenSideCastlingValid) {
@@ -290,7 +309,7 @@ public enum PieceType {
 				}
 			}
 			Log.i(getClass().getName(), String.format("Queenside castling : all squares between king and rook are empty and king is not in check in all squares for queenside castling = " + isQueenSideCastlingValid));
-			
+
 			final List<List<Movement>> movements = new ArrayList<List<Movement>>();
 			movements.addAll(Movement.KING_MOVEMENTS);
 			if (isKingSideCastlingValid) {
@@ -302,15 +321,15 @@ public enum PieceType {
 			return movements;
 		}
 	};
-	
+
 	abstract public String getAlgebraic();
-	
+
 	abstract public List<List<Movement>> getAllowedMovements(Piece piece);
-	
+
 	abstract public int getImageResource(Player player);
-	
+
 	abstract public int getNameResource();
-	
+
 	public static PieceType fromAlgebraic(final String algebraic) throws InvalidAlgebraic {
 		if (algebraic.trim().isEmpty()) {
 			return PieceType.PAWN;
